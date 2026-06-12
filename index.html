@@ -560,6 +560,7 @@ function restoreSession(data){
   const meta=data.user?.user_metadata||{};
   myName=meta.display_name||myEmail.split('@')[0];
   myAv=meta.avatar||AVATARS[0];
+  isAdmin=myEmail.toLowerCase()===ADMIN_EMAIL.toLowerCase();
   enterChat();
 }
 
@@ -571,7 +572,9 @@ async function enterChat(){
   const chat=document.getElementById('chat');
   chat.style.display='flex'; chat.style.flexDirection='column';
   document.getElementById('hav').textContent=myAv;
-  document.getElementById('hname').textContent=myName;
+  document.getElementById('hname').textContent=myName+(isAdmin?' 👑':'');
+  if(isAdmin) document.getElementById('msg-input').placeholder='پیام بنویس… (یا /help برای دستورات ادمین)';
+  await checkBanned();
   await loadMessages();
   startPolling();
   await syncVoiceMembers();
@@ -643,6 +646,16 @@ window.sendMsg=async function(){
   const inp=document.getElementById('msg-input');
   const text=inp.value.trim();
   if(!text||!myName) return;
+
+  /* ── دستورات ادمین ── */
+  if(isAdmin && text.startsWith('/')){
+    inp.value=''; inp.style.height='';
+    await handleAdminCommand(text);
+    return;
+  }
+
+  if(banned){ toast('شما از چت بن شده‌اید 🚫'); return; }
+
   inp.value=''; inp.style.height='';
   const sb=document.getElementById('send-btn');
   sb.classList.remove('sent'); void sb.offsetWidth; sb.classList.add('sent');
@@ -651,6 +664,80 @@ window.sendMsg=async function(){
     if(rows&&rows.length){const em=document.getElementById('empty-state');if(em)em.remove();if(rows[0].id>lastId){appendMsg(rows[0]);lastId=rows[0].id;scrollBottom();}}
   }catch(e){showErr('پیام ارسال نشد');inp.value=text;}
 };
+
+/* ══════════════════════════════════════
+   ADMIN COMMANDS
+══════════════════════════════════════ */
+const ADMIN_EMAIL='matinuchiha9@gmail.com';
+let isAdmin=false, banned=false;
+
+async function handleAdminCommand(raw){
+  const parts=raw.trim().split(/\s+/);
+  const cmd=parts[0].toLowerCase();
+  const arg=parts.slice(1).join(' ');
+
+  switch(cmd){
+    case '/clear': {
+      try{
+        await api('/rest/v1/messages?id=gt.0',{method:'DELETE',headers:{'Prefer':''}});
+        document.getElementById('messages').innerHTML=`<div class="empty" id="empty-state"><div class="empty-icon">✨</div><div class="empty-txt">اولین پیام رو بفرست!</div></div>`;
+        lastId=0; lastUid='';
+        toast('✅ همه پیام‌ها پاک شدن');
+      }catch{ toast('❌ خطا در پاک کردن'); }
+      break;
+    }
+    case '/ban': {
+      if(!arg){ toast('فرمت: /ban نام_کاربر'); break; }
+      try{
+        await api('/rest/v1/banned_users',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({name:arg})});
+        toast(`🚫 ${arg} بن شد`);
+        await sysMsg(`🚫 ${arg} توسط ادمین بن شد`);
+      }catch{ toast('❌ خطا در بن کردن'); }
+      break;
+    }
+    case '/unban': {
+      if(!arg){ toast('فرمت: /unban نام_کاربر'); break; }
+      try{
+        await api(`/rest/v1/banned_users?name=eq.${encodeURIComponent(arg)}`,{method:'DELETE',headers:{'Prefer':''}});
+        toast(`✅ ${arg} از بن خارج شد`);
+      }catch{ toast('❌ خطا'); }
+      break;
+    }
+    case '/banlist': {
+      try{
+        const rows=await api('/rest/v1/banned_users?select=name');
+        toast(rows.length? '🚫 '+rows.map(r=>r.name).join('، ') : 'لیست بن خالیه');
+      }catch{ toast('❌ خطا'); }
+      break;
+    }
+    case '/delmsg': {
+      const id=parseInt(arg);
+      if(!id){ toast('فرمت: /delmsg شناسه_پیام'); break; }
+      try{
+        await api(`/rest/v1/messages?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
+        toast(`🗑 پیام ${id} حذف شد`);
+      }catch{ toast('❌ خطا'); }
+      break;
+    }
+    case '/help': {
+      toast('دستورات: /clear /ban نام /unban نام /banlist /delmsg شناسه');
+      break;
+    }
+    default:
+      toast('دستور نامعتبر — /help رو بزن');
+  }
+}
+
+/* چک کردن بن بودن کاربر فعلی */
+async function checkBanned(){
+  if(isAdmin) { banned=false; return; }
+  try{
+    const rows=await api(`/rest/v1/banned_users?name=eq.${encodeURIComponent(myName)}&select=name`);
+    banned = rows.length>0;
+    if(banned) toast('شما از این چت بن شده‌اید 🚫');
+  }catch{}
+}
+
 
 function appendMsg(msg){
   const container=document.getElementById('messages');
@@ -669,7 +756,7 @@ function appendMsg(msg){
     <div class="bwrap">
       ${(!isMine&&gapTop&&!isSys)?`<div class="sname">${esc(msg.name)}</div>`:''}
       <div class="bubble${isSys?' sys':''}">${displayText}</div>
-      ${!isSys?`<div class="bmeta">${timeStr}${isMine?' ✓✓':''}</div>`:''}
+      ${!isSys?`<div class="bmeta">${timeStr}${isMine?' ✓✓':''}${isAdmin?` <span style="opacity:.5">#${msg.id}</span>`:''}</div>`:''}
     </div>`;
   container.appendChild(row);
 }

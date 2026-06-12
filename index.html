@@ -199,6 +199,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 #err-bar{display:none;background:var(--red);color:#fff;font-size:12px;text-align:center;padding:7px}
 @media(max-width:480px){.bwrap{max-width:82%}}
 </style>
+
+<link rel="manifest" href="manifest.json">
 </head>
 <body data-theme="dark">
 <div id="app">
@@ -1019,5 +1021,12 @@ function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
 function showErr(msg){ const e=document.getElementById('err-bar'); e.textContent=msg; e.style.display='block'; setTimeout(()=>e.style.display='none',5000); }
 </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js');
+}
+</script>
+
 </body>
 </html>

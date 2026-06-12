@@ -2,11 +2,15 @@
   "name": "GapChat",
   "short_name": "GapChat",
   "description": "GapChat Voice and Text Chat",
-  "start_url": "./",
+  "start_url": "/gapchatuchiha/",
+  "scope": "/gapchatuchiha/",
   "display": "standalone",
   "background_color": "#0b0d12",
   "theme_color": "#7c6dfa",
   "orientation": "portrait",
+  "lang": "fa",
+  "dir": "rtl",
+  "id": "https://matinuchiha-shadow.github.io/gapchatuchiha/",
   "icons": [
     {
       "src": "icon-192.png",

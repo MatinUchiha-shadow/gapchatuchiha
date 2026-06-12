@@ -8,7 +8,7 @@
 <style>
 :root {
   --bg:#0b0d12; --surface:#13161f; --panel:#1a1e2a; --border:#252a3a;
-  --accent:#7c6dfa; --accent2:#fa6d9b; --teal:#2dd4bf;
+  --accent:#7c6dfa; --accent2:#fa6d9b; --teal:#2dd4bf; --green:#22c55e;
   --text:#e2e5f0; --muted:#6b7094;
   --font:'Vazirmatn',system-ui,sans-serif; --ease:.18s cubic-bezier(.4,0,.2,1);
 }
@@ -44,12 +44,33 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .hname{font-size:14px;font-weight:600}
 .hstatus{font-size:11px;color:var(--muted)}
 .hr{display:flex;gap:6px;align-items:center}
-.icon-btn{width:34px;height:34px;border-radius:10px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px;transition:background var(--ease)}
+.icon-btn{width:34px;height:34px;border-radius:10px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px;transition:all var(--ease)}
 .icon-btn:hover{background:var(--border)}
-.call-btn{background:rgba(45,212,191,.15);color:var(--teal);}
-.call-btn:hover{background:rgba(45,212,191,.25);}
-.call-btn.active{background:rgba(45,212,191,.9);color:#0b0d12;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(45,212,191,.4)}50%{box-shadow:0 0 0 6px rgba(45,212,191,0)}}
+
+/* VOICE ROOM BAR */
+#voice-bar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.vb-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.vb-icon{font-size:16px}
+.vb-info{display:flex;flex-direction:column;gap:1px}
+.vb-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.vb-members{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.vm-chip{display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;background:var(--panel);border:1px solid var(--border);font-size:12px;transition:all .2s}
+.vm-chip.speaking{border-color:var(--green);background:rgba(34,197,94,.1);box-shadow:0 0 0 2px rgba(34,197,94,.2)}
+.vm-chip .vm-av{font-size:13px}
+.vm-chip .vm-name{color:var(--text);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vm-chip .vm-mute{font-size:10px;opacity:.6}
+.vb-join-btn{padding:7px 14px;border-radius:10px;font-size:13px;font-weight:600;background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);transition:all var(--ease);white-space:nowrap}
+.vb-join-btn:hover{background:rgba(34,197,94,.25)}
+.vb-join-btn.leave{background:rgba(229,51,74,.1);color:#e5334a;border-color:rgba(229,51,74,.3)}
+.vb-join-btn.leave:hover{background:rgba(229,51,74,.2)}
+.vb-controls{display:flex;gap:6px}
+.vc-btn{width:30px;height:30px;border-radius:8px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:14px;border:1px solid var(--border);transition:all var(--ease)}
+.vc-btn:hover{background:var(--border)}
+.vc-btn.muted{background:rgba(250,109,155,.1);border-color:var(--accent2);color:var(--accent2)}
+.vb-empty{font-size:12px;color:var(--muted);font-style:italic}
 
 /* MESSAGES */
 #messages{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:3px}
@@ -65,8 +86,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .bubble{padding:9px 13px;border-radius:16px;font-size:14px;line-height:1.6;word-break:break-word}
 .msg-row:not(.mine) .bubble{background:var(--surface);border:1px solid var(--border);border-bottom-right-radius:5px}
 .msg-row.mine .bubble{background:var(--accent);color:#fff;border-bottom-left-radius:5px}
-.bubble.call-evt{background:transparent;border:1px dashed var(--border);color:var(--muted);font-size:12px;text-align:center;padding:6px 12px;border-radius:99px}
-.msg-row.mine .bubble.call-evt{background:transparent;border:1px dashed rgba(255,255,255,.3);color:rgba(255,255,255,.6)}
+.bubble.sys{background:transparent;border:1px dashed var(--border);color:var(--muted);font-size:12px;text-align:center;padding:5px 12px;border-radius:99px}
+.msg-row.mine .bubble.sys{background:transparent;border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.5)}
 .bmeta{font-size:10px;color:var(--muted);margin-top:4px;padding:0 3px}
 .msg-row.mine .bmeta{text-align:left;color:rgba(255,255,255,.5)}
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;opacity:.4}
@@ -74,17 +95,13 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .empty-txt{font-size:13px;color:var(--muted)}
 
 /* TYPING */
-#typing{min-height:20px;padding:2px 14px 4px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-.tdots span{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--muted);animation:db .8s infinite}
-.tdots span:nth-child(2){animation-delay:.13s}
-.tdots span:nth-child(3){animation-delay:.26s}
-@keyframes db{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-4px)}}
+#typing{min-height:20px;padding:2px 14px 4px;font-size:12px;color:var(--muted)}
 
 /* INPUT */
 #input-bar{padding:10px 14px 14px;background:var(--surface);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;flex-shrink:0}
 .estrip{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px}
 .estrip::-webkit-scrollbar{height:0}
-.eq{width:30px;height:30px;border-radius:8px;font-size:16px;flex-shrink:0;background:var(--panel);display:flex;align-items:center;justify-content:center;transition:background var(--ease),transform var(--ease)}
+.eq{width:30px;height:30px;border-radius:8px;font-size:16px;flex-shrink:0;background:var(--panel);display:flex;align-items:center;justify-content:center;transition:all var(--ease)}
 .eq:hover{background:var(--border);transform:scale(1.1)}
 .irow{display:flex;gap:8px;align-items:flex-end}
 #msg-input{flex:1;padding:10px 14px;background:var(--panel);border:1.5px solid var(--border);border-radius:14px;font-size:14px;resize:none;max-height:110px;line-height:1.55;transition:border-color var(--ease)}
@@ -94,61 +111,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 #send-btn:hover{transform:scale(1.06)}
 #send-btn:active{transform:scale(.95)}
 
-/* ── CALL OVERLAY ── */
-#call-overlay{
-  position:fixed;inset:0;z-index:200;
-  display:none;flex-direction:column;align-items:center;justify-content:center;gap:28px;
-  background:rgba(11,13,18,.92);backdrop-filter:blur(18px);
-}
-#call-overlay.show{display:flex}
-.call-av{width:90px;height:90px;border-radius:28px;font-size:44px;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--panel);border:2px solid var(--border);
-  position:relative;}
-.call-av::after{
-  content:'';position:absolute;inset:-6px;border-radius:34px;
-  border:2px solid var(--teal);opacity:0;
-  animation:ring 1.8s infinite;
-}
-@keyframes ring{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.15);opacity:0}}
-.call-av.ringing::after{animation:ring 1.8s infinite}
-.call-av.connected::after{border-color:var(--teal);animation:none;opacity:1}
-.call-name{font-size:20px;font-weight:700}
-.call-status{font-size:13px;color:var(--muted)}
-.call-dur{font-size:13px;color:var(--teal);font-weight:600;min-height:18px}
-.call-actions{display:flex;gap:16px}
-.ca-btn{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;transition:all .18s}
-.ca-btn.hangup{background:#e5334a;color:#fff;box-shadow:0 4px 20px rgba(229,51,74,.4)}
-.ca-btn.hangup:hover{transform:scale(1.08);background:#f04060}
-.ca-btn.accept{background:var(--teal);color:#0b0d12;box-shadow:0 4px 20px rgba(45,212,191,.4)}
-.ca-btn.accept:hover{transform:scale(1.08)}
-.ca-btn.mute{background:var(--panel);border:1.5px solid var(--border);color:var(--text)}
-.ca-btn.mute:hover{background:var(--border)}
-.ca-btn.mute.on{background:rgba(250,109,155,.15);border-color:var(--accent2);color:var(--accent2)}
-
-/* INCOMING BANNER */
-#incoming-banner{
-  position:fixed;top:0;left:0;right:0;z-index:199;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:12px 16px;display:none;align-items:center;gap:12px;
-  animation:slideDown .25s ease;
-}
-@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
-#incoming-banner.show{display:flex}
-.ib-av{font-size:24px}
-.ib-info{flex:1}
-.ib-name{font-weight:600;font-size:14px}
-.ib-sub{font-size:12px;color:var(--muted)}
-.ib-btns{display:flex;gap:8px}
-.ib-btn{padding:7px 14px;border-radius:10px;font-size:13px;font-weight:600}
-.ib-btn.acc{background:var(--teal);color:#0b0d12}
-.ib-btn.rej{background:rgba(229,51,74,.15);color:#e5334a;border:1px solid rgba(229,51,74,.3)}
-
-/* TOAST / ERR */
-#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--panel);border:1px solid var(--border);padding:9px 18px;border-radius:99px;font-size:13px;opacity:0;transition:all .25s;pointer-events:none;z-index:300;white-space:nowrap}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--panel);border:1px solid var(--border);padding:9px 18px;border-radius:99px;font-size:13px;opacity:0;transition:all .25s;pointer-events:none;z-index:99;white-space:nowrap}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #err{display:none;background:#e5334a;color:#fff;font-size:12px;text-align:center;padding:7px}
-
 @media(max-width:480px){.bwrap{max-width:82%}}
 </style>
 </head>
@@ -183,11 +148,27 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     </div>
   </div>
   <div class="hr">
-    <button class="icon-btn call-btn" id="voice-btn" onclick="startCall()" title="تماس صوتی">📞</button>
     <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
     <button class="icon-btn" onclick="leaveChat()">🚪</button>
   </div>
 </header>
+
+<!-- VOICE ROOM BAR -->
+<div id="voice-bar" style="display:none">
+  <div class="vb-left">
+    <div class="vb-icon">🔊</div>
+    <div class="vb-info">
+      <div class="vb-title">روم صوتی</div>
+      <div class="vb-members" id="vb-members">
+        <span class="vb-empty">کسی اینجا نیست</span>
+      </div>
+    </div>
+  </div>
+  <div class="vb-controls" id="vb-controls" style="display:none">
+    <button class="vc-btn" id="mute-btn" onclick="toggleMute()" title="میکروفون">🎤</button>
+  </div>
+  <button class="vb-join-btn" id="vb-join-btn" onclick="toggleVoiceRoom()">ورود به صدا</button>
+</div>
 
 <!-- CHAT -->
 <div id="chat" style="display:none;flex:1;flex-direction:column;overflow:hidden">
@@ -207,70 +188,38 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   </div>
 </div>
 </div>
-
-<!-- INCOMING CALL BANNER -->
-<div id="incoming-banner">
-  <div class="ib-av" id="ib-av"></div>
-  <div class="ib-info">
-    <div class="ib-name" id="ib-name"></div>
-    <div class="ib-sub">تماس صوتی ورودی…</div>
-  </div>
-  <div class="ib-btns">
-    <button class="ib-btn acc" onclick="acceptCall()">📞 پاسخ</button>
-    <button class="ib-btn rej" onclick="rejectCall()">✕ رد</button>
-  </div>
-</div>
-
-<!-- ACTIVE CALL OVERLAY -->
-<div id="call-overlay">
-  <div class="call-av" id="co-av"></div>
-  <div>
-    <div class="call-name" id="co-name"></div>
-    <div class="call-status" id="co-status"></div>
-    <div class="call-dur" id="co-dur"></div>
-  </div>
-  <div class="call-actions" id="co-actions"></div>
-</div>
-
-<audio id="remote-audio" autoplay playsinline></audio>
-<audio id="ring-audio" loop>
-  <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA..." type="audio/wav"/>
-</audio>
 <div id="toast"></div>
+<!-- audio elements برای هر peer به صورت داینامیک اضافه می‌شن -->
 
 <script>
-/* ═══════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════ */
+/* ═══════════════════════════ CONFIG ═══════════════════════════ */
 const SUPABASE_URL = 'https://qbvrxcvntaopmtzaorgc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFidnJ4Y3ZudGFvcG10emFvcmdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjA2MTEsImV4cCI6MjA5NjgzNjYxMX0.7Q0lsPJBOum43p-DmXdn6c9TPMgUGSr7JxyiQ_FTaio';
 
-/* Public STUN servers برای WebRTC */
 const ICE_SERVERS = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
-  { urls: 'stun:stun.cloudflare.com:3478' },
+  { urls:'stun:stun.l.google.com:19302' },
+  { urls:'stun:stun1.l.google.com:19302' },
+  { urls:'stun:stun.cloudflare.com:3478' },
 ];
 
 const AVATARS = ['🧑','👩','🧔','👱','🧑‍💻','👩‍💻','🦊','🐼','🐸','🐺'];
 const EMOJIS  = ['😄','😂','❤️','🔥','👍','😍','🥺','😤','🎉','💯'];
 
-let myName = null, myAv = AVATARS[0], selectedAv = AVATARS[0];
-let lastId = 0, pollTimer = null, lastUid = '';
+let myName=null, myAv=AVATARS[0], selectedAv=AVATARS[0];
+let lastId=0, lastUid='', pollTimer=null;
 
-/* ══ WebRTC State ══ */
-let pc = null;           // RTCPeerConnection
-let localStream = null;  // میکروفون
-let callState = 'idle';  // idle | outgoing | incoming | connected
-let callWithName = '';   // طرف مقابل
-let callWithAv = '';
-let durTimer = null;
-let durSec = 0;
+/* ═══ VOICE ROOM STATE ═══ */
+let inVoice = false;           // آیا من توی رومم؟
+let localStream = null;        // میکروفون من
 let isMuted = false;
+let peers = {};                // { peerName: { pc, audioEl } }
+let voiceMembers = {};         // { name: { av, muted } } — همه توی روم
+let lastSignalId = 0;
+let speakingTimers = {};       // برای detect کردن صدا
 
 /* ─── BUILD UI ─── */
-(function(){
-  const avRow = document.getElementById('av-row');
+(()=>{
+  const avRow=document.getElementById('av-row');
   AVATARS.forEach((a,i)=>{
     const b=document.createElement('button');
     b.className='av-opt'+(i===0?' sel':'');
@@ -287,23 +236,24 @@ let isMuted = false;
   });
 })();
 
-/* ─── API HELPERS ─── */
-async function apiFetch(path, options={}){
-  const res = await fetch(SUPABASE_URL+path,{
-    ...options,
-    headers:{ 'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(options.headers||{}) }
+/* ─── API ─── */
+async function apiFetch(path, opts={}){
+  const res=await fetch(SUPABASE_URL+path,{
+    ...opts,
+    headers:{ 'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{}) }
   });
-  if(!res.ok){ const err=await res.text(); throw new Error(err); }
-  const text=await res.text(); return text?JSON.parse(text):[];
+  if(!res.ok){ throw new Error(await res.text()); }
+  const t=await res.text(); return t?JSON.parse(t):[];
 }
 
-/* ─── JOIN ─── */
-window.joinChat = async function(){
+/* ─── JOIN CHAT ─── */
+window.joinChat=async function(){
   const n=document.getElementById('name-input').value.trim();
   if(!n){ toast('یه اسم وارد کن 😅'); return; }
   myName=n; myAv=selectedAv;
   document.getElementById('login').style.display='none';
   document.getElementById('header').style.display='flex';
+  document.getElementById('voice-bar').style.display='flex';
   const chat=document.getElementById('chat');
   chat.style.display='flex'; chat.style.flexDirection='column';
   document.getElementById('hav').textContent=myAv;
@@ -311,6 +261,8 @@ window.joinChat = async function(){
   document.getElementById('hstatus').textContent='متصل شد ✓';
   await loadMessages();
   startPolling();
+  /* بار اول وضعیت روم رو بگیر */
+  await syncVoiceMembers();
 };
 
 /* ─── MESSAGES ─── */
@@ -320,11 +272,12 @@ async function loadMessages(){
     if(rows.length){ const em=document.getElementById('empty-state'); if(em) em.remove(); }
     rows.forEach(r=>{ if(r.id>lastId){ appendMsg(r); lastId=r.id; } });
     scrollBottom();
-  } catch(e){ showErr('خطا در بارگذاری: '+e.message); }
+  }catch(e){ showErr('خطا در بارگذاری: '+e.message); }
 }
 
 function startPolling(){
   pollTimer=setInterval(async()=>{
+    /* پیام‌های جدید */
     try{
       const rows=await apiFetch(`/rest/v1/messages?id=gt.${lastId}&order=id.asc&select=*`);
       if(rows.length){
@@ -332,21 +285,21 @@ function startPolling(){
         rows.forEach(r=>{ appendMsg(r); lastId=r.id; });
         scrollBottom();
       }
-    } catch{}
-    /* ── پول سیگنالینگ WebRTC ── */
+    }catch{}
+    /* سیگنال‌های WebRTC */
     await pollSignals();
-  }, 2000);
+  }, 1500);
 }
 
-window.sendMsg = async function(){
+window.sendMsg=async function(){
   const inp=document.getElementById('msg-input');
   const text=inp.value.trim();
   if(!text||!myName) return;
   inp.value=''; inp.style.height='';
   try{
-    const rows=await apiFetch('/rest/v1/messages',{ method:'POST', body:JSON.stringify({name:myName,avatar:myAv,text}) });
+    const rows=await apiFetch('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text})});
     if(rows&&rows.length){ const em=document.getElementById('empty-state'); if(em) em.remove(); if(rows[0].id>lastId){ appendMsg(rows[0]); lastId=rows[0].id; scrollBottom(); } }
-  } catch(e){ showErr('پیام ارسال نشد: '+e.message); inp.value=text; }
+  }catch(e){ showErr('پیام ارسال نشد'); inp.value=text; }
 };
 
 function appendMsg(msg){
@@ -355,287 +308,269 @@ function appendMsg(msg){
   const dt=new Date(msg.created_at);
   const timeStr=dt.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
   const gapTop=msg.name!==lastUid; lastUid=msg.name;
-
-  /* پیام‌های سیستم تماس */
-  if(msg.text&&msg.text.startsWith('__CALL__')) return; /* سیگنال‌ها رو نشون نده */
-
+  if(msg.text&&(msg.text.startsWith('__SIG__')||msg.text.startsWith('__PRESENCE__'))) return;
   const row=document.createElement('div');
   row.className=`msg-row ${isMine?'mine':''} ${gapTop?'gtop':''}`;
-  const isCallEvt = msg.text&&msg.text.startsWith('__EVT__');
-  const displayText = isCallEvt ? msg.text.replace('__EVT__','') : esc(msg.text).replace(/\n/g,'<br>');
+  const isSys=msg.text&&msg.text.startsWith('__EVT__');
+  const displayText=isSys?msg.text.replace('__EVT__',''):esc(msg.text).replace(/\n/g,'<br>');
   row.innerHTML=`
     ${gapTop?`<div class="mav">${esc(msg.avatar||'🧑')}</div>`:`<div class="mav-ph"></div>`}
     <div class="bwrap">
-      ${(!isMine&&gapTop)?`<div class="sname">${esc(msg.name)}</div>`:''}
-      <div class="bubble${isCallEvt?' call-evt':''}">${displayText}</div>
-      ${!isCallEvt?`<div class="bmeta">${timeStr}${isMine?' ✓✓':''}</div>`:''}
+      ${(!isMine&&gapTop&&!isSys)?`<div class="sname">${esc(msg.name)}</div>`:''}
+      <div class="bubble${isSys?' sys':''}">${displayText}</div>
+      ${!isSys?`<div class="bmeta">${timeStr}${isMine?' ✓✓':''}</div>`:''}
     </div>`;
   container.appendChild(row);
 }
 
-/* ═══════════════════════════════════════
-   ── WEBRTC SIGNALING (via Supabase) ──
-   جدول: signals (id, from_name, to_name, type, payload, created_at)
-   type: offer | answer | candidate | hangup | call_request | call_reject
-═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   VOICE ROOM
+   ── Signaling از طریق جدول signals در Supabase ──
+   ── Presence از طریق جدول voice_presence ──
+═══════════════════════════════════════════════════ */
 
-let lastSignalId = 0;
+/* وضعیت روم رو از جدول voice_presence بخون */
+async function syncVoiceMembers(){
+  try{
+    /* حذف رکوردهای قدیمی (بیشتر از ۱۰ ثانیه) */
+    const cutoff=new Date(Date.now()-10000).toISOString();
+    await apiFetch(`/rest/v1/voice_presence?updated_at=lt.${cutoff}`,{method:'DELETE',headers:{'Prefer':''}});
+    const rows=await apiFetch('/rest/v1/voice_presence?select=*');
+    const newMembers={};
+    rows.forEach(r=>{ newMembers[r.name]={av:r.avatar,muted:r.muted||false}; });
+    voiceMembers=newMembers;
+    renderVoiceBar();
+  }catch{}
+}
 
-async function sendSignal(type, payload, toName=''){
+/* heartbeat: هر ۴ ثانیه یه بار وضعیت خودمون رو آپدیت کن */
+async function heartbeat(){
+  if(!inVoice||!myName) return;
+  try{
+    await apiFetch('/rest/v1/voice_presence',{
+      method:'POST',
+      headers:{'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({name:myName,avatar:myAv,muted:isMuted,updated_at:new Date().toISOString()})
+    });
+  }catch{}
+}
+
+/* ورود/خروج از روم */
+window.toggleVoiceRoom=async function(){
+  if(!inVoice) await joinVoiceRoom();
+  else await leaveVoiceRoom();
+};
+
+async function joinVoiceRoom(){
+  try{
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+  }catch{
+    toast('اجازه میکروفون داده نشد! ⚠️'); return;
+  }
+  inVoice=true;
+  isMuted=false;
+  /* ثبت presence */
+  await apiFetch('/rest/v1/voice_presence',{
+    method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates'},
+    body:JSON.stringify({name:myName,avatar:myAv,muted:false,updated_at:new Date().toISOString()})
+  });
+  /* sync وضعیت روم و connect به هر کسی که هست */
+  await syncVoiceMembers();
+  for(const peerName of Object.keys(voiceMembers)){
+    if(peerName!==myName && !peers[peerName]){
+      await connectToPeer(peerName, true); /* ما initiator هستیم */
+    }
+  }
+  updateVoiceUI();
+  /* heartbeat هر ۴ ثانیه */
+  window._hbTimer=setInterval(heartbeat,4000);
+  /* detect صدا */
+  startSpeakDetection();
+  sysMsg('🎙 '+myName+' وارد روم صوتی شد');
+}
+
+async function leaveVoiceRoom(){
+  inVoice=false;
+  clearInterval(window._hbTimer);
+  /* پاک کردن presence */
+  try{ await apiFetch(`/rest/v1/voice_presence?name=eq.${encodeURIComponent(myName)}`,{method:'DELETE',headers:{'Prefer':''}}); }catch{}
+  /* بستن همه peer connectionها */
+  for(const pn of Object.keys(peers)){
+    peers[pn].pc.close();
+    if(peers[pn].audioEl) peers[pn].audioEl.remove();
+  }
+  peers={};
+  if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
+  updateVoiceUI();
+  await syncVoiceMembers();
+  sysMsg('🔇 '+myName+' از روم صوتی خارج شد');
+}
+
+/* ─── WebRTC peer connection ─── */
+async function connectToPeer(peerName, isInitiator){
+  if(peers[peerName]) return; /* قبلاً وصل شده */
+  const pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
+  /* audio element برای صدای این peer */
+  const audioEl=document.createElement('audio');
+  audioEl.autoplay=true; audioEl.playsInline=true;
+  document.body.appendChild(audioEl);
+  peers[peerName]={pc,audioEl};
+
+  /* اضافه کردن track میکروفون */
+  if(localStream) localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+
+  pc.ontrack=e=>{ audioEl.srcObject=e.streams[0]; };
+  pc.onicecandidate=e=>{
+    if(e.candidate) sendSignal('candidate',peerName,{candidate:e.candidate});
+  };
+  pc.onconnectionstatechange=()=>{
+    if(pc.connectionState==='failed'||pc.connectionState==='disconnected'){
+      if(peers[peerName]){ peers[peerName].pc.close(); if(peers[peerName].audioEl) peers[peerName].audioEl.remove(); delete peers[peerName]; }
+    }
+  };
+
+  if(isInitiator){
+    const offer=await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await sendSignal('offer',peerName,{sdp:offer});
+  }
+}
+
+/* ─── Signaling ─── */
+async function sendSignal(type, toPeer, payload){
   try{
     await apiFetch('/rest/v1/signals',{
       method:'POST',
-      body:JSON.stringify({ from_name:myName, from_av:myAv, to_name:toName||'', type, payload:JSON.stringify(payload) })
+      body:JSON.stringify({from_name:myName,from_av:myAv,to_name:toPeer,type,payload:JSON.stringify(payload)})
     });
-  } catch(e){ /* silent */ }
+  }catch{}
 }
 
 async function pollSignals(){
   if(!myName) return;
   try{
-    const rows=await apiFetch(
-      `/rest/v1/signals?id=gt.${lastSignalId}&order=id.asc&select=*`
-    );
+    const rows=await apiFetch(`/rest/v1/signals?to_name=eq.${encodeURIComponent(myName)}&id=gt.${lastSignalId}&order=id.asc&select=*`);
     for(const row of rows){
       if(row.id>lastSignalId) lastSignalId=row.id;
-      /* فقط پیام‌های مخصوص ما */
-      if(row.from_name===myName) continue; /* خودمون فرستادیم */
-      if(row.to_name && row.to_name!==myName) continue;
+      if(row.from_name===myName) continue;
       await handleSignal(row);
     }
-  } catch{}
+  }catch{}
+  /* sync اعضای روم */
+  await syncVoiceMembers();
+  /* اگه member جدیدی اومده و من توی رومم، connect کن */
+  if(inVoice){
+    for(const peerName of Object.keys(voiceMembers)){
+      if(peerName!==myName && !peers[peerName]){
+        await connectToPeer(peerName, myName>peerName); /* lexicographic تصمیم می‌گیره کی initiator باشه */
+      }
+    }
+  }
 }
 
 async function handleSignal(sig){
-  const payload = sig.payload ? JSON.parse(sig.payload) : {};
+  const payload=sig.payload?JSON.parse(sig.payload):{};
   switch(sig.type){
-    case 'call_request':
-      if(callState!=='idle') { await sendSignal('call_reject',{},sig.from_name); return; }
-      callWithName=sig.from_name; callWithAv=sig.from_av||'🧑';
-      showIncomingBanner();
-      break;
-    case 'call_reject':
-      if(callState==='outgoing'){
-        closeCallUI();
-        toast(callWithName+' تماس رو رد کرد');
-        addCallEvent('📵 تماس رد شد');
-      }
-      break;
     case 'offer':
-      if(callState==='incoming'||callState==='outgoing'){
-        await createPC();
-        await pc.setRemoteDescription(new RTCSessionDescription(payload));
-        const answer=await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        await sendSignal('answer',answer,sig.from_name);
-        callWithName=sig.from_name; callWithAv=sig.from_av||callWithAv;
-        setCallConnected();
-      }
+      if(!inVoice) return;
+      await connectToPeer(sig.from_name,false);
+      await peers[sig.from_name].pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      const answer=await peers[sig.from_name].pc.createAnswer();
+      await peers[sig.from_name].pc.setLocalDescription(answer);
+      await sendSignal('answer',sig.from_name,{sdp:answer});
       break;
     case 'answer':
-      if(pc && callState==='outgoing'){
-        await pc.setRemoteDescription(new RTCSessionDescription(payload));
-        setCallConnected();
+      if(peers[sig.from_name]){
+        await peers[sig.from_name].pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
       }
       break;
     case 'candidate':
-      if(pc){
-        try{ await pc.addIceCandidate(new RTCIceCandidate(payload)); } catch{}
-      }
-      break;
-    case 'hangup':
-      if(callState==='connected'||callState==='incoming'||callState==='outgoing'){
-        const who=callWithName;
-        endCallLocal(false);
-        toast(who+' تماس رو قطع کرد');
-        addCallEvent('📵 '+who+' تماس رو قطع کرد');
+      if(peers[sig.from_name]){
+        try{ await peers[sig.from_name].pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); }catch{}
       }
       break;
   }
 }
 
-/* ═══════════════════════════════════════
-   ── CALL FLOW ──
-═══════════════════════════════════════ */
-
-/* دکمه تماس در هدر */
-window.startCall = async function(){
-  if(callState!=='idle'){ toast('در حال تماس هستی'); return; }
-  /* نام طرف مقابل رو از کاربر بگیر */
-  const target=prompt('اسم کسی که می‌خوای زنگ بزنی؟');
-  if(!target||!target.trim()) return;
-  if(target.trim()===myName){ toast('نمی‌تونی به خودت زنگ بزنی 😄'); return; }
-  callWithName=target.trim();
-  callWithAv='📞';
-  callState='outgoing';
-  showCallOverlay('outgoing');
-  await sendSignal('call_request',{ av:myAv }, callWithName);
-  toast('داری زنگ می‌زنی به '+callWithName+'…');
-  /* بعد از 30 ثانیه اگه جواب نداد */
-  setTimeout(()=>{ if(callState==='outgoing'){ closeCallUI(); toast(callWithName+' جواب نداد'); addCallEvent('📵 پاسخ داده نشد'); } },30000);
-};
-
-window.acceptCall = async function(){
-  document.getElementById('incoming-banner').classList.remove('show');
-  callState='incoming';
-  showCallOverlay('incoming');
+/* ─── Voice Activity Detection ─── */
+function startSpeakDetection(){
+  if(!localStream) return;
   try{
-    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-  } catch{
-    toast('دسترسی به میکروفون رد شد!'); closeCallUI(); return;
+    const ctx=new AudioContext();
+    const src=ctx.createMediaStreamSource(localStream);
+    const analyser=ctx.createAnalyser();
+    analyser.fftSize=512;
+    src.connect(analyser);
+    const buf=new Uint8Array(analyser.frequencyBinCount);
+    let speaking=false;
+    setInterval(()=>{
+      if(!inVoice){ return; }
+      analyser.getByteFrequencyData(buf);
+      const avg=buf.reduce((a,b)=>a+b,0)/buf.length;
+      const nowSpeaking=avg>15&&!isMuted;
+      if(nowSpeaking!==speaking){
+        speaking=nowSpeaking;
+        renderVoiceBar(); /* update chip */
+      }
+    },100);
+    window._localSpeaking=()=>speaking&&!isMuted;
+  }catch{}
+}
+
+/* ─── MUTE ─── */
+window.toggleMute=function(){
+  isMuted=!isMuted;
+  if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);
+  document.getElementById('mute-btn').className='vc-btn'+(isMuted?' muted':'');
+  document.getElementById('mute-btn').textContent=isMuted?'🔇':'🎤';
+  heartbeat();
+  renderVoiceBar();
+};
+
+/* ─── UI ─── */
+function updateVoiceUI(){
+  const joinBtn=document.getElementById('vb-join-btn');
+  const controls=document.getElementById('vb-controls');
+  if(inVoice){
+    joinBtn.textContent='خروج از صدا';
+    joinBtn.className='vb-join-btn leave';
+    controls.style.display='flex';
+  } else {
+    joinBtn.textContent='ورود به صدا';
+    joinBtn.className='vb-join-btn';
+    controls.style.display='none';
   }
-  await createPC();
-  /* Caller باید offer بفرسته */
-  await sendSignal('offer_ready',{},callWithName); /* اعلام آمادگی */
-  /* در واقع کسی که قبول کرده منتظر offer می‌مونه (از startCallOffer) */
-  await startCallOffer();
-};
-
-async function startCallOffer(){
-  /* این تابع توسط caller بعد از دریافت قبول فراخوانی می‌شه */
-  try{
-    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-  } catch{
-    toast('دسترسی به میکروفون رد شد!'); closeCallUI(); return;
-  }
-  await createPC();
-  const offer=await pc.createOffer();
-  await pc.setLocalDescription(offer);
-  await sendSignal('offer',offer,callWithName);
+  renderVoiceBar();
 }
 
-window.rejectCall = async function(){
-  document.getElementById('incoming-banner').classList.remove('show');
-  await sendSignal('call_reject',{},callWithName);
-  callWithName=''; callWithAv=''; callState='idle';
-};
-
-async function createPC(){
-  if(pc){ pc.close(); }
-  pc=new RTCPeerConnection({ iceServers:ICE_SERVERS });
-  if(localStream) localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
-  pc.onicecandidate=e=>{ if(e.candidate) sendSignal('candidate',e.candidate,callWithName); };
-  pc.ontrack=e=>{ document.getElementById('remote-audio').srcObject=e.streams[0]; };
-  pc.onconnectionstatechange=()=>{
-    if(pc.connectionState==='disconnected'||pc.connectionState==='failed'){
-      if(callState==='connected'){ endCallLocal(false); toast('اتصال قطع شد'); }
-    }
-  };
-}
-
-/* وقتی هر دو طرف آماده شدن */
-function setCallConnected(){
-  callState='connected';
-  updateCallOverlay('connected');
-  startDurTimer();
-  document.getElementById('voice-btn').classList.add('active');
-  addCallEvent('📞 تماس با '+callWithName+' برقرار شد');
-}
-
-window.hangupCall = async function(){
-  await sendSignal('hangup',{},callWithName);
-  const dur=formatDur(durSec);
-  endCallLocal(true);
-  addCallEvent('📵 تماس قطع شد — '+dur);
-};
-
-function endCallLocal(addEvt){
-  clearInterval(durTimer); durSec=0;
-  if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
-  if(pc){ pc.close(); pc=null; }
-  document.getElementById('remote-audio').srcObject=null;
-  closeCallUI();
-  document.getElementById('voice-btn').classList.remove('active');
-}
-
-function closeCallUI(){
-  callState='idle'; callWithName=''; callWithAv='';
-  document.getElementById('call-overlay').classList.remove('show');
-  document.getElementById('incoming-banner').classList.remove('show');
-  clearInterval(durTimer); durSec=0;
-  document.getElementById('co-dur').textContent='';
-  isMuted=false;
-}
-
-/* ─── مدیریت signal "offer_ready" ─── */
-/* وقتی callee قبول کرد، caller باید offer بفرسته */
-const _origHandleSignal = handleSignal;
-async function handleSignal(sig){
-  if(sig.type==='offer_ready' && callState==='outgoing'){
-    await startCallOffer();
+function renderVoiceBar(){
+  const wrap=document.getElementById('vb-members');
+  const names=Object.keys(voiceMembers);
+  if(names.length===0){
+    wrap.innerHTML='<span class="vb-empty">کسی اینجا نیست</span>';
     return;
   }
-  await _origHandleSignal(sig);
-}
-
-/* ═══════════════════════════════════════
-   ── CALL OVERLAY UI ──
-═══════════════════════════════════════ */
-function showCallOverlay(mode){
-  const ov=document.getElementById('call-overlay');
-  ov.classList.add('show');
-  document.getElementById('co-av').textContent=callWithAv||'📞';
-  document.getElementById('co-av').className='call-av'+(mode==='connected'?' connected':' ringing');
-  document.getElementById('co-name').textContent=callWithName;
-  document.getElementById('co-status').textContent=mode==='outgoing'?'در حال زنگ خوردن…':mode==='incoming'?'در حال اتصال…':'متصل';
-  buildCallActions(mode);
-}
-
-function updateCallOverlay(mode){
-  document.getElementById('co-av').className='call-av'+(mode==='connected'?' connected':' ringing');
-  document.getElementById('co-status').textContent=mode==='connected'?'متصل شد ✓':'…';
-  buildCallActions(mode);
-}
-
-function buildCallActions(mode){
-  const wrap=document.getElementById('co-actions');
   wrap.innerHTML='';
-  if(mode==='connected'){
-    const muteBtn=document.createElement('button');
-    muteBtn.className='ca-btn mute'+(isMuted?' on':'');
-    muteBtn.textContent=isMuted?'🔇':'🎤';
-    muteBtn.title='میکروفون';
-    muteBtn.onclick=()=>{
-      isMuted=!isMuted;
-      if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);
-      muteBtn.className='ca-btn mute'+(isMuted?' on':'');
-      muteBtn.textContent=isMuted?'🔇':'🎤';
-    };
-    wrap.appendChild(muteBtn);
-  }
-  const hangBtn=document.createElement('button');
-  hangBtn.className='ca-btn hangup';
-  hangBtn.textContent='📵';
-  hangBtn.title='قطع تماس';
-  hangBtn.onclick=hangupCall;
-  wrap.appendChild(hangBtn);
+  names.forEach(n=>{
+    const m=voiceMembers[n];
+    const isMe=n===myName;
+    const speaking=isMe&&window._localSpeaking&&window._localSpeaking();
+    const chip=document.createElement('div');
+    chip.className='vm-chip'+(speaking?' speaking':'');
+    chip.innerHTML=`<span class="vm-av">${esc(m.av||'🧑')}</span><span class="vm-name">${esc(n)}</span>${m.muted?'<span class="vm-mute">🔇</span>':''}`;
+    wrap.appendChild(chip);
+  });
 }
 
-function showIncomingBanner(){
-  const ban=document.getElementById('incoming-banner');
-  document.getElementById('ib-av').textContent=callWithAv||'📞';
-  document.getElementById('ib-name').textContent=callWithName;
-  ban.classList.add('show');
-}
-
-/* ─── تایمر مدت تماس ─── */
-function startDurTimer(){
-  durSec=0;
-  durTimer=setInterval(()=>{ durSec++; document.getElementById('co-dur').textContent=formatDur(durSec); },1000);
-}
-function formatDur(s){ const m=Math.floor(s/60); return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
-
-/* ─── پیام رویداد تماس ─── */
-async function addCallEvent(text){
+async function sysMsg(text){
   try{
-    const rows=await apiFetch('/rest/v1/messages',{ method:'POST', body:JSON.stringify({name:myName,avatar:myAv,text:'__EVT__'+text}) });
+    const rows=await apiFetch('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text:'__EVT__'+text})});
     if(rows&&rows.length){ const em=document.getElementById('empty-state'); if(em) em.remove(); if(rows[0].id>lastId){ appendMsg(rows[0]); lastId=rows[0].id; scrollBottom(); } }
-  } catch{}
+  }catch{}
 }
 
-/* ═══════════════════════════════════════
-   ── MISC ──
-═══════════════════════════════════════ */
+/* ─── MISC ─── */
 document.getElementById('msg-input').addEventListener('input',function(){
   this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,110)+'px';
 });
@@ -646,16 +581,14 @@ document.getElementById('name-input').addEventListener('keydown',e=>{ if(e.key==
 
 window.leaveChat=function(){
   if(!confirm('از چت خارج بشی؟')) return;
-  if(callState!=='idle') hangupCall();
+  if(inVoice) leaveVoiceRoom();
   clearInterval(pollTimer); location.reload();
 };
-
 window.toggleTheme=function(){
   const b=document.body; const d=b.getAttribute('data-theme')==='dark';
   b.setAttribute('data-theme',d?'light':'dark');
   document.getElementById('theme-btn').textContent=d?'🌙':'☀️';
 };
-
 function scrollBottom(){ const m=document.getElementById('messages'); m.scrollTop=m.scrollHeight; }
 function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }

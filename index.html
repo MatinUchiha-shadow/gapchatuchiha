@@ -331,4 +331,523 @@ const THEME_PRESETS = {
   'پیش‌فرض': {'--bg':'#0b0d12','--surface':'#13161f','--panel':'#1a1e2a','--border':'#252a3a','--accent':'#7c6dfa','--accent2':'#fa6d9b','--text':'#e2e5f0','--muted':'#6b7094','--bubble-mine':'#7c6dfa','--bubble-mine-text':'#ffffff','--bubble-other':'#13161f','--bubble-other-text':'#e2e5f0','--radius':'16px'},
   'روشن': {'--bg':'#f2f4fb','--surface':'#ffffff','--panel':'#e8ebf7','--border':'#d0d5ea','--accent':'#7c6dfa','--accent2':'#fa6d9b','--text':'#1a1d2e','--muted':'#6b6f8a','--bubble-mine':'#7c6dfa','--bubble-mine-text':'#ffffff','--bubble-other':'#ffffff','--bubble-other-text':'#1a1d2e','--radius':'16px'},
   'اقیانوسی': {'--bg':'#071421','--surface':'#0e2235','--panel':'#163348','--border':'#1f4258','--accent':'#22d3ee','--accent2':'#3b82f6','--text':'#e6f6fb','--muted':'#7aa3b8','--bubble-mine':'#22d3ee','--bubble-mine-text':'#04222b','--bubble-other':'#0e2235','--bubble-other-text':'#e6f6fb','--radius':'16px'},
-  'جنگلی': {'--bg':'#0b1410','--surface':'#11201a','--panel':'#1a2e24','--border':'#27402f','--accent':'#34d399','--accent2':'#a3e635','--text':'#e7f5ee','--muted':'#7fa893','--bubble-mine':'#34d399','--bubble-mine-text':'#062017','--bubble-other':'#11201a','--bubble-other-text':'#e7f5ee',
+  'جنگلی': {'--bg':'#0b1410','--surface':'#11201a','--panel':'#1a2e24','--border':'#27402f','--accent':'#34d399','--accent2':'#a3e635','--text':'#e7f5ee','--muted':'#7fa893','--bubble-mine':'#34d399','--bubble-mine-text':'#062017','--bubble-other':'#11201a','--bubble-other-text':'#e7f5ee','--radius':'16px'},
+  'غروب': {'--bg':'#1a0e10','--surface':'#291418','--panel':'#3a1c20','--border':'#4f262b','--accent':'#fb7185','--accent2':'#fbbf24','--text':'#fdeeee','--muted':'#b9858c','--bubble-mine':'#fb7185','--bubble-mine-text':'#2a0a0d','--bubble-other':'#291418','--bubble-other-text':'#fdeeee','--radius':'16px'},
+  'مونوکروم': {'--bg':'#0a0a0a','--surface':'#141414','--panel':'#1e1e1e','--border':'#2e2e2e','--accent':'#e5e5e5','--accent2':'#a3a3a3','--text':'#f5f5f5','--muted':'#8a8a8a','--bubble-mine':'#e5e5e5','--bubble-mine-text':'#0a0a0a','--bubble-other':'#141414','--bubble-other-text':'#f5f5f5','--radius':'10px'},
+  'رزگلد': {'--bg':'#1c1416','--surface':'#2a1f22','--panel':'#3a2a2e','--border':'#4f383d','--accent':'#f4a8b3','--accent2':'#e8c4a0','--text':'#fbeef0','--muted':'#bb909a','--bubble-mine':'#f4a8b3','--bubble-mine-text':'#2a0e14','--bubble-other':'#2a1f22','--bubble-other-text':'#fbeef0','--radius':'20px'},
+  'کهربایی': {'--bg':'#170f06','--surface':'#241808','--panel':'#33220c','--border':'#4a3413','--accent':'#f59e0b','--accent2':'#fbbf24','--text':'#fdf2e0','--muted':'#bb9b6e','--bubble-mine':'#f59e0b','--bubble-mine-text':'#241404','--bubble-other':'#241808','--bubble-other-text':'#fdf2e0','--radius':'14px'},
+  'بنفش شب': {'--bg':'#0e0a1a','--surface':'#181228','--panel':'#241b3a','--border':'#352a52','--accent':'#a78bfa','--accent2':'#f472b6','--text':'#ede9fe','--muted':'#9183b8','--bubble-mine':'#a78bfa','--bubble-mine-text':'#1a1330','--bubble-other':'#181228','--bubble-other-text':'#ede9fe','--radius':'18px'},
+};
+
+let currentTheme = {};
+function loadTheme(){
+  const saved=localStorage.getItem('gapchat_theme');
+  if(saved){ try{ currentTheme=JSON.parse(saved); }catch{ currentTheme={...THEME_PRESETS['پیش‌فرض']}; } }
+  else currentTheme={...THEME_PRESETS['پیش‌فرض']};
+  applyTheme();
+}
+function applyTheme(){
+  const root=document.documentElement;
+  Object.entries(currentTheme).forEach(([k,v])=>root.style.setProperty(k,v));
+}
+function saveTheme(){ localStorage.setItem('gapchat_theme',JSON.stringify(currentTheme)); }
+function setThemeVar(key,val){ currentTheme[key]=val; applyTheme(); saveTheme(); renderThemePanel(); }
+function updateRadius(val){ currentTheme['--radius']=val+'px'; document.getElementById('tp-radius-val').textContent=val+'px'; applyTheme(); saveTheme(); }
+function applyPreset(name){ currentTheme={...THEME_PRESETS[name]}; if(!currentTheme['--radius']) currentTheme['--radius']='16px'; applyTheme(); saveTheme(); renderThemePanel(); }
+function resetTheme(){ applyPreset('پیش‌فرض'); toast('تم بازنشانی شد'); }
+
+function renderThemePanel(){
+  /* presets */
+  const presetsEl=document.getElementById('tp-presets');
+  presetsEl.innerHTML='';
+  Object.entries(THEME_PRESETS).forEach(([name,vars])=>{
+    const isActive=JSON.stringify(vars)===JSON.stringify({...vars,...Object.fromEntries(Object.entries(currentTheme).filter(([k])=>k in vars))}) && currentTheme['--accent']===vars['--accent'] && currentTheme['--bg']===vars['--bg'];
+    const chip=document.createElement('button');
+    chip.className='preset-chip'+(isActive?' active':'');
+    chip.onclick=()=>applyPreset(name);
+    chip.innerHTML=`<div class="preset-swatch">
+        <span style="background:${vars['--bg']}"></span>
+        <span style="background:${vars['--accent']}"></span>
+        <span style="background:${vars['--accent2']}"></span>
+      </div>
+      <div class="preset-label">${name}</div>`;
+    presetsEl.appendChild(chip);
+  });
+
+  /* color rows */
+  const mainEl=document.getElementById('tp-main-colors');
+  const bubbleEl=document.getElementById('tp-bubble-colors');
+  mainEl.innerHTML=''; bubbleEl.innerHTML='';
+  THEME_VARS.forEach(v=>{
+    const target = v.group==='main'?mainEl:bubbleEl;
+    const row=document.createElement('div');
+    row.className='color-row';
+    const val=currentTheme[v.key]||'#000000';
+    row.innerHTML=`
+      <div class="color-row-info">
+        <div class="color-name">${v.name}</div>
+        <div class="color-desc">${v.desc}</div>
+      </div>
+      <div class="color-input-wrap" style="background:${val}">
+        <input type="color" value="${toHex(val)}" oninput="setThemeVar('${v.key}',this.value)"/>
+      </div>`;
+    target.appendChild(row);
+  });
+
+  /* radius */
+  const radiusVal=parseInt(currentTheme['--radius'])||16;
+  document.getElementById('tp-radius').value=radiusVal;
+  document.getElementById('tp-radius-val').textContent=radiusVal+'px';
+}
+
+function toHex(c){
+  if(c.startsWith('#')&&(c.length===7||c.length===4)) return c.length===4? '#'+[...c.slice(1)].map(x=>x+x).join('') : c;
+  /* fallback for non-hex values */
+  const ctx=document.createElement('canvas').getContext('2d');
+  ctx.fillStyle=c;
+  return ctx.fillStyle;
+}
+
+window.openThemePanel=function(){
+  renderThemePanel();
+  document.getElementById('theme-overlay').classList.add('show');
+};
+window.closeThemePanel=function(){
+  document.getElementById('theme-overlay').classList.remove('show');
+};
+
+/* ══ INIT ══ */
+(()=>{
+  loadTheme();
+  const avRow=document.getElementById('av-row');
+  AVATARS.forEach((a,i)=>{
+    const b=document.createElement('button');
+    b.className='av-opt'+(i===0?' sel':'');
+    b.textContent=a;
+    b.onclick=()=>{ document.querySelectorAll('.av-opt').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); selectedAv=a; };
+    avRow.appendChild(b);
+  });
+  const strip=document.getElementById('estrip');
+  EMOJIS.forEach(e=>{
+    const b=document.createElement('button');
+    b.className='eq';b.textContent=e;
+    b.onclick=()=>{const i=document.getElementById('msg-input');i.value+=e;i.focus();};
+    strip.appendChild(b);
+  });
+  /* اگه session قبلی داشتیم */
+  const saved=localStorage.getItem('sb_session');
+  if(saved){ try{ const s=JSON.parse(saved); restoreSession(s); }catch{ localStorage.removeItem('sb_session'); } }
+})();
+
+/* ══ AUTH TAB ══ */
+window.switchTab=function(mode){
+  authMode=mode;
+  document.getElementById('tab-login').className='auth-tab'+(mode==='login'?' active':'');
+  document.getElementById('tab-signup').className='auth-tab'+(mode==='signup'?' active':'');
+  document.getElementById('auth-btn-txt').textContent=mode==='login'?'ورود':'ثبت‌نام';
+  document.getElementById('auth-err').textContent='';
+  document.getElementById('signup-extra').style.display=mode==='signup'?'flex':'none';
+};
+
+/* ══ AUTH ACTION ══ */
+window.doAuth=async function(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  const dispName=document.getElementById('auth-name').value.trim();
+  const errEl=document.getElementById('auth-err');
+  errEl.textContent='';
+  if(!email||!pass){ errEl.textContent='ایمیل و پسورد رو پر کن'; return; }
+  if(pass.length<6){ errEl.textContent='پسورد باید حداقل ۶ کاراکتر باشه'; return; }
+  if(authMode==='signup'&&!dispName){ errEl.textContent='یه اسم نمایشی وارد کن'; return; }
+
+  const btn=document.getElementById('auth-btn');
+  btn.disabled=true;
+  document.getElementById('auth-btn-txt').innerHTML='<span class="spin">⏳</span>';
+
+  const endpoint = authMode==='login'
+    ? '/auth/v1/token?grant_type=password'
+    : '/auth/v1/signup';
+  try{
+    const body = authMode==='signup'
+      ? {email,password:pass,data:{display_name:dispName,avatar:selectedAv}}
+      : {email,password:pass};
+    const res=await fetch(SB_URL+endpoint,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(!res.ok){
+      const msg=data.error_description||data.msg||data.error||'خطا';
+      errEl.textContent=translateAuthErr(msg);
+      btn.disabled=false; document.getElementById('auth-btn-txt').textContent=authMode==='login'?'ورود':'ثبت‌نام';
+      return;
+    }
+    if(authMode==='signup'&&!data.access_token){
+      errEl.textContent='';
+      toast('ثبت‌نام انجام شد! حالا وارد شو ✓');
+      switchTab('login'); btn.disabled=false; document.getElementById('auth-btn-txt').textContent='ورود';
+      return;
+    }
+    localStorage.setItem('sb_session',JSON.stringify(data));
+    restoreSession(data);
+  }catch(e){
+    errEl.textContent='مشکل اتصال به سرور';
+    btn.disabled=false; document.getElementById('auth-btn-txt').textContent=authMode==='login'?'ورود':'ثبت‌نام';
+  }
+};
+
+function translateAuthErr(msg){
+  if(msg.includes('Invalid login')) return 'ایمیل یا پسورد اشتباهه';
+  if(msg.includes('Email not confirmed')) return 'ایمیلت رو تأیید کن';
+  if(msg.includes('already registered')) return 'این ایمیل قبلاً ثبت شده';
+  if(msg.includes('password')) return 'پسورد خیلی ضعیفه';
+  return msg;
+}
+
+function restoreSession(data){
+  authToken=data.access_token;
+  myEmail=data.user?.email||'';
+  const meta=data.user?.user_metadata||{};
+  myName=meta.display_name||myEmail.split('@')[0];
+  myAv=meta.avatar||AVATARS[0];
+  enterChat();
+}
+
+/* ══ ENTER CHAT ══ */
+async function enterChat(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('header').style.display='flex';
+  document.getElementById('voice-bar').style.display='flex';
+  const chat=document.getElementById('chat');
+  chat.style.display='flex'; chat.style.flexDirection='column';
+  document.getElementById('hav').textContent=myAv;
+  document.getElementById('hname').textContent=myName;
+  await loadMessages();
+  startPolling();
+  await syncVoiceMembers();
+}
+
+/* ══ SIGN OUT ══ */
+window.signOut=async function(){
+  if(!confirm('از حساب خارج بشی؟')) return;
+  if(inVoice) await leaveVoiceRoom();
+  clearInterval(pollTimer);
+  try{
+    await fetch(SB_URL+'/auth/v1/logout',{
+      method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+authToken}
+    });
+  }catch{}
+  localStorage.removeItem('sb_session');
+  location.reload();
+};
+
+/* ══ API ══ */
+async function api(path, opts={}){
+  const headers={
+    'apikey':SB_KEY,
+    'Authorization':'Bearer '+(authToken||SB_KEY),
+    'Content-Type':'application/json',
+    'Prefer':'return=representation',
+    ...(opts.headers||{})
+  };
+  const res=await fetch(SB_URL+path,{...opts,headers});
+  if(!res.ok) throw new Error(await res.text());
+  const t=await res.text(); return t?JSON.parse(t):[];
+}
+
+/* ══ MESSAGES ══ */
+async function loadMessages(){
+  try{
+    const rows=await api('/rest/v1/messages?order=id.asc&select=*');
+    if(rows.length){const em=document.getElementById('empty-state');if(em)em.remove();}
+    rows.forEach(r=>{if(r.id>lastId){appendMsg(r);lastId=r.id;}});
+    scrollBottom();
+  }catch(e){showErr('خطا در بارگذاری');}
+}
+
+function startPolling(){
+  pollTimer=setInterval(async()=>{
+    try{
+      const rows=await api(`/rest/v1/messages?id=gt.${lastId}&order=id.asc&select=*`);
+      if(rows.length){
+        const em=document.getElementById('empty-state');if(em)em.remove();
+        rows.forEach(r=>{appendMsg(r);lastId=r.id;});
+        scrollBottom();
+      }
+    }catch{}
+    await pollSignals();
+  },1500);
+}
+
+window.sendMsg=async function(){
+  const inp=document.getElementById('msg-input');
+  const text=inp.value.trim();
+  if(!text||!myName) return;
+  inp.value=''; inp.style.height='';
+  try{
+    const rows=await api('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text})});
+    if(rows&&rows.length){const em=document.getElementById('empty-state');if(em)em.remove();if(rows[0].id>lastId){appendMsg(rows[0]);lastId=rows[0].id;scrollBottom();}}
+  }catch(e){showErr('پیام ارسال نشد');inp.value=text;}
+};
+
+function appendMsg(msg){
+  const container=document.getElementById('messages');
+  const isMine=msg.name===myName;
+  const dt=new Date(msg.created_at);
+  const timeStr=dt.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
+  const gapTop=msg.name!==lastUid; lastUid=msg.name;
+  if(msg.text&&(msg.text.startsWith('__SIG__')||msg.text.startsWith('__PRESENCE__'))) return;
+  const isSys=msg.text&&msg.text.startsWith('__EVT__');
+  const displayText=isSys?msg.text.replace('__EVT__',''):esc(msg.text).replace(/\n/g,'<br>');
+  const avatar=esc(msg.avatar||'🧑');
+  const row=document.createElement('div');
+  row.className=`msg-row ${isMine?'mine':''} ${gapTop?'gtop':''}`;
+  row.innerHTML=`
+    ${gapTop?`<div class="mav">${avatar}</div>`:`<div class="mav-ph"></div>`}
+    <div class="bwrap">
+      ${(!isMine&&gapTop&&!isSys)?`<div class="sname">${esc(msg.name)}</div>`:''}
+      <div class="bubble${isSys?' sys':''}">${displayText}</div>
+      ${!isSys?`<div class="bmeta">${timeStr}${isMine?' ✓✓':''}</div>`:''}
+    </div>`;
+  container.appendChild(row);
+}
+
+/* ══════════════════════════════════════
+   VOICE ROOM
+══════════════════════════════════════ */
+async function syncVoiceMembers(){
+  try{
+    const cutoff=new Date(Date.now()-10000).toISOString();
+    await api(`/rest/v1/voice_presence?updated_at=lt.${cutoff}`,{method:'DELETE',headers:{'Prefer':''}});
+    const rows=await api('/rest/v1/voice_presence?select=*');
+    voiceMembers={};
+    rows.forEach(r=>{voiceMembers[r.name]={av:r.avatar,muted:r.muted||false};});
+    renderVoiceBar();
+  }catch{}
+}
+
+async function heartbeat(){
+  if(!inVoice||!myName) return;
+  try{
+    await api('/rest/v1/voice_presence',{
+      method:'POST',
+      headers:{'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({name:myName,avatar:myAv,muted:isMuted,updated_at:new Date().toISOString()})
+    });
+  }catch{}
+}
+
+window.toggleVoiceRoom=async function(){
+  if(!inVoice) await joinVoiceRoom();
+  else await leaveVoiceRoom();
+};
+
+async function joinVoiceRoom(){
+  try{
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+  }catch{
+    toast('اجازه میکروفون داده نشد! ⚠️'); return;
+  }
+  inVoice=true;
+  isMuted=false;
+  await api('/rest/v1/voice_presence',{
+    method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates'},
+    body:JSON.stringify({name:myName,avatar:myAv,muted:false,updated_at:new Date().toISOString()})
+  });
+  await syncVoiceMembers();
+  for(const peerName of Object.keys(voiceMembers)){
+    if(peerName!==myName && !peers[peerName]){
+      await connectToPeer(peerName, true);
+    }
+  }
+  updateVoiceUI();
+  window._hbTimer=setInterval(heartbeat,4000);
+  startSpeakDetection();
+  sysMsg('🎙 '+myName+' وارد روم صوتی شد');
+}
+
+async function leaveVoiceRoom(){
+  inVoice=false;
+  clearInterval(window._hbTimer);
+  try{ await api(`/rest/v1/voice_presence?name=eq.${encodeURIComponent(myName)}`,{method:'DELETE',headers:{'Prefer':''}}); }catch{}
+  for(const pn of Object.keys(peers)){
+    peers[pn].pc.close();
+    if(peers[pn].audioEl) peers[pn].audioEl.remove();
+  }
+  peers={};
+  if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
+  updateVoiceUI();
+  await syncVoiceMembers();
+  sysMsg('🔇 '+myName+' از روم صوتی خارج شد');
+}
+
+async function connectToPeer(peerName, isInitiator){
+  if(peers[peerName]) return;
+  const pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
+  const audioEl=document.createElement('audio');
+  audioEl.autoplay=true; audioEl.playsInline=true;
+  document.body.appendChild(audioEl);
+  peers[peerName]={pc,audioEl};
+
+  if(localStream) localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+
+  pc.ontrack=e=>{ audioEl.srcObject=e.streams[0]; };
+  pc.onicecandidate=e=>{
+    if(e.candidate) sendSignal('candidate',peerName,{candidate:e.candidate});
+  };
+  pc.onconnectionstatechange=()=>{
+    if(pc.connectionState==='failed'||pc.connectionState==='disconnected'){
+      if(peers[peerName]){ peers[peerName].pc.close(); if(peers[peerName].audioEl) peers[peerName].audioEl.remove(); delete peers[peerName]; }
+    }
+  };
+
+  if(isInitiator){
+    const offer=await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await sendSignal('offer',peerName,{sdp:offer});
+  }
+}
+
+async function sendSignal(type, toPeer, payload){
+  try{
+    await api('/rest/v1/signals',{
+      method:'POST',
+      body:JSON.stringify({from_name:myName,from_av:myAv,to_name:toPeer,type,payload:JSON.stringify(payload)})
+    });
+  }catch{}
+}
+
+async function pollSignals(){
+  if(!myName) return;
+  try{
+    const rows=await api(`/rest/v1/signals?to_name=eq.${encodeURIComponent(myName)}&id=gt.${lastSignalId}&order=id.asc&select=*`);
+    for(const row of rows){
+      if(row.id>lastSignalId) lastSignalId=row.id;
+      if(row.from_name===myName) continue;
+      await handleSignal(row);
+    }
+  }catch{}
+  await syncVoiceMembers();
+  if(inVoice){
+    for(const peerName of Object.keys(voiceMembers)){
+      if(peerName!==myName && !peers[peerName]){
+        await connectToPeer(peerName, myName>peerName);
+      }
+    }
+  }
+}
+
+async function handleSignal(sig){
+  const payload=sig.payload?JSON.parse(sig.payload):{};
+  switch(sig.type){
+    case 'offer':
+      if(!inVoice) return;
+      await connectToPeer(sig.from_name,false);
+      await peers[sig.from_name].pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      const answer=await peers[sig.from_name].pc.createAnswer();
+      await peers[sig.from_name].pc.setLocalDescription(answer);
+      await sendSignal('answer',sig.from_name,{sdp:answer});
+      break;
+    case 'answer':
+      if(peers[sig.from_name]){
+        await peers[sig.from_name].pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      }
+      break;
+    case 'candidate':
+      if(peers[sig.from_name]){
+        try{ await peers[sig.from_name].pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); }catch{}
+      }
+      break;
+  }
+}
+
+function startSpeakDetection(){
+  if(!localStream) return;
+  try{
+    const ctx=new AudioContext();
+    const src=ctx.createMediaStreamSource(localStream);
+    const analyser=ctx.createAnalyser();
+    analyser.fftSize=512;
+    src.connect(analyser);
+    const buf=new Uint8Array(analyser.frequencyBinCount);
+    let speaking=false;
+    setInterval(()=>{
+      if(!inVoice){ return; }
+      analyser.getByteFrequencyData(buf);
+      const avg=buf.reduce((a,b)=>a+b,0)/buf.length;
+      const nowSpeaking=avg>15&&!isMuted;
+      if(nowSpeaking!==speaking){
+        speaking=nowSpeaking;
+        renderVoiceBar();
+      }
+    },100);
+    window._localSpeaking=()=>speaking&&!isMuted;
+  }catch{}
+}
+
+window.toggleMute=function(){
+  isMuted=!isMuted;
+  if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);
+  document.getElementById('mute-btn').className='vc-btn'+(isMuted?' muted':'');
+  document.getElementById('mute-btn').textContent=isMuted?'🔇':'🎤';
+  heartbeat();
+  renderVoiceBar();
+};
+
+function updateVoiceUI(){
+  const joinBtn=document.getElementById('vb-join-btn');
+  const controls=document.getElementById('vb-controls');
+  if(inVoice){
+    joinBtn.textContent='خروج از صدا';
+    joinBtn.className='vb-join-btn leave';
+    controls.style.display='flex';
+  } else {
+    joinBtn.textContent='ورود به صدا';
+    joinBtn.className='vb-join-btn';
+    controls.style.display='none';
+  }
+  renderVoiceBar();
+}
+
+function renderVoiceBar(){
+  const wrap=document.getElementById('vb-members');
+  const names=Object.keys(voiceMembers);
+  if(names.length===0){
+    wrap.innerHTML='<span class="vb-empty">کسی اینجا نیست</span>';
+    return;
+  }
+  wrap.innerHTML='';
+  names.forEach(n=>{
+    const m=voiceMembers[n];
+    const isMe=n===myName;
+    const speaking=isMe&&window._localSpeaking&&window._localSpeaking();
+    const chip=document.createElement('div');
+    chip.className='vm-chip'+(speaking?' speaking':'');
+    chip.innerHTML=`<span class="vm-av">${esc(m.av||'🧑')}</span><span class="vm-name">${esc(n)}</span>${m.muted?'<span class="vm-mute">🔇</span>':''}`;
+    wrap.appendChild(chip);
+  });
+}
+
+async function sysMsg(text){
+  try{
+    const rows=await api('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text:'__EVT__'+text})});
+    if(rows&&rows.length){ const em=document.getElementById('empty-state'); if(em) em.remove(); if(rows[0].id>lastId){ appendMsg(rows[0]); lastId=rows[0].id; scrollBottom(); } }
+  }catch{}
+}
+
+/* ══ MISC ══ */
+document.getElementById('msg-input').addEventListener('input',function(){
+  this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,110)+'px';
+});
+document.getElementById('msg-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMsg(); }
+});
+function scrollBottom(){ const m=document.getElementById('messages'); m.scrollTop=m.scrollHeight; }
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+function showErr(msg){ const e=document.getElementById('err-bar'); e.textContent=msg; e.style.display='block'; setTimeout(()=>e.style.display='none',5000); }
+</script>
+</body>
+</html>

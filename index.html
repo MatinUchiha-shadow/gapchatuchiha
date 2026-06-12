@@ -9,10 +9,12 @@
 :root {
   --bg:#0b0d12; --surface:#13161f; --panel:#1a1e2a; --border:#252a3a;
   --accent:#7c6dfa; --accent2:#fa6d9b; --teal:#2dd4bf; --green:#22c55e;
-  --text:#e2e5f0; --muted:#6b7094;
+  --text:#e2e5f0; --muted:#6b7094; --red:#e5334a;
+  --bubble-mine:#7c6dfa; --bubble-mine-text:#ffffff;
+  --bubble-other:#13161f; --bubble-other-text:#e2e5f0;
   --font:'Vazirmatn',system-ui,sans-serif; --ease:.18s cubic-bezier(.4,0,.2,1);
+  --radius:16px;
 }
-[data-theme=light]{--bg:#f2f4fb;--surface:#fff;--panel:#e8ebf7;--border:#d0d5ea;--text:#1a1d2e;--muted:#6b6f8a}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{font-family:var(--font);background:var(--bg);color:var(--text);transition:background var(--ease),color var(--ease)}
@@ -22,82 +24,85 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none;colo
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
 #app{display:flex;flex-direction:column;height:100vh}
 
-/* LOGIN */
-#login{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:28px;padding:24px}
-.login-logo{width:70px;height:70px;border-radius:22px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 8px 32px rgba(124,109,250,.35)}
-.login-title{font-size:26px;font-weight:700}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:28px 24px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:16px}
+/* ── AUTH SCREEN ── */
+#auth-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;gap:20px;padding:24px;overflow-y:auto;
+}
+.auth-logo{width:70px;height:70px;border-radius:22px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 8px 32px rgba(124,109,250,.35);flex-shrink:0}
+.auth-title{font-size:26px;font-weight:700}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:28px 24px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px}
+.auth-tabs{display:flex;background:var(--panel);border-radius:12px;padding:3px;gap:3px}
+.auth-tab{flex:1;padding:8px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);transition:all var(--ease);text-align:center}
+.auth-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .lbl{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:5px}
-.ifield{padding:12px 14px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;font-size:14px;width:100%;transition:border-color var(--ease)}
+.ifield{padding:12px 14px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;font-size:14px;width:100%;transition:border-color var(--ease);color:var(--text)}
 .ifield:focus{border-color:var(--accent)}
+.ifield.err{border-color:var(--red)}
+.auth-btn{padding:13px;border-radius:12px;font-size:15px;font-weight:600;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;transition:all var(--ease);box-shadow:0 4px 16px rgba(124,109,250,.3);position:relative}
+.auth-btn:hover{transform:translateY(-1px)}
+.auth-btn:disabled{opacity:.6;pointer-events:none}
+.auth-err{font-size:12px;color:var(--red);text-align:center;min-height:16px}
+
+/* avatar picker (signup) */
 .av-row{display:flex;gap:8px;flex-wrap:wrap}
 .av-opt{width:42px;height:42px;border-radius:11px;font-size:20px;background:var(--panel);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all var(--ease)}
 .av-opt:hover{border-color:var(--accent);transform:scale(1.08)}
 .av-opt.sel{border-color:var(--accent);background:rgba(124,109,250,.15)}
-.join-btn{padding:13px;border-radius:12px;font-size:15px;font-weight:600;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;transition:all var(--ease);box-shadow:0 4px 16px rgba(124,109,250,.3)}
-.join-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(124,109,250,.4)}
+.signup-extra{display:flex;flex-direction:column;gap:14px}
 
-/* HEADER */
+/* ── HEADER ── */
 header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
 .hl{display:flex;align-items:center;gap:10px}
-.hav{width:36px;height:36px;border-radius:11px;font-size:18px;display:flex;align-items:center;justify-content:center;background:var(--panel)}
+.hav{width:36px;height:36px;border-radius:11px;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;background:var(--panel);color:var(--text);flex-shrink:0}
 .hname{font-size:14px;font-weight:600}
 .hstatus{font-size:11px;color:var(--muted)}
 .hr{display:flex;gap:6px;align-items:center}
 .icon-btn{width:34px;height:34px;border-radius:10px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px;transition:all var(--ease)}
 .icon-btn:hover{background:var(--border)}
 
-/* VOICE ROOM BAR */
-#voice-bar{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:10px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;
-}
+/* ── VOICE BAR ── */
+#voice-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
 .vb-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
-.vb-icon{font-size:16px}
-.vb-info{display:flex;flex-direction:column;gap:1px}
-.vb-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.vb-members{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.vb-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.vb-members{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
 .vm-chip{display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;background:var(--panel);border:1px solid var(--border);font-size:12px;transition:all .2s}
-.vm-chip.speaking{border-color:var(--green);background:rgba(34,197,94,.1);box-shadow:0 0 0 2px rgba(34,197,94,.2)}
-.vm-chip .vm-av{font-size:13px}
-.vm-chip .vm-name{color:var(--text);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.vm-chip .vm-mute{font-size:10px;opacity:.6}
-.vb-join-btn{padding:7px 14px;border-radius:10px;font-size:13px;font-weight:600;background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);transition:all var(--ease);white-space:nowrap}
-.vb-join-btn:hover{background:rgba(34,197,94,.25)}
-.vb-join-btn.leave{background:rgba(229,51,74,.1);color:#e5334a;border-color:rgba(229,51,74,.3)}
-.vb-join-btn.leave:hover{background:rgba(229,51,74,.2)}
+.vm-chip.speaking{border-color:var(--green);background:rgba(34,197,94,.1);box-shadow:0 0 0 2px rgba(34,197,94,.15)}
+.vm-av{font-size:13px;width:18px;height:18px;border-radius:5px;background:var(--panel);color:var(--text);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vm-name{color:var(--text);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.vm-mute{font-size:10px;opacity:.6}
+.vb-empty{font-size:12px;color:var(--muted);font-style:italic}
 .vb-controls{display:flex;gap:6px}
 .vc-btn{width:30px;height:30px;border-radius:8px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:14px;border:1px solid var(--border);transition:all var(--ease)}
-.vc-btn:hover{background:var(--border)}
-.vc-btn.muted{background:rgba(250,109,155,.1);border-color:var(--accent2);color:var(--accent2)}
-.vb-empty{font-size:12px;color:var(--muted);font-style:italic}
+.vc-btn.muted{background:rgba(250,109,155,.1);border-color:var(--accent2)}
+.vb-join-btn{padding:7px 14px;border-radius:10px;font-size:13px;font-weight:600;background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);transition:all var(--ease);white-space:nowrap}
+.vb-join-btn:hover{background:rgba(34,197,94,.22)}
+.vb-join-btn.leave{background:rgba(229,51,74,.1);color:var(--red);border-color:rgba(229,51,74,.25)}
 
-/* MESSAGES */
+/* ── MESSAGES ── */
 #messages{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:3px}
 .msg-row{display:flex;gap:6px;align-items:flex-end;animation:mi .2s ease}
 @keyframes mi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .msg-row.mine{flex-direction:row-reverse}
 .msg-row.gtop{margin-top:10px}
-.mav{width:26px;height:26px;border-radius:8px;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mav{width:26px;height:26px;border-radius:8px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--panel);color:var(--text)}
 .mav-ph{width:26px;flex-shrink:0}
 .bwrap{display:flex;flex-direction:column;max-width:70%}
 .msg-row.mine .bwrap{align-items:flex-end}
 .sname{font-size:10px;color:var(--muted);margin-bottom:3px;padding:0 3px}
-.bubble{padding:9px 13px;border-radius:16px;font-size:14px;line-height:1.6;word-break:break-word}
-.msg-row:not(.mine) .bubble{background:var(--surface);border:1px solid var(--border);border-bottom-right-radius:5px}
-.msg-row.mine .bubble{background:var(--accent);color:#fff;border-bottom-left-radius:5px}
+.bubble{padding:9px 13px;border-radius:var(--radius);font-size:14px;line-height:1.6;word-break:break-word}
+.msg-row:not(.mine) .bubble{background:var(--bubble-other);color:var(--bubble-other-text);border:1px solid var(--border);border-bottom-right-radius:5px}
+.msg-row.mine .bubble{background:var(--bubble-mine);color:var(--bubble-mine-text);border-bottom-left-radius:5px}
 .bubble.sys{background:transparent;border:1px dashed var(--border);color:var(--muted);font-size:12px;text-align:center;padding:5px 12px;border-radius:99px}
-.msg-row.mine .bubble.sys{background:transparent;border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.5)}
+.msg-row.mine .bubble.sys{color:var(--muted);border-color:var(--border)}
 .bmeta{font-size:10px;color:var(--muted);margin-top:4px;padding:0 3px}
-.msg-row.mine .bmeta{text-align:left;color:rgba(255,255,255,.5)}
+.msg-row.mine .bmeta{text-align:left}
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;opacity:.4}
 .empty-icon{font-size:44px}
 .empty-txt{font-size:13px;color:var(--muted)}
 
-/* TYPING */
+/* ── INPUT ── */
 #typing{min-height:20px;padding:2px 14px 4px;font-size:12px;color:var(--muted)}
-
-/* INPUT */
 #input-bar{padding:10px 14px 14px;background:var(--surface);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;flex-shrink:0}
 .estrip{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px}
 .estrip::-webkit-scrollbar{height:0}
@@ -111,30 +116,83 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 #send-btn:hover{transform:scale(1.06)}
 #send-btn:active{transform:scale(.95)}
 
+/* ── THEME PANEL ── */
+#theme-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+#theme-overlay.show{display:flex}
+#theme-panel{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.tp-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.tp-title{font-size:16px;font-weight:700}
+.tp-body{overflow-y:auto;padding:14px 18px 24px;display:flex;flex-direction:column;gap:18px}
+.tp-section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.tp-presets{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.tp-presets::-webkit-scrollbar{height:0}
+.preset-chip{flex-shrink:0;width:64px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:14px;border:1.5px solid var(--border);background:var(--panel);transition:all var(--ease)}
+.preset-chip.active{border-color:var(--accent)}
+.preset-swatch{width:40px;height:40px;border-radius:10px;display:flex;overflow:hidden}
+.preset-swatch span{flex:1;height:100%}
+.preset-label{font-size:10px;color:var(--muted)}
+.color-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.color-row:last-child{border-bottom:none}
+.color-row-info{display:flex;flex-direction:column;gap:2px}
+.color-name{font-size:13px;font-weight:600}
+.color-desc{font-size:11px;color:var(--muted)}
+.color-input-wrap{position:relative;width:40px;height:40px;border-radius:10px;border:1.5px solid var(--border);overflow:hidden;flex-shrink:0}
+.color-input-wrap input[type=color]{position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);cursor:pointer;border:none;padding:0}
+.tp-actions{display:flex;gap:8px;padding-top:6px}
+.tp-action-btn{flex:1;padding:11px;border-radius:12px;font-size:13px;font-weight:600;background:var(--panel);border:1px solid var(--border);transition:all var(--ease)}
+.tp-action-btn:hover{background:var(--border)}
+.tp-action-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none}
+.tp-radius-row{display:flex;align-items:center;gap:12px;padding:10px 0}
+.tp-radius-row input[type=range]{flex:1;accent-color:var(--accent)}
+
+/* ── MISC ── */
+.spin{display:inline-block;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--panel);border:1px solid var(--border);padding:9px 18px;border-radius:99px;font-size:13px;opacity:0;transition:all .25s;pointer-events:none;z-index:99;white-space:nowrap}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-#err{display:none;background:#e5334a;color:#fff;font-size:12px;text-align:center;padding:7px}
+#err-bar{display:none;background:var(--red);color:#fff;font-size:12px;text-align:center;padding:7px}
 @media(max-width:480px){.bwrap{max-width:82%}}
 </style>
 </head>
 <body data-theme="dark">
 <div id="app">
-<div id="err"></div>
+<div id="err-bar"></div>
 
-<!-- LOGIN -->
-<div id="login">
-  <div class="login-logo">💬</div>
-  <div class="login-title">GapChat</div>
-  <div class="login-card">
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-logo">💬</div>
+  <div class="auth-title">GapChat</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">ورود</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">ثبت‌نام</button>
+    </div>
+
+    <!-- signup-only fields -->
+    <div class="signup-extra" id="signup-extra" style="display:none">
+      <div>
+        <div class="lbl">اسم نمایشی</div>
+        <input class="ifield" id="auth-name" placeholder="مثلاً: علی، سارا…" maxlength="20"/>
+      </div>
+      <div>
+        <div class="lbl">آواتار</div>
+        <div class="av-row" id="av-row"></div>
+      </div>
+    </div>
+
     <div>
-      <div class="lbl">اسمت چیه؟</div>
-      <input class="ifield" id="name-input" placeholder="مثلاً: علی، سارا…" maxlength="20"/>
+      <div class="lbl">ایمیل</div>
+      <input class="ifield" id="auth-email" type="email" placeholder="example@email.com" autocomplete="email"/>
     </div>
     <div>
-      <div class="lbl">آواتار</div>
-      <div class="av-row" id="av-row"></div>
+      <div class="lbl">پسورد</div>
+      <input class="ifield" id="auth-pass" type="password" placeholder="حداقل ۶ کاراکتر" autocomplete="current-password"/>
     </div>
-    <button class="join-btn" onclick="joinChat()">ورود به چت ←</button>
+    <div class="auth-err" id="auth-err"></div>
+    <button class="auth-btn" id="auth-btn" onclick="doAuth()">
+      <span id="auth-btn-txt">ورود</span>
+    </button>
   </div>
 </div>
 
@@ -144,24 +202,21 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     <div class="hav" id="hav"></div>
     <div>
       <div class="hname" id="hname"></div>
-      <div class="hstatus" id="hstatus">در حال اتصال…</div>
+      <div class="hstatus" id="hstatus">متصل ✓</div>
     </div>
   </div>
   <div class="hr">
-    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
-    <button class="icon-btn" onclick="leaveChat()">🚪</button>
+    <button class="icon-btn" onclick="openThemePanel()" title="شخصی‌سازی تم">🎨</button>
+    <button class="icon-btn" onclick="signOut()" title="خروج از حساب">🚪</button>
   </div>
 </header>
 
-<!-- VOICE ROOM BAR -->
+<!-- VOICE BAR -->
 <div id="voice-bar" style="display:none">
   <div class="vb-left">
-    <div class="vb-icon">🔊</div>
-    <div class="vb-info">
-      <div class="vb-title">روم صوتی</div>
-      <div class="vb-members" id="vb-members">
-        <span class="vb-empty">کسی اینجا نیست</span>
-      </div>
+    <div>
+      <div class="vb-title">🔊 روم صوتی</div>
+      <div class="vb-members" id="vb-members"><span class="vb-empty">کسی اینجا نیست</span></div>
     </div>
   </div>
   <div class="vb-controls" id="vb-controls" style="display:none">
@@ -188,13 +243,54 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   </div>
 </div>
 </div>
+
+<!-- THEME PANEL -->
+<div id="theme-overlay" onclick="if(event.target===this) closeThemePanel()">
+  <div id="theme-panel">
+    <div class="tp-header">
+      <div class="tp-title">🎨 شخصی‌سازی تم</div>
+      <button class="icon-btn" onclick="closeThemePanel()">✕</button>
+    </div>
+    <div class="tp-body">
+      <div>
+        <div class="tp-section-title">پیش‌فرض‌ها</div>
+        <div class="tp-presets" id="tp-presets"></div>
+      </div>
+
+      <div>
+        <div class="tp-section-title">رنگ‌های اصلی</div>
+        <div id="tp-main-colors"></div>
+      </div>
+
+      <div>
+        <div class="tp-section-title">حباب پیام‌ها</div>
+        <div id="tp-bubble-colors"></div>
+      </div>
+
+      <div>
+        <div class="tp-section-title">گردی گوشه‌ها</div>
+        <div class="tp-radius-row">
+          <span style="font-size:13px">🔲</span>
+          <input type="range" id="tp-radius" min="4" max="28" value="16" oninput="updateRadius(this.value)"/>
+          <span style="font-size:13px">⬜</span>
+          <span id="tp-radius-val" style="font-size:12px;color:var(--muted);min-width:32px;text-align:left">16px</span>
+        </div>
+      </div>
+
+      <div class="tp-actions">
+        <button class="tp-action-btn" onclick="resetTheme()">بازنشانی</button>
+        <button class="tp-action-btn primary" onclick="closeThemePanel()">ذخیره و بستن</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
-<!-- audio elements برای هر peer به صورت داینامیک اضافه می‌شن -->
 
 <script>
-/* ═══════════════════════════ CONFIG ═══════════════════════════ */
-const SUPABASE_URL = 'https://qbvrxcvntaopmtzaorgc.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFidnJ4Y3ZudGFvcG10emFvcmdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjA2MTEsImV4cCI6MjA5NjgzNjYxMX0.7Q0lsPJBOum43p-DmXdn6c9TPMgUGSr7JxyiQ_FTaio';
+/* ══════════════ CONFIG ══════════════ */
+const SB_URL = 'https://qbvrxcvntaopmtzaorgc.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFidnJ4Y3ZudGFvcG10emFvcmdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjA2MTEsImV4cCI6MjA5NjgzNjYxMX0.7Q0lsPJBOum43p-DmXdn6c9TPMgUGSr7JxyiQ_FTaio';
 
 const ICE_SERVERS = [
   { urls:'stun:stun.l.google.com:19302' },
@@ -205,394 +301,34 @@ const ICE_SERVERS = [
 const AVATARS = ['🧑','👩','🧔','👱','🧑‍💻','👩‍💻','🦊','🐼','🐸','🐺'];
 const EMOJIS  = ['😄','😂','❤️','🔥','👍','😍','🥺','😤','🎉','💯'];
 
-let myName=null, myAv=AVATARS[0], selectedAv=AVATARS[0];
-let lastId=0, lastUid='', pollTimer=null;
+/* ══ Auth/state ══ */
+let authToken=null, myEmail=null, myName=null, myAv=AVATARS[0], selectedAv=AVATARS[0];
+let lastId=0, lastUid='', pollTimer=null, authMode='login';
 
-/* ═══ VOICE ROOM STATE ═══ */
-let inVoice = false;           // آیا من توی رومم؟
-let localStream = null;        // میکروفون من
-let isMuted = false;
-let peers = {};                // { peerName: { pc, audioEl } }
-let voiceMembers = {};         // { name: { av, muted } } — همه توی روم
-let lastSignalId = 0;
-let speakingTimers = {};       // برای detect کردن صدا
+/* ══ Voice state ══ */
+let inVoice=false, localStream=null, isMuted=false;
+let peers={}, voiceMembers={}, lastSignalId=0;
 
-/* ─── BUILD UI ─── */
-(()=>{
-  const avRow=document.getElementById('av-row');
-  AVATARS.forEach((a,i)=>{
-    const b=document.createElement('button');
-    b.className='av-opt'+(i===0?' sel':'');
-    b.textContent=a;
-    b.onclick=()=>{ document.querySelectorAll('.av-opt').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); selectedAv=a; };
-    avRow.appendChild(b);
-  });
-  const strip=document.getElementById('estrip');
-  EMOJIS.forEach(e=>{
-    const b=document.createElement('button');
-    b.className='eq'; b.textContent=e;
-    b.onclick=()=>{ const i=document.getElementById('msg-input'); i.value+=e; i.focus(); };
-    strip.appendChild(b);
-  });
-})();
+/* ══════════════════════════════════════
+   THEME SYSTEM
+══════════════════════════════════════ */
+const THEME_VARS = [
+  {key:'--bg',          name:'پس‌زمینه اصلی',     desc:'رنگ پس‌زمینه کل اپ',           group:'main'},
+  {key:'--surface',     name:'سطح رویی',          desc:'هدر، نوار ورودی، حباب دیگران', group:'main'},
+  {key:'--panel',       name:'پنل/کادرها',        desc:'اینپوت‌ها، دکمه‌های آیکون',     group:'main'},
+  {key:'--border',      name:'خطوط مرزی',         desc:'حاشیه‌ها و جداکننده‌ها',        group:'main'},
+  {key:'--accent',      name:'رنگ اصلی (Accent)', desc:'دکمه ارسال، فوکوس، تأکید',      group:'main'},
+  {key:'--accent2',     name:'رنگ ثانویه',        desc:'گرادینت لوگو و دکمه‌ها',        group:'main'},
+  {key:'--text',        name:'متن اصلی',          desc:'رنگ کلی نوشته‌ها',              group:'main'},
+  {key:'--muted',       name:'متن کم‌رنگ',        desc:'زمان، وضعیت، توضیحات',          group:'main'},
+  {key:'--bubble-mine',      name:'حباب من',          desc:'پس‌زمینه پیام‌های خودم',  group:'bubble'},
+  {key:'--bubble-mine-text', name:'متن حباب من',      desc:'رنگ نوشته‌های خودم',      group:'bubble'},
+  {key:'--bubble-other',     name:'حباب دیگران',      desc:'پس‌زمینه پیام‌های دیگران', group:'bubble'},
+  {key:'--bubble-other-text',name:'متن حباب دیگران',  desc:'رنگ نوشته‌های دیگران',    group:'bubble'},
+];
 
-/* ─── API ─── */
-async function apiFetch(path, opts={}){
-  const res=await fetch(SUPABASE_URL+path,{
-    ...opts,
-    headers:{ 'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{}) }
-  });
-  if(!res.ok){ throw new Error(await res.text()); }
-  const t=await res.text(); return t?JSON.parse(t):[];
-}
-
-/* ─── JOIN CHAT ─── */
-window.joinChat=async function(){
-  const n=document.getElementById('name-input').value.trim();
-  if(!n){ toast('یه اسم وارد کن 😅'); return; }
-  myName=n; myAv=selectedAv;
-  document.getElementById('login').style.display='none';
-  document.getElementById('header').style.display='flex';
-  document.getElementById('voice-bar').style.display='flex';
-  const chat=document.getElementById('chat');
-  chat.style.display='flex'; chat.style.flexDirection='column';
-  document.getElementById('hav').textContent=myAv;
-  document.getElementById('hname').textContent=myName;
-  document.getElementById('hstatus').textContent='متصل شد ✓';
-  await loadMessages();
-  startPolling();
-  /* بار اول وضعیت روم رو بگیر */
-  await syncVoiceMembers();
-};
-
-/* ─── MESSAGES ─── */
-async function loadMessages(){
-  try{
-    const rows=await apiFetch('/rest/v1/messages?order=id.asc&select=*');
-    if(rows.length){ const em=document.getElementById('empty-state'); if(em) em.remove(); }
-    rows.forEach(r=>{ if(r.id>lastId){ appendMsg(r); lastId=r.id; } });
-    scrollBottom();
-  }catch(e){ showErr('خطا در بارگذاری: '+e.message); }
-}
-
-function startPolling(){
-  pollTimer=setInterval(async()=>{
-    /* پیام‌های جدید */
-    try{
-      const rows=await apiFetch(`/rest/v1/messages?id=gt.${lastId}&order=id.asc&select=*`);
-      if(rows.length){
-        const em=document.getElementById('empty-state'); if(em) em.remove();
-        rows.forEach(r=>{ appendMsg(r); lastId=r.id; });
-        scrollBottom();
-      }
-    }catch{}
-    /* سیگنال‌های WebRTC */
-    await pollSignals();
-  }, 1500);
-}
-
-window.sendMsg=async function(){
-  const inp=document.getElementById('msg-input');
-  const text=inp.value.trim();
-  if(!text||!myName) return;
-  inp.value=''; inp.style.height='';
-  try{
-    const rows=await apiFetch('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text})});
-    if(rows&&rows.length){ const em=document.getElementById('empty-state'); if(em) em.remove(); if(rows[0].id>lastId){ appendMsg(rows[0]); lastId=rows[0].id; scrollBottom(); } }
-  }catch(e){ showErr('پیام ارسال نشد'); inp.value=text; }
-};
-
-function appendMsg(msg){
-  const container=document.getElementById('messages');
-  const isMine=msg.name===myName;
-  const dt=new Date(msg.created_at);
-  const timeStr=dt.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
-  const gapTop=msg.name!==lastUid; lastUid=msg.name;
-  if(msg.text&&(msg.text.startsWith('__SIG__')||msg.text.startsWith('__PRESENCE__'))) return;
-  const row=document.createElement('div');
-  row.className=`msg-row ${isMine?'mine':''} ${gapTop?'gtop':''}`;
-  const isSys=msg.text&&msg.text.startsWith('__EVT__');
-  const displayText=isSys?msg.text.replace('__EVT__',''):esc(msg.text).replace(/\n/g,'<br>');
-  row.innerHTML=`
-    ${gapTop?`<div class="mav">${esc(msg.avatar||'🧑')}</div>`:`<div class="mav-ph"></div>`}
-    <div class="bwrap">
-      ${(!isMine&&gapTop&&!isSys)?`<div class="sname">${esc(msg.name)}</div>`:''}
-      <div class="bubble${isSys?' sys':''}">${displayText}</div>
-      ${!isSys?`<div class="bmeta">${timeStr}${isMine?' ✓✓':''}</div>`:''}
-    </div>`;
-  container.appendChild(row);
-}
-
-/* ═══════════════════════════════════════════════════
-   VOICE ROOM
-   ── Signaling از طریق جدول signals در Supabase ──
-   ── Presence از طریق جدول voice_presence ──
-═══════════════════════════════════════════════════ */
-
-/* وضعیت روم رو از جدول voice_presence بخون */
-async function syncVoiceMembers(){
-  try{
-    /* حذف رکوردهای قدیمی (بیشتر از ۱۰ ثانیه) */
-    const cutoff=new Date(Date.now()-10000).toISOString();
-    await apiFetch(`/rest/v1/voice_presence?updated_at=lt.${cutoff}`,{method:'DELETE',headers:{'Prefer':''}});
-    const rows=await apiFetch('/rest/v1/voice_presence?select=*');
-    const newMembers={};
-    rows.forEach(r=>{ newMembers[r.name]={av:r.avatar,muted:r.muted||false}; });
-    voiceMembers=newMembers;
-    renderVoiceBar();
-  }catch{}
-}
-
-/* heartbeat: هر ۴ ثانیه یه بار وضعیت خودمون رو آپدیت کن */
-async function heartbeat(){
-  if(!inVoice||!myName) return;
-  try{
-    await apiFetch('/rest/v1/voice_presence',{
-      method:'POST',
-      headers:{'Prefer':'resolution=merge-duplicates'},
-      body:JSON.stringify({name:myName,avatar:myAv,muted:isMuted,updated_at:new Date().toISOString()})
-    });
-  }catch{}
-}
-
-/* ورود/خروج از روم */
-window.toggleVoiceRoom=async function(){
-  if(!inVoice) await joinVoiceRoom();
-  else await leaveVoiceRoom();
-};
-
-async function joinVoiceRoom(){
-  try{
-    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-  }catch{
-    toast('اجازه میکروفون داده نشد! ⚠️'); return;
-  }
-  inVoice=true;
-  isMuted=false;
-  /* ثبت presence */
-  await apiFetch('/rest/v1/voice_presence',{
-    method:'POST',
-    headers:{'Prefer':'resolution=merge-duplicates'},
-    body:JSON.stringify({name:myName,avatar:myAv,muted:false,updated_at:new Date().toISOString()})
-  });
-  /* sync وضعیت روم و connect به هر کسی که هست */
-  await syncVoiceMembers();
-  for(const peerName of Object.keys(voiceMembers)){
-    if(peerName!==myName && !peers[peerName]){
-      await connectToPeer(peerName, true); /* ما initiator هستیم */
-    }
-  }
-  updateVoiceUI();
-  /* heartbeat هر ۴ ثانیه */
-  window._hbTimer=setInterval(heartbeat,4000);
-  /* detect صدا */
-  startSpeakDetection();
-  sysMsg('🎙 '+myName+' وارد روم صوتی شد');
-}
-
-async function leaveVoiceRoom(){
-  inVoice=false;
-  clearInterval(window._hbTimer);
-  /* پاک کردن presence */
-  try{ await apiFetch(`/rest/v1/voice_presence?name=eq.${encodeURIComponent(myName)}`,{method:'DELETE',headers:{'Prefer':''}}); }catch{}
-  /* بستن همه peer connectionها */
-  for(const pn of Object.keys(peers)){
-    peers[pn].pc.close();
-    if(peers[pn].audioEl) peers[pn].audioEl.remove();
-  }
-  peers={};
-  if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
-  updateVoiceUI();
-  await syncVoiceMembers();
-  sysMsg('🔇 '+myName+' از روم صوتی خارج شد');
-}
-
-/* ─── WebRTC peer connection ─── */
-async function connectToPeer(peerName, isInitiator){
-  if(peers[peerName]) return; /* قبلاً وصل شده */
-  const pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
-  /* audio element برای صدای این peer */
-  const audioEl=document.createElement('audio');
-  audioEl.autoplay=true; audioEl.playsInline=true;
-  document.body.appendChild(audioEl);
-  peers[peerName]={pc,audioEl};
-
-  /* اضافه کردن track میکروفون */
-  if(localStream) localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
-
-  pc.ontrack=e=>{ audioEl.srcObject=e.streams[0]; };
-  pc.onicecandidate=e=>{
-    if(e.candidate) sendSignal('candidate',peerName,{candidate:e.candidate});
-  };
-  pc.onconnectionstatechange=()=>{
-    if(pc.connectionState==='failed'||pc.connectionState==='disconnected'){
-      if(peers[peerName]){ peers[peerName].pc.close(); if(peers[peerName].audioEl) peers[peerName].audioEl.remove(); delete peers[peerName]; }
-    }
-  };
-
-  if(isInitiator){
-    const offer=await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    await sendSignal('offer',peerName,{sdp:offer});
-  }
-}
-
-/* ─── Signaling ─── */
-async function sendSignal(type, toPeer, payload){
-  try{
-    await apiFetch('/rest/v1/signals',{
-      method:'POST',
-      body:JSON.stringify({from_name:myName,from_av:myAv,to_name:toPeer,type,payload:JSON.stringify(payload)})
-    });
-  }catch{}
-}
-
-async function pollSignals(){
-  if(!myName) return;
-  try{
-    const rows=await apiFetch(`/rest/v1/signals?to_name=eq.${encodeURIComponent(myName)}&id=gt.${lastSignalId}&order=id.asc&select=*`);
-    for(const row of rows){
-      if(row.id>lastSignalId) lastSignalId=row.id;
-      if(row.from_name===myName) continue;
-      await handleSignal(row);
-    }
-  }catch{}
-  /* sync اعضای روم */
-  await syncVoiceMembers();
-  /* اگه member جدیدی اومده و من توی رومم، connect کن */
-  if(inVoice){
-    for(const peerName of Object.keys(voiceMembers)){
-      if(peerName!==myName && !peers[peerName]){
-        await connectToPeer(peerName, myName>peerName); /* lexicographic تصمیم می‌گیره کی initiator باشه */
-      }
-    }
-  }
-}
-
-async function handleSignal(sig){
-  const payload=sig.payload?JSON.parse(sig.payload):{};
-  switch(sig.type){
-    case 'offer':
-      if(!inVoice) return;
-      await connectToPeer(sig.from_name,false);
-      await peers[sig.from_name].pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-      const answer=await peers[sig.from_name].pc.createAnswer();
-      await peers[sig.from_name].pc.setLocalDescription(answer);
-      await sendSignal('answer',sig.from_name,{sdp:answer});
-      break;
-    case 'answer':
-      if(peers[sig.from_name]){
-        await peers[sig.from_name].pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-      }
-      break;
-    case 'candidate':
-      if(peers[sig.from_name]){
-        try{ await peers[sig.from_name].pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); }catch{}
-      }
-      break;
-  }
-}
-
-/* ─── Voice Activity Detection ─── */
-function startSpeakDetection(){
-  if(!localStream) return;
-  try{
-    const ctx=new AudioContext();
-    const src=ctx.createMediaStreamSource(localStream);
-    const analyser=ctx.createAnalyser();
-    analyser.fftSize=512;
-    src.connect(analyser);
-    const buf=new Uint8Array(analyser.frequencyBinCount);
-    let speaking=false;
-    setInterval(()=>{
-      if(!inVoice){ return; }
-      analyser.getByteFrequencyData(buf);
-      const avg=buf.reduce((a,b)=>a+b,0)/buf.length;
-      const nowSpeaking=avg>15&&!isMuted;
-      if(nowSpeaking!==speaking){
-        speaking=nowSpeaking;
-        renderVoiceBar(); /* update chip */
-      }
-    },100);
-    window._localSpeaking=()=>speaking&&!isMuted;
-  }catch{}
-}
-
-/* ─── MUTE ─── */
-window.toggleMute=function(){
-  isMuted=!isMuted;
-  if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);
-  document.getElementById('mute-btn').className='vc-btn'+(isMuted?' muted':'');
-  document.getElementById('mute-btn').textContent=isMuted?'🔇':'🎤';
-  heartbeat();
-  renderVoiceBar();
-};
-
-/* ─── UI ─── */
-function updateVoiceUI(){
-  const joinBtn=document.getElementById('vb-join-btn');
-  const controls=document.getElementById('vb-controls');
-  if(inVoice){
-    joinBtn.textContent='خروج از صدا';
-    joinBtn.className='vb-join-btn leave';
-    controls.style.display='flex';
-  } else {
-    joinBtn.textContent='ورود به صدا';
-    joinBtn.className='vb-join-btn';
-    controls.style.display='none';
-  }
-  renderVoiceBar();
-}
-
-function renderVoiceBar(){
-  const wrap=document.getElementById('vb-members');
-  const names=Object.keys(voiceMembers);
-  if(names.length===0){
-    wrap.innerHTML='<span class="vb-empty">کسی اینجا نیست</span>';
-    return;
-  }
-  wrap.innerHTML='';
-  names.forEach(n=>{
-    const m=voiceMembers[n];
-    const isMe=n===myName;
-    const speaking=isMe&&window._localSpeaking&&window._localSpeaking();
-    const chip=document.createElement('div');
-    chip.className='vm-chip'+(speaking?' speaking':'');
-    chip.innerHTML=`<span class="vm-av">${esc(m.av||'🧑')}</span><span class="vm-name">${esc(n)}</span>${m.muted?'<span class="vm-mute">🔇</span>':''}`;
-    wrap.appendChild(chip);
-  });
-}
-
-async function sysMsg(text){
-  try{
-    const rows=await apiFetch('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text:'__EVT__'+text})});
-    if(rows&&rows.length){ const em=document.getElementById('empty-state'); if(em) em.remove(); if(rows[0].id>lastId){ appendMsg(rows[0]); lastId=rows[0].id; scrollBottom(); } }
-  }catch{}
-}
-
-/* ─── MISC ─── */
-document.getElementById('msg-input').addEventListener('input',function(){
-  this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,110)+'px';
-});
-document.getElementById('msg-input').addEventListener('keydown',function(e){
-  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMsg(); }
-});
-document.getElementById('name-input').addEventListener('keydown',e=>{ if(e.key==='Enter') joinChat(); });
-
-window.leaveChat=function(){
-  if(!confirm('از چت خارج بشی؟')) return;
-  if(inVoice) leaveVoiceRoom();
-  clearInterval(pollTimer); location.reload();
-};
-window.toggleTheme=function(){
-  const b=document.body; const d=b.getAttribute('data-theme')==='dark';
-  b.setAttribute('data-theme',d?'light':'dark');
-  document.getElementById('theme-btn').textContent=d?'🌙':'☀️';
-};
-function scrollBottom(){ const m=document.getElementById('messages'); m.scrollTop=m.scrollHeight; }
-function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
-function showErr(msg){ const e=document.getElementById('err'); e.textContent=msg; e.style.display='block'; setTimeout(()=>e.style.display='none',5000); }
-</script>
-</body>
-</html>
+const THEME_PRESETS = {
+  'پیش‌فرض': {'--bg':'#0b0d12','--surface':'#13161f','--panel':'#1a1e2a','--border':'#252a3a','--accent':'#7c6dfa','--accent2':'#fa6d9b','--text':'#e2e5f0','--muted':'#6b7094','--bubble-mine':'#7c6dfa','--bubble-mine-text':'#ffffff','--bubble-other':'#13161f','--bubble-other-text':'#e2e5f0','--radius':'16px'},
+  'روشن': {'--bg':'#f2f4fb','--surface':'#ffffff','--panel':'#e8ebf7','--border':'#d0d5ea','--accent':'#7c6dfa','--accent2':'#fa6d9b','--text':'#1a1d2e','--muted':'#6b6f8a','--bubble-mine':'#7c6dfa','--bubble-mine-text':'#ffffff','--bubble-other':'#ffffff','--bubble-other-text':'#1a1d2e','--radius':'16px'},
+  'اقیانوسی': {'--bg':'#071421','--surface':'#0e2235','--panel':'#163348','--border':'#1f4258','--accent':'#22d3ee','--accent2':'#3b82f6','--text':'#e6f6fb','--muted':'#7aa3b8','--bubble-mine':'#22d3ee','--bubble-mine-text':'#04222b','--bubble-other':'#0e2235','--bubble-other-text':'#e6f6fb','--radius':'16px'},
+  'جنگلی': {'--bg':'#0b1410','--surface':'#11201a','--panel':'#1a2e24','--border':'#27402f','--accent':'#34d399','--accent2':'#a3e635','--text':'#e7f5ee','--muted':'#7fa893','--bubble-mine':'#34d399','--bubble-mine-text':'#062017','--bubble-other':'#11201a','--bubble-other-text':'#e7f5ee',

@@ -927,28 +927,37 @@ window.cancelMedia=function(){
 async function sendMediaMessage(inp, caption){
   const file=pendingMediaFile;
   const isVideo=pendingMediaIsVideo;
-  toast('در حال آپلود… ⏳');
+  const bucket=isVideo?'chat-videos':'chat-images';
+  const ext=(file.name.split('.').pop()||(isVideo?'mp4':'jpg')).toLowerCase().replace(/[^a-z0-9]/g,'');
+  /* مسیر ساده بدون کاراکتر خاص */
+  const path=`${Date.now()}.${ext||'jpg'}`;
+
+  /* نمایش UI لودینگ */
+  cancelMedia();
+  inp.value=''; inp.style.height='';
+  showUploadProgress(file.size, isVideo);
+
   try{
-    const ext=(file.name.split('.').pop()||(isVideo?'mp4':'jpg')).toLowerCase();
-    const path=`${Date.now()}-${encodeURIComponent(myName)}.${ext}`;
-    const bucket=isVideo?'chat-videos':'chat-images';
-    const res=await fetch(`${SB_URL}/storage/v1/object/${bucket}/${path}`,{
-      method:'POST',
-      headers:{
-        'apikey':SB_KEY,
-        'Authorization':'Bearer '+(authToken||SB_KEY),
-        'Content-Type':file.type,
-        'x-upsert':'true'
+    await uploadWithProgress(
+      `${SB_URL}/storage/v1/object/${bucket}/${path}`,
+      {
+        method:'POST',
+        headers:{
+          'apikey':SB_KEY,
+          'Authorization':'Bearer '+(authToken||SB_KEY),
+          'Content-Type':file.type,
+          'x-upsert':'true'
+        }
       },
-      body:file
-    });
-    if(!res.ok) throw new Error(await res.text());
+      file,
+      (pct)=>updateUploadProgress(pct)
+    );
+
+    hideUploadProgress();
     const publicUrl=`${SB_URL}/storage/v1/object/public/${bucket}/${path}`;
-    /* زمان انقضا: ۱ ساعت دیگه */
     const expiresAt=new Date(Date.now()+60*60*1000).toISOString();
     const msgText=`__MEDIA__${isVideo?'video':'image'}__${publicUrl}__${path}__${bucket}__EXPIRE__${expiresAt}__${caption?'CAP__'+caption:''}`;
-    cancelMedia();
-    inp.value=''; inp.style.height='';
+
     const sb=document.getElementById('send-btn');
     sb.classList.remove('sent'); void sb.offsetWidth; sb.classList.add('sent');
     const rows=await api('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text:msgText})});
@@ -956,8 +965,78 @@ async function sendMediaMessage(inp, caption){
     api('/rest/v1/rpc/increment_message_count',{method:'POST',body:JSON.stringify({p_name:myName,p_email:myEmail,p_avatar:myAv})}).catch(()=>{});
     toast('✅ ارسال شد');
   }catch(err){
-    toast('❌ آپلود ناموفق بود');
+    hideUploadProgress();
+    console.error('upload error',err);
+    toast('❌ آپلود ناموفق بود: '+err.message);
   }
+}
+
+function uploadWithProgress(url, opts, file, onProgress){
+  return new Promise((resolve, reject)=>{
+    const xhr=new XMLHttpRequest();
+    xhr.open(opts.method||'POST', url);
+    Object.entries(opts.headers||{}).forEach(([k,v])=>xhr.setRequestHeader(k,v));
+    xhr.upload.onprogress=e=>{
+      if(e.lengthComputable) onProgress(Math.round(e.loaded/e.total*100));
+    };
+    xhr.onload=()=>{
+      if(xhr.status>=200&&xhr.status<300) resolve(xhr.responseText);
+      else reject(new Error(`HTTP ${xhr.status}: ${xhr.responseText}`));
+    };
+    xhr.onerror=()=>reject(new Error('خطای شبکه'));
+    xhr.send(file);
+  });
+}
+
+/* ── UI لودینگ آپلود ── */
+function fmtSize(bytes){
+  if(bytes<1024*1024) return (bytes/1024).toFixed(0)+' KB';
+  return (bytes/1024/1024).toFixed(1)+' MB';
+}
+function showUploadProgress(totalBytes, isVideo){
+  let el=document.getElementById('upload-progress-bar');
+  if(!el){
+    el=document.createElement('div');
+    el.id='upload-progress-bar';
+    el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 18px;min-width:240px;max-width:90vw;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:10px;animation:fadeSlideUp .3s ease';
+    document.body.appendChild(el);
+  }
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="position:relative;width:44px;height:44px;flex-shrink:0">
+        <svg width="44" height="44" style="transform:rotate(-90deg)">
+          <circle cx="22" cy="22" r="18" fill="none" stroke="var(--border)" stroke-width="4"/>
+          <circle id="upl-circle" cx="22" cy="22" r="18" fill="none" stroke="var(--accent)" stroke-width="4"
+            stroke-dasharray="113" stroke-dashoffset="113" stroke-linecap="round" style="transition:stroke-dashoffset .3s ease"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700" id="upl-pct">0%</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;margin-bottom:3px">${isVideo?'📹 در حال آپلود فیلم':'🖼 در حال آپلود عکس'}</div>
+        <div style="font-size:11px;color:var(--muted)" id="upl-size">۰ / ${fmtSize(totalBytes)}</div>
+      </div>
+    </div>
+    <div style="height:4px;background:var(--border);border-radius:99px;overflow:hidden">
+      <div id="upl-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .3s ease"></div>
+    </div>`;
+  el._total=totalBytes;
+  el.style.display='flex';
+}
+function updateUploadProgress(pct){
+  const bar=document.getElementById('upl-bar');
+  const circle=document.getElementById('upl-circle');
+  const pctEl=document.getElementById('upl-pct');
+  const sizeEl=document.getElementById('upl-size');
+  const el=document.getElementById('upload-progress-bar');
+  if(!bar) return;
+  bar.style.width=pct+'%';
+  if(circle) circle.style.strokeDashoffset=(113*(1-pct/100)).toFixed(1);
+  if(pctEl) pctEl.textContent=pct+'%';
+  if(sizeEl&&el&&el._total) sizeEl.textContent=fmtSize(el._total*pct/100)+' / '+fmtSize(el._total);
+}
+function hideUploadProgress(){
+  const el=document.getElementById('upload-progress-bar');
+  if(el){ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }
 }
 
 /* پاکسازی فایل‌های منقضی‌شده از storage */

@@ -1129,14 +1129,64 @@ async function handleAdminCommand(raw){
       openProfile(arg);
       break;
     }
+    case '/delroom': {
+      const roomId=parseInt(arg);
+      if(!arg||isNaN(roomId)){ toast('فرمت: /delroom شناسه_روم'); break; }
+      if(roomId===0){ toast('❌ روم عمومی رو نمیشه حذف کرد'); break; }
+      try{
+        await api(`/rest/v1/voice_rooms?id=eq.${roomId}`,{method:'DELETE',headers:{'Prefer':''}});
+        toast(`🗑 روم ${roomId} حذف شد`);
+        if(currentRoomId===roomId) await switchVoiceRoom(0,'روم عمومی',false);
+      }catch{ toast('❌ خطا در حذف روم'); }
+      break;
+    }
     case '/help': {
-      toast('دستورات: /clear /ban نام /unban نام /banlist /delmsg شناسه /role نام رول /profile نام');
+      showAdminHelpMenu();
       break;
     }
     default:
       toast('دستور نامعتبر — /help رو بزن');
   }
 }
+
+/* ── منوی کمک ادمین ── */
+const ADMIN_COMMANDS=[
+  {cmd:'/clear',     desc:'پاک کردن همه پیام‌ها',        placeholder:''},
+  {cmd:'/ban ',      desc:'بن کردن کاربر',               placeholder:'نام_کاربر'},
+  {cmd:'/unban ',    desc:'رفع بن کاربر',                placeholder:'نام_کاربر'},
+  {cmd:'/banlist',   desc:'لیست بن‌شده‌ها',              placeholder:''},
+  {cmd:'/delmsg ',   desc:'حذف پیام با شناسه',           placeholder:'شناسه'},
+  {cmd:'/role ',     desc:'تغییر رول کاربر',             placeholder:'نام member|helper|admin'},
+  {cmd:'/profile ',  desc:'مشاهده پروفایل',              placeholder:'نام_کاربر'},
+  {cmd:'/delroom ',  desc:'حذف روم صوتی',                placeholder:'شناسه_روم'},
+];
+function showAdminHelpMenu(){
+  let el=document.getElementById('admin-help-menu');
+  if(el){ el.remove(); return; }
+  el=document.createElement('div');
+  el.id='admin-help-menu';
+  el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:10px;min-width:280px;max-width:95vw;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:4px;animation:fadeSlideUp .25s ease';
+  el.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--muted);padding:4px 8px 8px;border-bottom:1px solid var(--border);margin-bottom:4px">⚙️ دستورات ادمین — کلیک کن</div>`+
+    ADMIN_COMMANDS.map(c=>`
+      <button onclick="insertAdminCmd('${c.cmd}','${c.placeholder}')" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;background:transparent;text-align:right;transition:background .15s;width:100%" onmouseover="this.style.background='var(--panel)'" onmouseout="this.style.background='transparent'">
+        <code style="font-size:12px;color:var(--accent);font-family:monospace;flex-shrink:0">${c.cmd.trim()}</code>
+        <span style="font-size:12px;color:var(--muted)">${c.desc}</span>
+      </button>`).join('');
+  document.body.appendChild(el);
+  /* کلیک بیرون = بسته بشه */
+  setTimeout(()=>document.addEventListener('click',function h(e){
+    if(!el.contains(e.target)){el.remove();document.removeEventListener('click',h);}
+  }),100);
+}
+window.insertAdminCmd=function(cmd,placeholder){
+  const inp=document.getElementById('msg-input');
+  inp.value=cmd+(placeholder?'':'');
+  inp.focus();
+  /* cursor رو آخر بذار */
+  inp.setSelectionRange(inp.value.length,inp.value.length);
+  const el=document.getElementById('admin-help-menu');
+  if(el) el.remove();
+};
 
 /* چک کردن بن بودن کاربر فعلی */
 async function checkBanned(){
@@ -1231,6 +1281,23 @@ function renderProfile(profile, isBanned){
     ${profile.email?`<div class="pf-email">${esc(profile.email)}</div>`:''}
     <div class="pf-role-badge ${role}">${ROLE_LABELS[role]||role}</div>
     ${isBanned?'<div class="pf-banned">🚫 این کاربر بن شده است</div>':''}
+    <!-- بیوگرافی -->
+    <div style="width:100%;margin-top:12px">
+      ${isSelf?`
+        <div id="pf-bio-display" style="font-size:13px;color:var(--muted);text-align:center;min-height:20px;cursor:pointer;padding:6px 10px;border-radius:10px;transition:background .15s" onclick="toggleBioEdit()" title="ویرایش بیو" onmouseover="this.style.background='var(--panel)'" onmouseout="this.style.background='transparent'">
+          ${profile.bio?esc(profile.bio):'<span style="opacity:.5">بیوگرافی… (کلیک کن تا ویرایش کنی)</span>'}
+        </div>
+        <div id="pf-bio-edit" style="display:none;flex-direction:column;gap:6px;width:100%">
+          <textarea class="ifield" id="pf-bio-input" maxlength="120" rows="3" style="resize:none;font-size:13px;padding:8px 12px;border-radius:12px">${esc(profile.bio||'')}</textarea>
+          <div style="display:flex;gap:6px">
+            <button class="pf-action-btn" style="flex:1" onclick="toggleBioEdit()">لغو</button>
+            <button class="pf-action-btn ok" style="flex:1" onclick="saveBio()">ذخیره</button>
+          </div>
+          <div style="font-size:11px;color:var(--muted);text-align:left" id="pf-bio-counter">۰/۱۲۰</div>
+        </div>`
+      :(profile.bio?`<div style="font-size:13px;color:var(--muted);text-align:center;padding:6px 10px">${esc(profile.bio)}</div>`:'')
+      }
+    </div>
     <div class="pf-stats">
       <div class="pf-stat"><div class="pf-stat-val">${profile.message_count||0}</div><div class="pf-stat-lbl">تعداد پیام</div></div>
       <div class="pf-stat"><div class="pf-stat-val">${fmtDuration(profile.voice_seconds)}</div><div class="pf-stat-lbl">مدت وویس چت</div></div>
@@ -1266,6 +1333,36 @@ function renderProfile(profile, isBanned){
 
 function escJs(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
+/* ─── بیوگرافی ─── */
+window.toggleBioEdit=function(){
+  const disp=document.getElementById('pf-bio-display');
+  const edit=document.getElementById('pf-bio-edit');
+  if(!edit) return;
+  const show=edit.style.display==='none';
+  edit.style.display=show?'flex':'none';
+  if(disp) disp.style.display=show?'none':'block';
+  if(show){
+    const ta=document.getElementById('pf-bio-input');
+    ta.focus();
+    const counter=document.getElementById('pf-bio-counter');
+    ta.oninput=()=>{ if(counter) counter.textContent=ta.value.length+'/۱۲۰'; };
+    if(counter) counter.textContent=ta.value.length+'/۱۲۰';
+  }
+};
+window.saveBio=async function(){
+  const ta=document.getElementById('pf-bio-input');
+  const bio=(ta?ta.value:'').trim().slice(0,120);
+  try{
+    await api('/rest/v1/profiles',{
+      method:'POST',
+      headers:{'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({name:myName,bio})
+    });
+    toast('✅ بیو ذخیره شد');
+    openProfile(myName);
+  }catch{ toast('❌ خطا در ذخیره بیو'); }
+};
+
 /* ─── تغییر اسم نمایشی ─── */
 window.toggleNameEdit=function(){
   const edit=document.getElementById('pf-name-edit');
@@ -1283,6 +1380,12 @@ window.saveDisplayName=async function(){
   if(!newName){ toast('اسم نمی‌تونه خالی باشه'); return; }
   if(newName===myName){ toggleNameEdit(); return; }
   if(newName.length>20){ toast('حداکثر ۲۰ کاراکتر'); return; }
+
+  /* چک تکراری بودن اسم */
+  try{
+    const existing=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(newName)}&select=name`);
+    if(existing.length>0){ toast('❌ این اسم قبلاً توسط کاربر دیگه‌ای انتخاب شده'); return; }
+  }catch{}
 
   const oldName=myName;
   try{
@@ -1613,12 +1716,14 @@ window.renderRoomsList=function(){
     const locked=!!r.password;
     const count=roomMemberCounts[r.id]||0;
     const isCurrent=r.id===currentRoomId;
+    const canDelete=isAdmin && r.id!==0;
     return `<div class="room-card ${isCurrent?'current':''}" onclick="tryJoinRoom(${r.id},'${escJs(r.name)}',${locked})">
       <div class="room-icon">${locked?'🔒':'🔊'}</div>
       <div class="room-info">
         <div class="room-name">${esc(r.name)}${isCurrent?' <span style="color:var(--accent);font-size:11px">(فعلی)</span>':''}</div>
-        <div class="room-meta">${count} نفر آنلاین · ${locked?'خصوصی':'پابلیک'}</div>
+        <div class="room-meta">${count} نفر آنلاین · ${locked?'خصوصی':'پابلیک'} · #${r.id}</div>
       </div>
+      ${canDelete?`<button onclick="event.stopPropagation();adminDeleteRoom(${r.id},'${escJs(r.name)}')" style="flex-shrink:0;width:30px;height:30px;border-radius:8px;background:rgba(229,51,74,.12);color:var(--red);border:1px solid rgba(229,51,74,.25);font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .15s" onmouseover="this.style.background='rgba(229,51,74,.25)'" onmouseout="this.style.background='rgba(229,51,74,.12)'">🗑</button>`:''}
     </div>`;
   }).join('');
 };
@@ -1638,6 +1743,16 @@ window.createVoiceRoom=async function(){
   }catch(e){
     toast('❌ خطا (شاید این اسم قبلاً استفاده شده)');
   }
+};
+
+window.adminDeleteRoom=async function(roomId, roomName){
+  if(!confirm(`روم «${roomName}» حذف بشه؟`)) return;
+  try{
+    await api(`/rest/v1/voice_rooms?id=eq.${roomId}`,{method:'DELETE',headers:{'Prefer':''}});
+    toast(`🗑 روم «${roomName}» حذف شد`);
+    if(currentRoomId===roomId) await switchVoiceRoom(0,'روم عمومی',false);
+    await loadRooms();
+  }catch{ toast('❌ خطا در حذف روم'); }
 };
 
 window.tryJoinRoom=async function(roomId, roomName, locked){

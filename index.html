@@ -1393,19 +1393,20 @@ function appendMsg(msg){
   if(isSys){
     displayText=msg.text.replace('__EVT__','');
   } else if(isMedia){
-    /* پارس کردن مدیا */
-    const typeMatch=msg.text.match(/__MEDIA__(image|video)__/);
-    const urlMatch=msg.text.match(/__MEDIA__(?:image|video)__([^_]+(?:__[^_]+)*?)__[^_]+__[^_]+__EXPIRE__/);
-    /* ساده‌تر: URL مستقیم بگیر */
-    const parts=msg.text.split('__');
-    const mediaType=parts[1]; // image یا video
-    const mediaUrl=parts[2];
+    /* پارس با regex تا URL سالم بمونه */
+    const typeM=msg.text.match(/__MEDIA__(image|video)__/);
+    const mediaType=typeM?typeM[1]:'image';
+    /* URL بین دومین __ و سومین __ که قبل از path هست */
+    const afterType=msg.text.replace(/^__MEDIA__(?:image|video)__/,'');
+    /* URL تا جایی که /storage/v1/object/public/chat-.../ داره */
+    const urlM=afterType.match(/^(https?:\/\/[^\s]+?\/storage\/v1\/object\/public\/chat-(?:images|videos)\/[^_]+\.[a-z0-9]+)/i);
+    const mediaUrl=urlM?urlM[1]:'';
     const capIdx=msg.text.indexOf('CAP__');
     const caption=capIdx>-1?esc(msg.text.slice(capIdx+5)):'';
     if(mediaType==='video'){
       displayText=`<video class="chat-media" src="${esc(mediaUrl)}" controls playsinline></video>${caption?'<br>'+caption:''}`;
     } else {
-      displayText=`<img class="chat-media" src="${esc(mediaUrl)}" alt="عکس" onclick="window.open(this.src,'_blank')" loading="lazy"/>${caption?'<br>'+caption:''}`;
+      displayText=`<img class="chat-media" src="${esc(mediaUrl)}" alt="عکس" onclick="window.open('${esc(mediaUrl)}','_blank')" loading="lazy"/>${caption?'<br>'+caption:''}`;
     }
   } else {
     displayText=esc(msg.text).replace(/\n/g,'<br>');

@@ -366,79 +366,109 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 }
 .camera-msg-btn:hover{background:var(--border);transform:scale(1.08)}
 
-/* ── UNLOCK PANEL ── */
+/* ══ REWARDS PANEL — NEW DESIGN ══ */
 #unlock-overlay{
   position:fixed;inset:0;z-index:300;display:none;align-items:flex-end;justify-content:center;
   background:rgba(0,0,0,0);transition:background .3s ease;
 }
-#unlock-overlay.show{display:flex;background:rgba(0,0,0,.6)}
+#unlock-overlay.show{display:flex;background:rgba(0,0,0,.65)}
 #unlock-panel{
-  width:100%;max-width:480px;height:88vh;max-height:88vh;
-  background:var(--surface);border-radius:28px 28px 0 0;
+  width:100%;max-width:480px;height:92vh;
+  background:var(--bg);border-radius:26px 26px 0 0;
   display:flex;flex-direction:column;overflow:hidden;
-  transform:translateY(100%) scale(.97);opacity:0;
-  transition:transform .44s cubic-bezier(.34,1.1,.4,1),opacity .3s ease;
+  transform:translateY(100%);opacity:0;
+  transition:transform .42s cubic-bezier(.34,1.05,.4,1),opacity .3s ease;
+  border-top:1px solid var(--border);
 }
-#unlock-overlay.show #unlock-panel{transform:translateY(0) scale(1);opacity:1}
-.unlock-header{
-  padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);flex-shrink:0;
-}
-.unlock-title-wrap{display:flex;flex-direction:column;gap:3px}
-.unlock-title{font-size:17px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.unlock-subtitle{font-size:11px;color:var(--muted)}
-.unlock-body{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
-.unlock-my-level{
-  background:linear-gradient(135deg,rgba(124,109,250,.15),rgba(250,109,155,.1));
-  border:1px solid rgba(124,109,250,.25);border-radius:18px;padding:14px 16px;
-}
-.unlock-lv-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.unlock-lv-badge{
-  width:52px;height:52px;border-radius:16px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 4px 16px rgba(124,109,250,.4);
-}
-.unlock-lv-num{font-size:18px;font-weight:900;color:#fff;line-height:1}
-.unlock-lv-lbl{font-size:8px;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:.08em}
-.unlock-lv-info{flex:1}
-.unlock-lv-rank{font-size:14px;font-weight:700}
-.unlock-lv-xp{font-size:11px;color:var(--muted);margin-top:2px}
-.unlock-progress-wrap{width:100%;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
-.unlock-progress-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .8s cubic-bezier(.16,1,.3,1)}
-.unlock-progress-txt{font-size:10px;color:var(--muted);margin-top:5px}
+#unlock-overlay.show #unlock-panel{transform:translateY(0);opacity:1}
 
-/* Reward cards */
-.unlock-card{
-  border-radius:18px;border:1.5px solid var(--border);
-  background:var(--panel);overflow:hidden;
-  transition:border-color var(--ease);
-}
-.unlock-card.unlocked{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)}
-.unlock-card.next-up{border-color:rgba(124,109,250,.5);background:rgba(124,109,250,.06);animation:nextUpPulse 2.5s ease-in-out infinite}
-@keyframes nextUpPulse{0%,100%{box-shadow:0 0 0 0 rgba(124,109,250,.0)}50%{box-shadow:0 0 0 4px rgba(124,109,250,.12)}}
-.unlock-card-inner{display:flex;align-items:center;gap:12px;padding:13px 14px}
-.unlock-card-icon{
-  width:46px;height:46px;border-radius:14px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:22px;
+/* header */
+.rp-header{
+  padding:14px 18px 12px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);flex-shrink:0;
   background:var(--surface);
 }
-.unlock-card.unlocked .unlock-card-icon{background:rgba(34,197,94,.12)}
-.unlock-card.next-up .unlock-card-icon{background:rgba(124,109,250,.15)}
-.unlock-card.locked .unlock-card-icon{filter:grayscale(1);opacity:.45}
-.unlock-card-info{flex:1;min-width:0}
-.unlock-card-name{font-size:13px;font-weight:700}
-.unlock-card.locked .unlock-card-name{color:var(--muted)}
-.unlock-card-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
-.unlock-card-badge{
-  flex-shrink:0;padding:4px 10px;border-radius:99px;font-size:10px;font-weight:700;
+.rp-header-icon{
+  width:40px;height:40px;border-radius:13px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 3px 12px rgba(124,109,250,.35);
 }
-.unlock-card.unlocked .unlock-card-badge{background:rgba(34,197,94,.15);color:#22c55e}
-.unlock-card.next-up .unlock-card-badge{background:rgba(124,109,250,.15);color:var(--accent)}
-.unlock-card.locked .unlock-card-badge{background:var(--surface);color:var(--muted)}
-.unlock-card-progress{padding:0 14px 12px}
-.unlock-card-pbar-wrap{height:4px;background:var(--border);border-radius:99px;overflow:hidden}
-.unlock-card-pbar{height:100%;border-radius:99px;background:var(--accent);transition:width .6s ease}
+.rp-header-info{flex:1}
+.rp-header-title{font-size:16px;font-weight:800;color:var(--text)}
+.rp-header-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.rp-close{width:32px;height:32px;border-radius:10px;background:var(--panel);color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* hero card */
+.rp-hero{
+  margin:14px 14px 0;border-radius:20px;padding:16px;
+  background:linear-gradient(135deg,rgba(124,109,250,.18) 0%,rgba(250,109,155,.12) 100%);
+  border:1px solid rgba(124,109,250,.22);position:relative;overflow:hidden;flex-shrink:0;
+}
+.rp-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% 20%,rgba(124,109,250,.15),transparent 60%);
+  pointer-events:none;
+}
+.rp-hero-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.rp-lv-badge{
+  width:56px;height:56px;border-radius:18px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 6px 20px rgba(124,109,250,.45);
+}
+.rp-lv-num{font-size:22px;font-weight:900;color:#fff;line-height:1}
+.rp-lv-lbl{font-size:8px;color:rgba(255,255,255,.75);font-weight:700;letter-spacing:.1em;margin-top:1px}
+.rp-hero-info{flex:1;min-width:0}
+.rp-rank-name{font-size:16px;font-weight:800}
+.rp-xp-txt{font-size:11px;color:var(--muted);margin-top:3px}
+.rp-hero-bar-wrap{height:7px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+.rp-hero-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1s cubic-bezier(.16,1,.3,1)}
+.rp-hero-bar-info{display:flex;justify-content:space-between;margin-top:5px}
+.rp-hero-bar-info span{font-size:10px;color:var(--muted)}
+
+/* tabs */
+.rp-tabs{display:flex;gap:0;padding:12px 14px 0;flex-shrink:0}
+.rp-tab{flex:1;padding:8px 0;font-size:12px;font-weight:700;color:var(--muted);
+  border-bottom:2px solid transparent;transition:all .2s ease;text-align:center}
+.rp-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* body */
+.rp-body{flex:1;overflow-y:auto;padding:12px 14px 24px;display:flex;flex-direction:column;gap:8px;min-height:0}
+
+/* reward row */
+.rr-item{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;
+  border-radius:16px;border:1.5px solid var(--border);background:var(--surface);
+  transition:transform .15s ease,border-color .2s ease;
+  animation:fadeSlideUp .3s cubic-bezier(.16,1,.3,1) both;
+}
+.rr-item.rr-unlocked{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)}
+.rr-item.rr-next{
+  border-color:rgba(124,109,250,.5);background:rgba(124,109,250,.06);
+  animation:rrNextPulse 2.5s ease-in-out infinite,fadeSlideUp .3s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes rrNextPulse{0%,100%{box-shadow:0 0 0 0 rgba(124,109,250,0)}50%{box-shadow:0 0 0 4px rgba(124,109,250,.14)}}
+.rr-item.rr-locked{opacity:.7}
+.rr-icon-wrap{
+  width:44px;height:44px;border-radius:13px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  background:var(--panel);
+}
+.rr-unlocked .rr-icon-wrap{background:rgba(34,197,94,.12)}
+.rr-next .rr-icon-wrap{background:rgba(124,109,250,.15)}
+.rr-locked .rr-icon-wrap{filter:grayscale(1);opacity:.5}
+.rr-info{flex:1;min-width:0}
+.rr-name{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:5px}
+.rr-locked .rr-name{color:var(--muted)}
+.rr-lvl{font-size:10px;color:var(--muted);font-weight:500}
+.rr-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.rr-badge{flex-shrink:0;padding:4px 9px;border-radius:99px;font-size:10px;font-weight:700;white-space:nowrap}
+.rr-unlocked .rr-badge{background:rgba(34,197,94,.15);color:#22c55e}
+.rr-next .rr-badge{background:rgba(124,109,250,.15);color:var(--accent)}
+.rr-locked .rr-badge{background:var(--panel);color:var(--muted)}
+.rr-pbar-wrap{width:100%;height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:6px}
+.rr-pbar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
 
 /* ── LEVEL REACTION PARTICLES ── */
 .reaction-particle{
@@ -782,18 +812,25 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 
 <div id="toast"></div>
 
-<!-- UNLOCK PANEL -->
+<!-- REWARDS PANEL -->
 <div id="unlock-overlay" onclick="if(event.target===this) closeUnlockPanel()">
   <div id="unlock-panel">
-    <div class="unlock-header">
-      <div class="unlock-title-wrap">
-        <div class="unlock-title">🔓 سیستم جوایز</div>
-        <div class="unlock-subtitle">با فعالیت جوایز بیشتری باز کن</div>
+    <div class="rp-header">
+      <div class="rp-header-icon">🏆</div>
+      <div class="rp-header-info">
+        <div class="rp-header-title">سیستم جوایز</div>
+        <div class="rp-header-sub">با فعالیت جوایز بیشتری باز کن</div>
       </div>
-      <button class="icon-btn" onclick="closeUnlockPanel()">✕</button>
+      <button class="rp-close" onclick="closeUnlockPanel()">✕</button>
     </div>
-    <div class="unlock-body" id="unlock-body">
-      <div style="text-align:center;color:var(--muted);padding:20px">در حال بارگذاری…</div>
+    <div id="rp-hero-wrap"></div>
+    <div class="rp-tabs">
+      <button class="rp-tab active" id="rptab-all" onclick="rpSwitchTab('all')">همه</button>
+      <button class="rp-tab" id="rptab-unlocked" onclick="rpSwitchTab('unlocked')">باز شده</button>
+      <button class="rp-tab" id="rptab-locked" onclick="rpSwitchTab('locked')">قفل</button>
+    </div>
+    <div class="rp-body" id="unlock-body">
+      <div style="text-align:center;color:var(--muted);padding:30px">در حال بارگذاری…</div>
     </div>
   </div>
 </div>
@@ -1144,7 +1181,7 @@ async function sendVoiceMessage(blob, mimeType){
   else if(mimeType.includes('mp4')) ext='m4a';
   else if(mimeType.includes('webm')) ext='webm';
   const path=`voice_${Date.now()}.${ext}`;
-  showUploadProgress(blob.size, false);
+  showUploadProgress(blob.size, 'audio');
   try{
     await uploadWithProgress(
       `${SB_URL}/storage/v1/object/chat-images/${path}`,
@@ -1664,7 +1701,7 @@ function showUploadProgress(totalBytes, isVideo){
         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700" id="upl-pct">0%</div>
       </div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;margin-bottom:3px">${isVideo?'📹 در حال آپلود فیلم':'🖼 در حال آپلود عکس'}</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:3px">${isVideo==='audio'?'🎤 در حال آپلود صدا':isVideo?'📹 در حال آپلود فیلم':'🖼 در حال آپلود عکس'}</div>
         <div style="font-size:11px;color:var(--muted)" id="upl-size">۰ / ${fmtSize(totalBytes)}</div>
       </div>
     </div>
@@ -2437,9 +2474,7 @@ window.vpToggle=function(pid){
   if(!el) return;
   let audio=vpAudios[pid];
   if(!audio){
-    audio=new Audio();
-    audio.crossOrigin='anonymous';
-    audio.src=el.dataset.src;
+    audio=new Audio(el.dataset.src);
     vpAudios[pid]=audio;
     audio.addEventListener('timeupdate',()=>vpUpdate(pid,audio));
     audio.addEventListener('ended',()=>{
@@ -2451,28 +2486,8 @@ window.vpToggle=function(pid){
       const timeEl=document.getElementById(pid+'-time');
       if(timeEl) timeEl.textContent=fmtVpTime(audio.duration);
     });
-    audio.addEventListener('error',()=>{
-      /* fallback: try without crossOrigin */
-      const fallback=new Audio(el.dataset.src);
-      vpAudios[pid]=fallback;
-      fallback.addEventListener('timeupdate',()=>vpUpdate(pid,fallback));
-      fallback.addEventListener('ended',()=>{
-        const btn=document.querySelector(`#${pid} .vp-play-btn`);
-        if(btn) btn.textContent='▶';
-        vpSetProgress(pid,1,1);
-      });
-      fallback.addEventListener('loadedmetadata',()=>{
-        const timeEl=document.getElementById(pid+'-time');
-        if(timeEl) timeEl.textContent=fmtVpTime(fallback.duration);
-      });
-      fallback.play().then(()=>{
-        const btn=document.querySelector(`#${pid} .vp-play-btn`);
-        if(btn) btn.textContent='⏸';
-      }).catch(()=>{ toast('❌ پخش صدا ممکن نشد'); });
-    });
   }
   if(audio.paused){
-    /* pause all others */
     Object.entries(vpAudios).forEach(([k,a])=>{
       if(k!==pid&&!a.paused){ a.pause(); const b=document.querySelector(`#${k} .vp-play-btn`); if(b) b.textContent='▶'; }
     });
@@ -2481,8 +2496,18 @@ window.vpToggle=function(pid){
       playPromise.then(()=>{
         const btn=document.querySelector(`#${pid} .vp-play-btn`);
         if(btn) btn.textContent='⏸';
-      }).catch(()=>{
-        toast('❌ پخش صدا ممکن نشد — دوباره امتحان کن');
+      }).catch(err=>{
+        /* اگه NotAllowedError بود یعنی user gesture نبوده - نشون بده */
+        if(err.name==='NotAllowedError'){
+          toast('برای پخش صدا روی دکمه ▶ بزن');
+        } else {
+          /* سعی کن audio رو reload کن */
+          audio.load();
+          audio.play().then(()=>{
+            const btn=document.querySelector(`#${pid} .vp-play-btn`);
+            if(btn) btn.textContent='⏸';
+          }).catch(()=>toast('❌ فایل صوتی در دسترس نیست'));
+        }
       });
     } else {
       const btn=document.querySelector(`#${pid} .vp-play-btn`);
@@ -2655,7 +2680,7 @@ window.openUnlockPanel=async function(){
   const ov=document.getElementById('unlock-overlay');
   ov.style.display='flex';
   requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('show')));
-  await renderUnlockBody();
+  await renderUnlockBody('all');
 };
 window.closeUnlockPanel=function(){
   const ov=document.getElementById('unlock-overlay');
@@ -2663,9 +2688,21 @@ window.closeUnlockPanel=function(){
   setTimeout(()=>{ if(!ov.classList.contains('show')) ov.style.display='none'; }, 440);
 };
 
-async function renderUnlockBody(){
+let _rpFilter='all';
+window.rpSwitchTab=function(tab){
+  _rpFilter=tab;
+  document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('active'));
+  const el=document.getElementById('rptab-'+tab);
+  if(el) el.classList.add('active');
+  renderUnlockBody(tab);
+};
+
+async function renderUnlockBody(filter){
+  _rpFilter=filter||'all';
   const body=document.getElementById('unlock-body');
-  body.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px">در حال بارگذاری…</div>';
+  const heroWrap=document.getElementById('rp-hero-wrap');
+
+  body.innerHTML='<div style="text-align:center;color:var(--muted);padding:30px;font-size:13px">در حال بارگذاری…</div>';
 
   let profile={message_count:0,voice_seconds:0};
   try{
@@ -2675,88 +2712,74 @@ async function renderUnlockBody(){
 
   const lv=getLevelInfo(profile.message_count||0, profile.voice_seconds||0);
   const myLevel=lv.level;
-  const nextReward=UNLOCK_REWARDS.find(function(r){return r.lvl>myLevel;});
-  const levelsToNext=nextReward?nextReward.lvl-myLevel:0;
+  const nextReward=UNLOCK_REWARDS.find(r=>r.lvl>myLevel);
 
+  /* ── HERO CARD ── */
+  const nextTxt=nextReward
+    ? `${nextReward.lvl-myLevel} لول تا ${nextReward.icon} ${nextReward.name}`
+    : '🎉 همه جوایز باز شدن!';
+  heroWrap.innerHTML=`
+    <div class="rp-hero">
+      <div class="rp-hero-top">
+        <div class="rp-lv-badge">
+          <div class="rp-lv-num">${myLevel}</div>
+          <div class="rp-lv-lbl">LEVEL</div>
+        </div>
+        <div class="rp-hero-info">
+          <div class="rp-rank-name" style="color:${lv.color}">${esc(lv.rank.name)}</div>
+          <div class="rp-xp-txt">${lv.xpInLevel.toLocaleString()} / ${lv.xpNeeded.toLocaleString()} XP · مجموع ${lv.xp.toLocaleString()} XP</div>
+        </div>
+      </div>
+      <div class="rp-hero-bar-wrap">
+        <div class="rp-hero-bar" style="width:0%" id="rp-progress-bar"></div>
+      </div>
+      <div class="rp-hero-bar-info">
+        <span>${lv.progress}% پیشرفت</span>
+        <span>${nextTxt}</span>
+      </div>
+    </div>`;
+  /* animate bar after render */
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const bar=document.getElementById('rp-progress-bar');
+    if(bar) bar.style.width=lv.progress+'%';
+  }));
+
+  /* ── REWARD LIST ── */
   body.innerHTML='';
+  const filtered=UNLOCK_REWARDS.filter(r=>{
+    if(_rpFilter==='unlocked') return myLevel>=r.lvl;
+    if(_rpFilter==='locked') return myLevel<r.lvl;
+    return true;
+  });
 
-  /* ── MY LEVEL CARD ── */
-  var lvCard=document.createElement('div');
-  lvCard.className='unlock-my-level';
-  var nextTxt=nextReward
-    ? (levelsToNext+' لول تا جایزه بعدی ('+nextReward.icon+' '+nextReward.name+')')
-    : 'همه جوایز باز شده!';
-  lvCard.innerHTML=
-    '<div class="unlock-lv-row">'+
-      '<div class="unlock-lv-badge">'+
-        '<div class="unlock-lv-num">'+myLevel+'</div>'+
-        '<div class="unlock-lv-lbl">LEVEL</div>'+
-      '</div>'+
-      '<div class="unlock-lv-info">'+
-        '<div class="unlock-lv-rank" style="color:'+lv.color+'">'+esc(lv.rank.name)+'</div>'+
-        '<div class="unlock-lv-xp">'+lv.xpInLevel+' / '+lv.xpNeeded+' XP تا لول بعدی</div>'+
-      '</div>'+
-    '</div>'+
-    '<div class="unlock-progress-wrap">'+
-      '<div class="unlock-progress-bar" style="width:'+lv.progress+'%"></div>'+
-    '</div>'+
-    '<div class="unlock-progress-txt">'+lv.progress+'% پیشرفت · '+nextTxt+'</div>';
-  body.appendChild(lvCard);
+  if(filtered.length===0){
+    body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">
+      <div style="font-size:36px;margin-bottom:10px">${_rpFilter==='unlocked'?'🏆':'🔒'}</div>
+      ${_rpFilter==='unlocked'?'هنوز جایزه‌ای باز نشده!':'همه جوایز باز شدن! 🎉'}
+    </div>`;
+    return;
+  }
 
-  /* ── REWARD CARDS ── */
-  UNLOCK_REWARDS.forEach(function(r){
-    var isUnlocked=myLevel>=r.lvl;
-    var isNext=nextReward&&r.lvl===nextReward.lvl;
-    var lvNeed=r.lvl-myLevel;
-    var cls=isUnlocked?'unlocked':isNext?'next-up':'locked';
-    var badgeTxt=isUnlocked?'✅ باز شده':isNext?(levelsToNext+' لول دیگه'):(lvNeed+' لول دیگه');
-    var prog=isUnlocked?100:Math.min(99,Math.round((myLevel/r.lvl)*100));
+  filtered.forEach((r,i)=>{
+    const isUnlocked=myLevel>=r.lvl;
+    const isNext=nextReward&&r.lvl===nextReward.lvl;
+    const lvNeed=r.lvl-myLevel;
+    const prog=isUnlocked?100:Math.min(99,Math.round((myLevel/r.lvl)*100));
+    const cls=isUnlocked?'rr-unlocked':isNext?'rr-next':'rr-locked';
+    const badgeTxt=isUnlocked?'✓ باز شده':isNext?`${lvNeed} لول دیگه`:`لول ${r.lvl}`;
 
-    var card=document.createElement('div');
-    card.className='unlock-card '+cls;
-
-    var inner=document.createElement('div');
-    inner.className='unlock-card-inner';
-
-    var iconEl=document.createElement('div');
-    iconEl.className='unlock-card-icon';
-    iconEl.textContent=r.icon;
-
-    var infoEl=document.createElement('div');
-    infoEl.className='unlock-card-info';
-
-    var nameEl=document.createElement('div');
-    nameEl.className='unlock-card-name';
-    nameEl.textContent=r.name;
-    var lvlSpan=document.createElement('span');
-    lvlSpan.style.cssText='font-size:10px;color:var(--muted);font-weight:400;margin-right:4px';
-    lvlSpan.textContent=' · لول '+r.lvl;
-    nameEl.appendChild(lvlSpan);
-
-    var descEl=document.createElement('div');
-    descEl.className='unlock-card-desc';
-    descEl.textContent=r.desc;
-
-    infoEl.appendChild(nameEl);
-    infoEl.appendChild(descEl);
-
-    var badgeEl=document.createElement('div');
-    badgeEl.className='unlock-card-badge';
-    badgeEl.textContent=badgeTxt;
-
-    inner.appendChild(iconEl);
-    inner.appendChild(infoEl);
-    inner.appendChild(badgeEl);
-    card.appendChild(inner);
-
-    if(!isUnlocked){
-      var progWrap=document.createElement('div');
-      progWrap.className='unlock-card-progress';
-      progWrap.innerHTML='<div class="unlock-card-pbar-wrap"><div class="unlock-card-pbar" style="width:'+prog+'%"></div></div>';
-      card.appendChild(progWrap);
-    }
-
-    body.appendChild(card);
+    const item=document.createElement('div');
+    item.className=`rr-item ${cls}`;
+    item.style.animationDelay=(i*30)+'ms';
+    item.innerHTML=`
+      <div class="rr-icon-wrap">${r.icon}</div>
+      <div class="rr-info">
+        <div class="rr-name">${esc(r.name)}<span class="rr-lvl">لول ${r.lvl}</span></div>
+        <div class="rr-desc">${esc(r.desc)}</div>
+        ${!isUnlocked?`<div class="rr-pbar-wrap"><div class="rr-pbar" style="width:${prog}%"></div></div>`:''}
+      </div>
+      <div class="rr-badge">${badgeTxt}</div>`;
+    body.appendChild(item);
   });
 }
 

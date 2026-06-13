@@ -1836,24 +1836,51 @@ async function handleAdminCommand(raw){
         toast('فرمت: /givexp نام_کاربر مقدار_xp'); break;
       }
       try{
-        /* هر XP = یه پیام معادل (هر پیام = 10 XP) */
+        toast(`⏳ در حال انتقال ${xpAmount} XP…`);
+        /* هر پیام = 10 XP → msgEquiv پیام معادل */
         const msgEquiv=Math.ceil(xpAmount/10);
-        await api('/rest/v1/rpc/add_xp_messages',{
-          method:'POST',
-          body:JSON.stringify({p_name:xpTarget,p_count:msgEquiv})
-        }).catch(async()=>{
-          for(let i=0;i<msgEquiv;i++){
-            await api('/rest/v1/rpc/increment_message_count',{
-              method:'POST',
-              body:JSON.stringify({p_name:xpTarget,p_email:'',p_avatar:'🧑'})
-            }).catch(()=>{});
-          }
-        });
-        /* invalidate cache رنگ */
+
+        /* روش ۱: RPC اختصاصی */
+        let done=false;
+        try{
+          await api('/rest/v1/rpc/add_xp_messages',{
+            method:'POST',
+            body:JSON.stringify({p_name:xpTarget,p_count:msgEquiv})
+          });
+          done=true;
+        }catch{}
+
+        if(!done){
+          /* روش ۲: مستقیم message_count رو آپدیت کن با یه PATCH */
+          try{
+            /* اول مقدار فعلی رو بگیر */
+            const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(xpTarget)}&select=message_count,voice_seconds,email,avatar`);
+            const cur=rows[0]||{};
+            const newCount=(cur.message_count||0)+msgEquiv;
+            await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(xpTarget)}`,{
+              method:'PATCH',
+              headers:{'Prefer':'return=minimal'},
+              body:JSON.stringify({message_count:newCount})
+            });
+            done=true;
+          }catch{}
+        }
+
+        if(!done){
+          /* روش ۳: upsert با مقدار جدید */
+          const rows2=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(xpTarget)}&select=message_count`).catch(()=>[]);
+          const cur2=(rows2[0]?.message_count||0)+msgEquiv;
+          await api('/rest/v1/profiles',{
+            method:'POST',
+            headers:{'Prefer':'resolution=merge-duplicates'},
+            body:JSON.stringify({name:xpTarget,message_count:cur2})
+          });
+        }
+
         delete rankColorCache[xpTarget];
-        toast(`✅ ${xpAmount} XP به ${xpTarget} داده شد`);
-        await sysMsg(`⭐ ادمین ${xpAmount} XP به ${xpTarget} داد`);
-      }catch{ toast('❌ خطا در دادن XP'); }
+        toast(`✅ ${xpAmount.toLocaleString()} XP به ${xpTarget} داده شد`);
+        await sysMsg(`⭐ ادمین ${xpAmount.toLocaleString()} XP به ${xpTarget} داد`);
+      }catch(e){ toast('❌ خطا در دادن XP: '+e.message); }
       break;
     }
     case '/help': {
@@ -2242,8 +2269,9 @@ function appendMsg(msg){
     const typeM=msg.text.match(/__MEDIA__(image|video|audio)__/);
     const mediaType=typeM?typeM[1]:'image';
     const afterType=msg.text.replace(/^__MEDIA__(?:image|video|audio)__/,'');
-    const urlM=afterType.match(/^(https?:\/\/[^\s]+?\/storage\/v1\/object\/public\/[a-z0-9_-]+\/[^_\s]+\.(?:jpg|jpeg|png|gif|webp|mp4|mov|webm|m4a|ogg|mp3))/i);
-    const mediaUrl=urlM?urlM[1]:'';
+    /* URL رو جدا کن — تا اولین __ بعدی */
+    const doubleUnderIdx=afterType.indexOf('__');
+    const mediaUrl=doubleUnderIdx>-1 ? afterType.slice(0,doubleUnderIdx) : (afterType.split(/\s/)[0]||'');
     const capIdx=msg.text.indexOf('CAP__');
     const caption=capIdx>-1?esc(msg.text.slice(capIdx+5)):'';
     if(mediaType==='audio'){

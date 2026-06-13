@@ -134,6 +134,55 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .bubble:active{transform:scale(.985)}
 .bubble img.chat-media{max-width:220px;max-height:200px;border-radius:10px;display:block;cursor:pointer;margin-top:4px}
 .bubble video.chat-media{max-width:220px;max-height:200px;border-radius:10px;display:block;margin-top:4px}
+
+/* ── منشن ── */
+.mention{color:var(--accent);font-weight:600;cursor:pointer;background:rgba(124,109,250,.12);border-radius:5px;padding:0 3px}
+.mention:hover{background:rgba(124,109,250,.25)}
+.mention.mine{color:#c4bbff;background:rgba(255,255,255,.15)}
+
+/* ── پین ── */
+#pinned-bar{background:rgba(124,109,250,.08);border-bottom:1px solid rgba(124,109,250,.2);padding:8px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;animation:fadeSlideDown .3s ease}
+#pinned-bar:hover{background:rgba(124,109,250,.15)}
+.pinned-icon{font-size:14px;flex-shrink:0}
+.pinned-text{font-size:12px;color:var(--accent);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pinned-by{font-size:10px;color:var(--muted);flex-shrink:0}
+
+/* ── ری‌اکشن ── */
+.reactions-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.reaction-chip{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:99px;background:var(--panel);border:1.5px solid var(--border);font-size:12px;cursor:pointer;transition:all .15s cubic-bezier(.34,1.56,.64,1);user-select:none}
+.reaction-chip:hover{transform:scale(1.1);border-color:var(--accent)}
+.reaction-chip.mine{background:rgba(124,109,250,.15);border-color:var(--accent)}
+.reaction-chip .rc{font-size:14px}
+.reaction-chip .cnt{font-size:11px;font-weight:700;color:var(--muted)}
+
+/* ── ری‌اکشن پیکر ── */
+#reaction-picker{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:8px;display:flex;gap:6px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:fadeSlideUp .2s ease}
+.rp-emoji{width:34px;height:34px;border-radius:9px;font-size:18px;display:flex;align-items:center;justify-content:center;background:var(--panel);transition:transform .15s cubic-bezier(.34,1.56,.64,1),background var(--ease)}
+.rp-emoji:hover{transform:scale(1.2);background:var(--border)}
+
+/* ── ریپلای ── */
+.reply-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(124,109,250,.06);border-top:1px solid rgba(124,109,250,.15);flex-shrink:0;animation:fadeSlideUp .2s ease}
+.reply-bar-content{flex:1;min-width:0}
+.reply-bar-name{font-size:11px;color:var(--accent);font-weight:600}
+.reply-bar-text{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reply-preview{border-right:3px solid var(--accent);padding:5px 10px;margin-bottom:5px;border-radius:0 8px 8px 0;background:rgba(124,109,250,.06);font-size:12px;cursor:pointer}
+.reply-preview .rp-name{color:var(--accent);font-weight:600;font-size:11px;margin-bottom:2px}
+.reply-preview .rp-text{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── منوی پیام ── */
+.msg-menu{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:6px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.45);min-width:160px;animation:fadeSlideUp .2s ease}
+.msg-menu-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;font-size:13px;width:100%;text-align:right;transition:background .12s;color:var(--text)}
+.msg-menu-item:hover{background:var(--panel)}
+.msg-menu-item.danger{color:var(--red)}
+.msg-menu-sep{height:1px;background:var(--border);margin:4px 0}
+
+/* ── لول ── */
+.level-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;margin-top:4px}
+.lvl-bar-wrap{width:100%;height:6px;background:var(--border);border-radius:99px;margin-top:6px;overflow:hidden}
+.lvl-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s cubic-bezier(.16,1,.3,1)}
+
+/* ── میوت کاربر ── */
+.muted-msg{opacity:.35;filter:grayscale(.6);pointer-events:none}
 .msg-row:not(.mine) .bubble{background:var(--bubble-other);color:var(--bubble-other-text);border:1px solid var(--border);border-bottom-right-radius:5px}
 .msg-row.mine .bubble{background:var(--bubble-mine);color:var(--bubble-mine-text);border-bottom-left-radius:5px}
 .bubble.sys{background:transparent;border:1px dashed var(--border);color:var(--muted);font-size:12px;text-align:center;padding:5px 12px;border-radius:99px}
@@ -383,6 +432,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 
 <!-- CHAT -->
 <div id="chat" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+  <div id="pinned-bar" style="display:none" onclick="scrollToPinned()">
+    <span class="pinned-icon">📌</span>
+    <span class="pinned-text" id="pinned-text"></span>
+    <span class="pinned-by" id="pinned-by"></span>
+  </div>
   <div id="messages">
     <div class="empty" id="empty-state">
       <div class="empty-icon">✨</div>
@@ -390,6 +444,13 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
     </div>
   </div>
   <div id="typing"></div>
+  <div id="reply-bar" class="reply-bar" style="display:none">
+    <div class="reply-bar-content">
+      <div class="reply-bar-name" id="reply-bar-name"></div>
+      <div class="reply-bar-text" id="reply-bar-text"></div>
+    </div>
+    <button class="icon-btn" onclick="cancelReply()" style="flex-shrink:0">✕</button>
+  </div>
   <div id="input-bar">
     <div class="estrip" id="estrip"></div>
     <div class="irow">
@@ -547,6 +608,13 @@ let lastId=0, lastUid='', pollTimer=null, authMode='login';
 /* ══ Voice state ══ */
 let inVoice=false, localStream=null, isMuted=false;
 let peers={}, voiceMembers={}, lastSignalId=0;
+
+/* ══ Features state ══ */
+let replyTo=null;          // {id, name, text}
+let pinnedMsg=null;        // {id, text, by}
+let mutedUsers=new Set(JSON.parse(localStorage.getItem('mutedUsers')||'[]'));
+let reactions={};          // msgId -> {emoji: [names]}
+let msgElements={};        // msgId -> DOM row
 
 /* ══════════════════════════════════════
    THEME SYSTEM
@@ -777,6 +845,9 @@ async function enterChat(){
   await loadMessages();
   startPolling();
   await syncVoiceMembers();
+  /* بارگذاری پین و ری‌اکشن‌های ذخیره‌شده */
+  try{ pinnedMsg=JSON.parse(localStorage.getItem('pinnedMsg')||'null'); renderPinnedBar(); }catch{}
+  try{ reactions=JSON.parse(localStorage.getItem('reactions')||'{}'); }catch{}
 }
 
 /* عکس/آواتار رو توی یه المان بگذار */
@@ -882,8 +953,11 @@ window.sendMsg=async function(){
   inp.value=''; inp.style.height='';
   const sb=document.getElementById('send-btn');
   sb.classList.remove('sent'); void sb.offsetWidth; sb.classList.add('sent');
+  const msgData={name:myName,avatar:myAv,text};
+  if(replyToData){ msgData.reply_to_id=replyToData.id; msgData.reply_to_name=replyToData.name; msgData.reply_to_text=replyToData.text.slice(0,100); }
+  cancelReply();
   try{
-    const rows=await api('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text})});
+    const rows=await api('/rest/v1/messages',{method:'POST',body:JSON.stringify(msgData)});
     if(rows&&rows.length){const em=document.getElementById('empty-state');if(em)em.remove();if(rows[0].id>lastId){appendMsg(rows[0]);lastId=rows[0].id;scrollBottom();}}
     api('/rest/v1/rpc/increment_message_count',{method:'POST',body:JSON.stringify({p_name:myName,p_email:myEmail,p_avatar:myAv})}).catch(()=>{});
   }catch(e){showErr('پیام ارسال نشد');inp.value=text;}
@@ -1304,6 +1378,18 @@ function renderProfile(profile, isBanned){
       <div class="pf-stat"><div class="pf-stat-val">${isBanned?'بن':'آزاد'}</div><div class="pf-stat-lbl">وضعیت</div></div>
       <div class="pf-stat"><div class="pf-stat-val">${fmtLastSeen(profile.last_seen)}</div><div class="pf-stat-lbl">آخرین بازدید</div></div>
     </div>
+    <!-- لول -->
+    ${(()=>{
+      const lv=getLevelInfo(profile.message_count||0);
+      return `<div style="width:100%;margin-top:14px;padding:12px 14px;background:var(--panel);border-radius:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span class="level-badge" style="background:${lv.bg};color:${lv.color}">⭐ ${lv.label}</span>
+          <span style="font-size:11px;color:var(--muted)">${lv.next?`${profile.message_count||0}/${lv.next.min} پیام`:'سطح ماکسیمم!'}</span>
+        </div>
+        <div class="lvl-bar-wrap"><div class="lvl-bar" style="width:${lv.progress}%"></div></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:left">${lv.progress}%${lv.next?' تا '+lv.next.label:''}</div>
+      </div>`;
+    })()}
     ${!isSelf?`<button class="pf-action-btn" style="width:100%;margin-top:14px" onclick="closeProfile();openDmChat('${escJs(profile.name)}')">✉️ ارسال پیام خصوصی</button>`:''}`;
 
   if(isAdmin && !isSelf){
@@ -1483,65 +1569,106 @@ async function handleAvatarUpload(e){
 }
 
 
+function formatMentions(text, isMine){
+  return text.replace(/@([\w\u0600-\u06FF\u200c]+)/g,(m,name)=>{
+    const cls=isMine?'mention mine':'mention';
+    return `<span class="${cls}" onclick="openProfile('${name.replace(/'/g,"\\'")}')">@${name}</span>`;
+  });
+}
+
 function appendMsg(msg){
   const container=document.getElementById('messages');
-  const isMine=msg.name===msg.name&&msg.name===myName;
+  const isMine=msg.name===myName;
   const dt=new Date(msg.created_at);
   const timeStr=dt.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
   const gapTop=msg.name!==lastUid; lastUid=msg.name;
   if(msg.text&&(msg.text.startsWith('__SIG__')||msg.text.startsWith('__PRESENCE__'))) return;
+  if(mutedUsers.has(msg.name)) return;
+
   const isSys=msg.text&&msg.text.startsWith('__EVT__');
   const isMedia=msg.text&&msg.text.startsWith('__MEDIA__');
-  let displayText='';
+  let displayText='', plainText='';
+
   if(isSys){
     displayText=msg.text.replace('__EVT__','');
+    plainText=displayText;
   } else if(isMedia){
-    /* پارس با regex تا URL سالم بمونه */
     const typeM=msg.text.match(/__MEDIA__(image|video)__/);
     const mediaType=typeM?typeM[1]:'image';
-    /* URL بین دومین __ و سومین __ که قبل از path هست */
     const afterType=msg.text.replace(/^__MEDIA__(?:image|video)__/,'');
-    /* URL تا جایی که /storage/v1/object/public/chat-.../ داره */
     const urlM=afterType.match(/^(https?:\/\/[^\s]+?\/storage\/v1\/object\/public\/chat-(?:images|videos)\/[^_]+\.[a-z0-9]+)/i);
     const mediaUrl=urlM?urlM[1]:'';
     const capIdx=msg.text.indexOf('CAP__');
     const caption=capIdx>-1?esc(msg.text.slice(capIdx+5)):'';
+    plainText=mediaType==='video'?'📹 فیلم':'🖼 عکس';
     if(mediaType==='video'){
       displayText=`<video class="chat-media" src="${esc(mediaUrl)}" controls playsinline></video>${caption?'<br>'+caption:''}`;
     } else {
       displayText=`<img class="chat-media" src="${esc(mediaUrl)}" alt="عکس" onclick="window.open('${esc(mediaUrl)}','_blank')" loading="lazy"/>${caption?'<br>'+caption:''}`;
     }
   } else {
-    displayText=esc(msg.text).replace(/\n/g,'<br>');
+    plainText=msg.text||'';
+    displayText=formatMentions(esc(msg.text).replace(/\n/g,'<br>'), isMine);
   }
+
+  /* ریپلای */
+  let replyHtml='';
+  if(msg.reply_to_id && msg.reply_to_name && msg.reply_to_text){
+    const rText=esc(msg.reply_to_text).slice(0,60)+(msg.reply_to_text.length>60?'…':'');
+    replyHtml=`<div class="reply-preview" onclick="scrollToMsg(${msg.reply_to_id})">
+      <div class="rp-name">${esc(msg.reply_to_name)}</div>
+      <div class="rp-text">${rText}</div>
+    </div>`;
+  }
+
   const avatar=esc(msg.avatar||'🧑');
   const photo=profilePhotos[msg.name];
   const avInner=photo?`<img src="${esc(photo)}" alt=""/>`:avatar;
   const safeName=esc(msg.name).replace(/'/g,"\\'");
+
   const row=document.createElement('div');
   row.className=`msg-row ${isMine?'mine':''} ${gapTop?'gtop':''}`;
+  row.dataset.msgId=msg.id;
   row.innerHTML=`
     ${gapTop?`<div class="mav${!isSys?' clickable':''}" ${!isSys?`onclick="openProfile('${safeName}')"`:''}>${avInner}</div>`:`<div class="mav-ph"></div>`}
     <div class="bwrap">
       ${(!isMine&&gapTop&&!isSys)?`<div class="sname clickable" onclick="openProfile('${safeName}')">${esc(msg.name)}</div>`:''}
-      <div class="bubble${isSys?' sys':''}">${displayText}</div>
+      <div class="bubble${isSys?' sys':''}">
+        ${replyHtml}
+        ${displayText}
+      </div>
+      ${!isSys?`<div class="reactions-row" id="reactions-${msg.id}"></div>`:''}
       ${!isSys?`<div class="bmeta">${timeStr}${isMine?' ✓✓':''}${isAdmin?` <span style="opacity:.5">#${msg.id}</span>`:''}</div>`:''}
     </div>`;
-  container.appendChild(row);
 
-  /* اگه عکس پروفایل این کاربر رو نداریم، بگیر */
+  /* منوی طولانی-فشار / راست‌کلیک */
+  if(!isSys){
+    let pressTimer=null;
+    const bubble=row.querySelector('.bubble');
+    const openMenu=()=>showMsgMenu(msg, plainText, row, isMine);
+    bubble.addEventListener('contextmenu',e=>{e.preventDefault();openMenu();});
+    bubble.addEventListener('touchstart',()=>{ pressTimer=setTimeout(openMenu,500); },{passive:true});
+    bubble.addEventListener('touchend',()=>clearTimeout(pressTimer));
+    bubble.addEventListener('touchmove',()=>clearTimeout(pressTimer));
+  }
+
+  container.appendChild(row);
+  msgElements[msg.id]=row;
+
+  /* ری‌اکشن‌های ذخیره‌شده */
+  if(reactions[msg.id]) renderReactions(msg.id);
+
   if(!isSys && !(msg.name in profilePhotos)) fetchProfilePhoto(msg.name);
 }
 
 /* کش عکس‌های پروفایل */
 let profilePhotos={};
 async function fetchProfilePhoto(name){
-  profilePhotos[name]=null; /* جلوی درخواست تکراری */
+  profilePhotos[name]=null;
   try{
     const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(name)}&select=photo_url`);
     if(rows.length && rows[0].photo_url){
       profilePhotos[name]=rows[0].photo_url;
-      /* آپدیت آواتارهای فعلی این کاربر توی صفحه */
       document.querySelectorAll('.mav.clickable').forEach(el=>{
         if(el.getAttribute('onclick')===`openProfile('${name.replace(/'/g,"\\'")}')`){
           el.innerHTML=`<img src="${esc(rows[0].photo_url)}" alt=""/>`;
@@ -1550,6 +1677,204 @@ async function fetchProfilePhoto(name){
     }
   }catch{}
 }
+
+/* ══════════════════════════════════════
+   MSG MENU (راست‌کلیک / فشار طولانی)
+══════════════════════════════════════ */
+function showMsgMenu(msg, plainText, row, isMine){
+  document.getElementById('reaction-picker')?.remove();
+  document.querySelectorAll('.msg-menu').forEach(m=>m.remove());
+
+  const menu=document.createElement('div');
+  menu.className='msg-menu';
+
+  const items=[
+    {icon:'😀', label:'ری‌اکشن', fn:()=>{ menu.remove(); showReactionPicker(msg.id, row); }},
+    {icon:'↩️', label:'ریپلای', fn:()=>{ menu.remove(); setReply(msg.id, msg.name, plainText); }},
+  ];
+  if(isAdmin || isMine){
+    items.push({icon:'📌', label:'پین کردن', fn:()=>{ menu.remove(); pinMessage(msg.id, plainText, msg.name); }});
+  }
+  if(isMine){
+    items.push({sep:true});
+    items.push({icon:'🗑', label:'حذف پیام', fn:()=>{ menu.remove(); deleteMyMsg(msg.id, plainText); }, danger:true});
+  }
+  if(!isMine && !isAdmin){
+    items.push({sep:true});
+    items.push({icon:'🔇', label:mutedUsers.has(msg.name)?'رفع میوت':'میوت کاربر', fn:()=>{ menu.remove(); toggleMuteUser(msg.name); }});
+  }
+  if(isAdmin && !isMine){
+    items.push({sep:true});
+    items.push({icon:'🔇', label:mutedUsers.has(msg.name)?'رفع میوت':'میوت (محلی)', fn:()=>{ menu.remove(); toggleMuteUser(msg.name); }});
+    items.push({icon:'🗑', label:'حذف این پیام (ادمین)', fn:()=>{ menu.remove(); adminDelMsg(msg.id); }, danger:true});
+  }
+
+  items.forEach(item=>{
+    if(item.sep){ const s=document.createElement('div'); s.className='msg-menu-sep'; menu.appendChild(s); return; }
+    const btn=document.createElement('button');
+    btn.className='msg-menu-item'+(item.danger?' danger':'');
+    btn.innerHTML=`<span>${item.icon}</span><span>${item.label}</span>`;
+    btn.onclick=item.fn;
+    menu.appendChild(btn);
+  });
+
+  document.body.appendChild(menu);
+  /* موقعیت */
+  const rect=row.getBoundingClientRect();
+  let top=rect.top+window.scrollY+10;
+  let left=isMine? rect.left-170 : rect.right+6;
+  if(left<6) left=6;
+  if(left+170>window.innerWidth) left=window.innerWidth-176;
+  if(top+240>window.innerHeight) top=window.innerHeight-245;
+  menu.style.top=top+'px'; menu.style.left=left+'px';
+
+  setTimeout(()=>document.addEventListener('click',function h(){menu.remove();document.removeEventListener('click',h);},{ once:true }),50);
+}
+
+/* ══ ریپلای ══ */
+let replyToData=null;
+function setReply(id, name, text){
+  replyToData={id, name, text};
+  document.getElementById('reply-bar-name').textContent='ریپلای به '+name;
+  document.getElementById('reply-bar-text').textContent=text.slice(0,80);
+  document.getElementById('reply-bar').style.display='flex';
+  document.getElementById('msg-input').focus();
+}
+window.cancelReply=function(){
+  replyToData=null;
+  document.getElementById('reply-bar').style.display='none';
+};
+window.scrollToMsg=function(id){
+  const el=msgElements[id];
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.style.transition='background .3s';
+  el.style.background='rgba(124,109,250,.18)';
+  setTimeout(()=>el.style.background='',1200);
+};
+
+/* ══ پین ══ */
+async function pinMessage(id, text, byName){
+  pinnedMsg={id, text:text.slice(0,100), by:byName};
+  localStorage.setItem('pinnedMsg', JSON.stringify(pinnedMsg));
+  renderPinnedBar();
+  toast('📌 پیام پین شد');
+}
+function renderPinnedBar(){
+  const bar=document.getElementById('pinned-bar');
+  if(!pinnedMsg){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  document.getElementById('pinned-text').textContent=pinnedMsg.text;
+  document.getElementById('pinned-by').textContent='از '+pinnedMsg.by;
+}
+window.scrollToPinned=function(){
+  if(pinnedMsg) scrollToMsg(pinnedMsg.id);
+};
+
+/* ══ ری‌اکشن‌ها ══ */
+const REACTION_EMOJIS=['❤️','😂','👍','🔥','😮','😢','👏','🎉'];
+function showReactionPicker(msgId, row){
+  document.getElementById('reaction-picker')?.remove();
+  const picker=document.createElement('div');
+  picker.id='reaction-picker';
+  REACTION_EMOJIS.forEach(e=>{
+    const btn=document.createElement('button');
+    btn.className='rp-emoji'; btn.textContent=e;
+    btn.onclick=()=>{ picker.remove(); addReaction(msgId, e); };
+    picker.appendChild(btn);
+  });
+  document.body.appendChild(picker);
+  const rect=row.getBoundingClientRect();
+  let top=rect.top-55;
+  if(top<6) top=rect.bottom+6;
+  picker.style.top=top+'px';
+  picker.style.left=Math.max(6,Math.min(rect.left, window.innerWidth-picker.offsetWidth-10))+'px';
+  setTimeout(()=>document.addEventListener('click',function h(){picker.remove();document.removeEventListener('click',h);},{once:true}),50);
+}
+function addReaction(msgId, emoji){
+  if(!reactions[msgId]) reactions[msgId]={};
+  if(!reactions[msgId][emoji]) reactions[msgId][emoji]=[];
+  const list=reactions[msgId][emoji];
+  const idx=list.indexOf(myName);
+  if(idx>-1) list.splice(idx,1); else list.push(myName);
+  if(list.length===0) delete reactions[msgId][emoji];
+  /* ذخیره در localStorage (سمت کلاینت — برای سرور باید جدول جداگانه بسازی) */
+  localStorage.setItem('reactions', JSON.stringify(reactions));
+  renderReactions(msgId);
+}
+function renderReactions(msgId){
+  const el=document.getElementById('reactions-'+msgId);
+  if(!el||!reactions[msgId]) return;
+  el.innerHTML=Object.entries(reactions[msgId])
+    .filter(([,list])=>list.length>0)
+    .map(([emoji,list])=>`
+      <button class="reaction-chip${list.includes(myName)?' mine':''}" onclick="addReaction(${msgId},'${emoji}')">
+        <span class="rc">${emoji}</span><span class="cnt">${list.length}</span>
+      </button>`).join('');
+}
+
+/* ══ حذف پیام ══ */
+async function deleteMyMsg(id, text){
+  const choice=confirm('پیام رو برای همه پاک کنی یا فقط برای خودت؟\n\nOK = برای همه\nCancel = فقط برای خودت');
+  if(choice){
+    /* حذف برای همه */
+    try{
+      await api(`/rest/v1/messages?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
+      const el=msgElements[id]; if(el) el.remove();
+      delete msgElements[id];
+      toast('🗑 پیام حذف شد');
+    }catch{ toast('❌ خطا'); }
+  } else {
+    /* فقط از دید خودت */
+    const el=msgElements[id];
+    if(el){ el.style.display='none'; toast('👁 پیام فقط برای تو مخفی شد'); }
+  }
+}
+async function adminDelMsg(id){
+  try{
+    await api(`/rest/v1/messages?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
+    const el=msgElements[id]; if(el) el.remove();
+    delete msgElements[id];
+    toast('🗑 پیام حذف شد');
+  }catch{ toast('❌ خطا'); }
+}
+
+/* ══ میوت کاربر ══ */
+function toggleMuteUser(name){
+  if(mutedUsers.has(name)){
+    mutedUsers.delete(name);
+    toast(`🔊 ${name} از حالت میوت خارج شد`);
+  } else {
+    mutedUsers.add(name);
+    toast(`🔇 ${name} میوت شد (فقط برای تو)`);
+    /* مخفی کردن پیام‌های موجود */
+    document.querySelectorAll('.msg-row').forEach(el=>{
+      const bwrap=el.querySelector('.sname');
+      if(bwrap&&bwrap.textContent===name) el.classList.add('muted-msg');
+    });
+  }
+  localStorage.setItem('mutedUsers', JSON.stringify([...mutedUsers]));
+}
+
+/* ══ سیستم لول ══ */
+const LEVELS=[
+  {min:0,   label:'تازه‌کار',  color:'#6b7094', bg:'rgba(107,112,148,.15)'},
+  {min:10,  label:'فعال',      color:'#22c55e', bg:'rgba(34,197,94,.15)'},
+  {min:50,  label:'باتجربه',   color:'#2dd4bf', bg:'rgba(45,212,191,.15)'},
+  {min:150, label:'حرفه‌ای',   color:'#7c6dfa', bg:'rgba(124,109,250,.15)'},
+  {min:300, label:'استاد',     color:'#fa6d9b', bg:'rgba(250,109,155,.15)'},
+  {min:500, label:'افسانه‌ای', color:'#f59e0b', bg:'rgba(245,158,11,.15)'},
+];
+function getLevelInfo(msgCount){
+  let lvl=LEVELS[0];
+  for(const l of LEVELS){ if(msgCount>=l.min) lvl=l; }
+  const idx=LEVELS.indexOf(lvl);
+  const next=LEVELS[idx+1];
+  const progress=next? Math.min(100,Math.round((msgCount-lvl.min)/(next.min-lvl.min)*100)) : 100;
+  return {...lvl, idx, next, progress};
+}
+
+
 
 /* ══════════════════════════════════════
    VOICE ROOM (multi-room)

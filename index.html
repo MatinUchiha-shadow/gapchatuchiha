@@ -2089,8 +2089,99 @@ async function getNameColor(name){
 
 
 /* ══════════════════════════════════════
-   کدهای مخفی /Morty و /KMG
+   سیستم صدا (Web Audio API — بدون فایل خارجی)
 ══════════════════════════════════════ */
+let _audioCtx = null;
+function getAudioCtx(){
+  if(!_audioCtx) _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(_audioCtx.state==='suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+
+/* صدای ورود به وویس - یه تون صعودی شاد */
+function playJoinSound(){
+  try{
+    const ctx = getAudioCtx();
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i*0.1);
+      gain.gain.setValueAtTime(0, ctx.currentTime + i*0.1);
+      gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + i*0.1 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.1 + 0.22);
+      osc.start(ctx.currentTime + i*0.1);
+      osc.stop(ctx.currentTime + i*0.1 + 0.25);
+    });
+  }catch{}
+}
+
+/* صدای خروج از وویس - یه تون نزولی */
+function playLeaveSound(){
+  try{
+    const ctx = getAudioCtx();
+    const notes = [783.99, 659.25, 523.25, 392.00]; // G5 E5 C5 G4
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i*0.09);
+      gain.gain.setValueAtTime(0, ctx.currentTime + i*0.09);
+      gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + i*0.09 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.09 + 0.2);
+      osc.start(ctx.currentTime + i*0.09);
+      osc.stop(ctx.currentTime + i*0.09 + 0.22);
+    });
+  }catch{}
+}
+
+/* صدای ترکیدن برای کدهای مخفی */
+function playExplosionSound(){
+  try{
+    const ctx = getAudioCtx();
+
+    /* صدای انفجار با noise */
+    const bufferSize = ctx.sampleRate * 0.8;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0; i<bufferSize; i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/bufferSize, 2.5);
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(800, ctx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.5);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(1.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+
+    source.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    source.start(ctx.currentTime);
+    source.stop(ctx.currentTime + 0.8);
+
+    /* چند تون بالای ترکیدن */
+    [880, 1100, 660].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const g2 = ctx.createGain();
+      osc.connect(g2); g2.connect(ctx.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i*0.05);
+      osc.frequency.exponentialRampToValueAtTime(freq*0.3, ctx.currentTime + i*0.05 + 0.3);
+      g2.gain.setValueAtTime(0.2, ctx.currentTime + i*0.05);
+      g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.05 + 0.35);
+      osc.start(ctx.currentTime + i*0.05);
+      osc.stop(ctx.currentTime + i*0.05 + 0.4);
+    });
+  }catch{}
+}
+
+
 async function handleSecretCode(code){
   /* چک کن قبلاً استفاده شده یا نه */
   const usedKey = `secret_used_${myName}_${code}`;
@@ -2127,6 +2218,7 @@ async function giveSecretXP(code){
 
   /* انیمیشن کانفتی */
   showConfetti();
+  playExplosionSound();
   /* پنل advancement */
   showAdvancement(code);
   toast(`🎉 +100 XP از کد ${code}!`);
@@ -2273,6 +2365,7 @@ async function joinVoiceRoom(){
   updateVoiceUI();
   window._hbTimer=setInterval(heartbeat,4000);
   startSpeakDetection();
+  playJoinSound();
   sysMsg('🎙 '+myName+' وارد روم صوتی «'+currentRoomName+'» شد');
 }
 
@@ -2300,6 +2393,7 @@ async function leaveVoiceRoom(){
   }
   updateVoiceUI();
   await syncVoiceMembers();
+  playLeaveSound();
   sysMsg('🔇 '+myName+' از روم صوتی «'+currentRoomName+'» خارج شد');
 }
 

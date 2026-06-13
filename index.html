@@ -4529,21 +4529,25 @@ window.aiSend = async function(){
   aiShowTyping();
 
   try {
-    var geminiContents = aiHistory.slice(-10).map(function(m){
-      return { role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] };
+    var orMessages = aiHistory.slice(-10).map(function(m){
+      return { role: m.role, content: m.content };
     });
-    var resp = await fetch('https://winter-block-8690.matinuchiha9.workers.dev', {
+    orMessages.unshift({ role: 'system', content: 'تو یه دستیار هوشمند فارسی‌زبان هستی برای اپ چت GapChat. به سوالات کاربران به فارسی و مختصر و واضح جواب بده. از ایموجی استفاده کن.' });
+    var resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer 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'
+      },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: 'تو یه دستیار هوشمند فارسی‌زبان هستی برای اپ چت GapChat. به سوالات کاربران به فارسی و مختصر و واضح جواب بده. از ایموجی استفاده کن.' }] },
-        contents: geminiContents
+        model: 'meta-llama/llama-3.1-8b-instruct:free',
+        messages: orMessages
       })
     });
     var data = await resp.json();
     aiRemoveTyping();
-    if(data.candidates && data.candidates[0]){
-      var answer = data.candidates[0].content.parts[0].text;
+    if(data.choices && data.choices[0]){
+      var answer = data.choices[0].message.content;
       aiHistory.push({ role:'assistant', content: answer });
       aiAppendMsg('bot', answer);
     } else {

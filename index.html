@@ -896,12 +896,20 @@ async function api(path, opts={}){
 }
 
 /* ══ MESSAGES ══ */
+const seenMsgIds = new Set();
+
 async function loadMessages(){
   await cleanupOldMessages();
   try{
     const rows=await api('/rest/v1/messages?order=id.asc&select=*');
     if(rows.length){const em=document.getElementById('empty-state');if(em)em.remove();}
-    rows.forEach(r=>{if(r.id>lastId){appendMsg(r);lastId=r.id;}});
+    rows.forEach(r=>{
+      if(!seenMsgIds.has(r.id)){
+        seenMsgIds.add(r.id);
+        appendMsg(r);
+        lastId=r.id;
+      }
+    });
     scrollBottom();
   }catch(e){showErr('خطا در بارگذاری');}
 }
@@ -922,7 +930,13 @@ function startPolling(){
       const rows=await api(`/rest/v1/messages?id=gt.${lastId}&order=id.asc&select=*`);
       if(rows.length){
         const em=document.getElementById('empty-state');if(em)em.remove();
-        rows.forEach(r=>{appendMsg(r);lastId=r.id;});
+        rows.forEach(r=>{
+          if(!seenMsgIds.has(r.id)){
+            seenMsgIds.add(r.id);
+            appendMsg(r);
+            lastId=r.id;
+          }
+        });
         scrollBottom();
       }
     }catch{}
@@ -958,7 +972,16 @@ window.sendMsg=async function(){
   cancelReply();
   try{
     const rows=await api('/rest/v1/messages',{method:'POST',body:JSON.stringify(msgData)});
-    if(rows&&rows.length){const em=document.getElementById('empty-state');if(em)em.remove();if(rows[0].id>lastId){appendMsg(rows[0]);lastId=rows[0].id;scrollBottom();}}
+    if(rows&&rows.length){
+      const em=document.getElementById('empty-state');if(em)em.remove();
+      const msg=rows[0];
+      if(!seenMsgIds.has(msg.id)){
+        seenMsgIds.add(msg.id);
+        lastId=msg.id;
+        appendMsg(msg);
+        scrollBottom();
+      }
+    }
     api('/rest/v1/rpc/increment_message_count',{method:'POST',body:JSON.stringify({p_name:myName,p_email:myEmail,p_avatar:myAv})}).catch(()=>{});
   }catch(e){showErr('پیام ارسال نشد');inp.value=text;}
 };

@@ -441,6 +441,98 @@ body[data-active-theme="کهکشان"] .auth-btn,
 body[data-active-theme="کهکشان"] .tp-action-btn.primary{
   background:linear-gradient(135deg,#a855f7,#22d3ee,#f472b6);
 }
+
+/* ── ماینکرفت preset: سواچ بلوک چمن پیکسلی ── */
+.preset-chip.preset-minecraft .preset-swatch{
+  background:#3a5226;
+  border-radius:4px;
+}
+.preset-minecraft-grass{
+  position:absolute;inset:0;z-index:2;border-radius:4px;overflow:hidden;
+  background:
+    linear-gradient(180deg, #5ea640 0%, #5ea640 35%, #8b5a2b 35%, #8b5a2b 100%);
+  image-rendering:pixelated;
+}
+.preset-minecraft-grass::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(90deg, rgba(0,0,0,.08) 0 2px, transparent 2px 8px),
+    linear-gradient(0deg, rgba(0,0,0,.08) 0 2px, transparent 2px 8px);
+  background-size:8px 8px;
+}
+.preset-minecraft-grass::after{
+  content:'';position:absolute;left:0;right:0;top:32%;height:6px;
+  background:#3f7a2c;
+}
+.preset-chip.preset-minecraft:hover .preset-swatch{
+  box-shadow:0 0 0 2px #5ea640;
+}
+.preset-chip.preset-minecraft .preset-label{
+  font-weight:800;color:#5ea640;letter-spacing:.02em;
+  text-shadow:1px 1px 0 #2a3a1a;
+}
+
+/* ── فعال‌بودن تم ماینکرفت روی کل اپ ── */
+body[data-active-theme="ماینکرفت"]{
+  --radius:0px !important;
+}
+body[data-active-theme="ماینکرفت"] *{
+  border-radius:0 !important;
+}
+body[data-active-theme="ماینکرفت"] .auth-logo,
+body[data-active-theme="ماینکرفت"] .hav,
+body[data-active-theme="ماینکرفت"] .mav,
+body[data-active-theme="ماینکرفت"] .preset-chip,
+body[data-active-theme="ماینکرفت"] .ifield,
+body[data-active-theme="ماینکرفت"] .auth-btn,
+body[data-active-theme="ماینکرفت"] .icon-btn,
+body[data-active-theme="ماینکرفت"] .bubble,
+body[data-active-theme="ماینکرفت"] .tp-action-btn,
+body[data-active-theme="ماینکرفت"] .vc-btn,
+body[data-active-theme="ماینکرفت"] .vb-join-btn,
+body[data-active-theme="ماینکرفت"] .reaction-chip,
+body[data-active-theme="ماینکرفت"] .vm-chip,
+body[data-active-theme="ماینکرفت"] .av-opt{
+  border-radius:0 !important;
+}
+body[data-active-theme="ماینکرفت"] .bubble.mine,
+body[data-active-theme="ماینکرفت"] .msg-row.mine .bubble{
+  box-shadow:2px 2px 0 0 #2a3a1a;
+  border:2px solid #3f7a2c;
+}
+body[data-active-theme="ماینکرفت"] .bubble:not(.mine){
+  box-shadow:2px 2px 0 0 #1a1a1a;
+  border:2px solid #5a4a3a;
+}
+body[data-active-theme="ماینکرفت"] .auth-btn,
+body[data-active-theme="ماینکرفت"] .tp-action-btn.primary{
+  background:#5ea640;
+  border:2px solid #3f7a2c;
+  box-shadow:3px 3px 0 0 #2a3a1a;
+}
+body[data-active-theme="ماینکرفت"] .auth-btn:hover,
+body[data-active-theme="ماینکرفت"] .tp-action-btn.primary:hover{
+  transform:translate(-1px,-1px);
+  box-shadow:4px 4px 0 0 #2a3a1a;
+}
+body[data-active-theme="ماینکرفت"] .icon-btn,
+body[data-active-theme="ماینکرفت"] .vc-btn,
+body[data-active-theme="ماینکرفت"] .vb-join-btn{
+  border:2px solid #5a4a3a;
+}
+body[data-active-theme="ماینکرفت"] header,
+body[data-active-theme="ماینکرفت"] #voice-bar{
+  border-bottom:3px solid #2a3a1a;
+}
+body[data-active-theme="ماینکرفت"] .auth-logo{
+  background:linear-gradient(180deg,#5ea640 0%,#5ea640 50%,#8b5a2b 50%,#8b5a2b 100%) !important;
+  border:2px solid #2a3a1a;
+}
+body[data-active-theme="ماینکرفت"] .hav,
+body[data-active-theme="ماینکرفت"] .mav{
+  background:linear-gradient(180deg,#5ea640 0%,#5ea640 50%,#8b5a2b 50%,#8b5a2b 100%) !important;
+  border:2px solid #2a3a1a;
+}
 .preset-label{font-size:10px;color:var(--muted);text-align:center}
 .color-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
 .color-row:last-child{border-bottom:none}
@@ -921,6 +1013,7 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
   </div>
   <div class="vb-controls" id="vb-controls" style="display:none">
     <button class="vc-btn" id="mute-btn" onclick="toggleMute()" title="میکروفون">🎤</button>
+    <button class="vc-btn" id="speaker-btn" onclick="toggleSpeaker()" title="بلندگو">🔉</button>
   </div>
   <button class="vb-join-btn" id="vb-join-btn" onclick="toggleVoiceRoom()">ورود به صدا</button>
 </div>
@@ -1163,6 +1256,7 @@ let lastId=0, lastUid='', pollTimer=null, authMode='login';
 /* ══ Voice state ══ */
 let inVoice=false, localStream=null, isMuted=false;
 let peers={}, voiceMembers={}, lastSignalId=0;
+let speakerOn=false;
 
 /* ══ Features state ══ */
 let replyTo=null;          // {id, name, text}
@@ -1201,6 +1295,7 @@ const THEME_PRESETS = {
   'بنفش شب': {'--bg':'#0e0a1a','--surface':'#181228','--panel':'#241b3a','--border':'#352a52','--accent':'#a78bfa','--accent2':'#f472b6','--text':'#ede9fe','--muted':'#9183b8','--bubble-mine':'#a78bfa','--bubble-mine-text':'#1a1330','--bubble-other':'#181228','--bubble-other-text':'#ede9fe','--radius':'18px'},
   'کهکشان': {'--bg':'#05030f','--surface':'#0c0a22','--panel':'#15123a','--border':'#2a235c','--accent':'#a855f7','--accent2':'#22d3ee','--text':'#f0eaff','--muted':'#8b80c4','--bubble-mine':'#a855f7','--bubble-mine-text':'#ffffff','--bubble-other':'#0c0a22','--bubble-other-text':'#f0eaff','--radius':'18px'},
   'سیاه‌چاله': {'--bg':'#000000','--surface':'#000000','--panel':'#0a0a0a','--border':'#1a1a1a','--accent':'#ff6a00','--accent2':'#ffffff','--text':'#ffffff','--muted':'#555555','--bubble-mine':'#000000','--bubble-mine-text':'#ffffff','--bubble-other':'#0a0a0a','--bubble-other-text':'#ffffff','--radius':'16px'},
+  'ماینکرفت': {'--bg':'#1b2912','--surface':'#243318','--panel':'#3a5226','--border':'#5b3a1e','--accent':'#5ea640','--accent2':'#8b5a2b','--text':'#eaffe0','--muted':'#9bb88a','--bubble-mine':'#5ea640','--bubble-mine-text':'#1b2912','--bubble-other':'#3a3a3a','--bubble-other-text':'#eaffe0','--radius':'0px'},
 };
 
 /* پریست‌های قفل‌شده: نام => شرط دسترسی */
@@ -1308,19 +1403,19 @@ function renderThemePanel(){
     const isActive=JSON.stringify(vars)===JSON.stringify({...vars,...Object.fromEntries(Object.entries(currentTheme).filter(([k])=>k in vars))}) && currentTheme['--accent']===vars['--accent'] && currentTheme['--bg']===vars['--bg'];
     const locked=isPresetLocked(name);
     const chip=document.createElement('button');
-    chip.className='preset-chip'+(isActive?' active':'')+(locked?' locked':'')+(name==='کهکشان'?' preset-galaxy':'')+(name==='سیاه‌چاله'?' preset-blackhole':'');
+    chip.className='preset-chip'+(isActive?' active':'')+(locked?' locked':'')+(name==='کهکشان'?' preset-galaxy':'')+(name==='سیاه‌چاله'?' preset-blackhole':'')+(name==='ماینکرفت'?' preset-minecraft':'');
     chip.onclick=()=>applyPreset(name);
     const lockBadge=locked
       ? `<div class="preset-lock-badge">🔒<span>${LOCKED_PRESETS[name].label}</span></div>`
       : '';
     const extraDeco = name==='کهکشان'
       ? '<div class="preset-galaxy-stars"></div>'
-      : (name==='سیاه‌چاله' ? '<div class="preset-blackhole-core"></div>' : '');
+      : (name==='سیاه‌چاله' ? '<div class="preset-blackhole-core"></div>' : (name==='ماینکرفت' ? '<div class="preset-minecraft-grass"></div>' : ''));
     chip.innerHTML=`<div class="preset-swatch">
         ${extraDeco}
-        <span style="background:${vars['--bg']}"></span>
+        ${name==='ماینکرفت'?'':`<span style="background:${vars['--bg']}"></span>
         <span style="background:${vars['--accent']}"></span>
-        <span style="background:${vars['--accent2']}"></span>
+        <span style="background:${vars['--accent2']}"></span>`}
       </div>
       <div class="preset-label">${name}</div>
       ${lockBadge}`;
@@ -3617,6 +3712,9 @@ let voiceJoinTime=null;
 
 async function leaveVoiceRoom(){
   inVoice=false;
+  speakerOn=false;
+  const sb=document.getElementById('speaker-btn');
+  if(sb){ sb.className='vc-btn'; sb.textContent='🔉'; sb.title='بلندگو'; }
   clearInterval(window._hbTimer);
   try{ await api(`/rest/v1/voice_presence?name=eq.${encodeURIComponent(myName)}`,{method:'DELETE',headers:{'Prefer':''}}); }catch{}
   for(const pn of Object.keys(peers)){
@@ -3761,7 +3859,7 @@ async function connectToPeer(peerName, isInitiator){
 
   if(localStream) localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
 
-  pc.ontrack=e=>{ audioEl.srcObject=e.streams[0]; };
+  pc.ontrack=e=>{ audioEl.srcObject=e.streams[0]; if(speakerOn) applySpeakerOutput(); };
   pc.onicecandidate=e=>{
     if(e.candidate) sendSignal('candidate',peerName,{candidate:e.candidate});
   };
@@ -3878,6 +3976,61 @@ window.toggleMute=function(){
   heartbeat();
   renderVoiceBar();
 };
+
+/* ── خروجی صدا روی بلندگو (Speaker) ── */
+window.toggleSpeaker=async function(){
+  speakerOn=!speakerOn;
+  const btn=document.getElementById('speaker-btn');
+  if(btn){
+    btn.className='vc-btn'+(speakerOn?' muted':'');
+    btn.textContent=speakerOn?'🔊':'🔉';
+    btn.title=speakerOn?'خروج از بلندگو':'بلندگو';
+  }
+  await applySpeakerOutput();
+  toast(speakerOn?'🔊 صدا روی بلندگو رفت':'🔉 بازگشت به حالت عادی');
+};
+
+/* اعمال خروجی صدا روی همه عناصر audio فعال (پیرها) */
+async function applySpeakerOutput(){
+  let sinkId='';
+  if(speakerOn){
+    try{
+      /* تلاش برای پیدا کردن دستگاه خروجی بلندگو (در دسکتاپ/اندروید معمولا "speaker" یا "default") */
+      if(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices){
+        /* درخواست اجازه لیبل دستگاه‌ها (نیاز به یه getUserMedia قبلی که داریم) */
+        const devices=await navigator.mediaDevices.enumerateDevices();
+        const outputs=devices.filter(d=>d.kind==='audiooutput');
+        const speakerDev=outputs.find(d=>/speaker|loud|external|default/i.test(d.label));
+        if(speakerDev) sinkId=speakerDev.deviceId;
+      }
+    }catch{}
+  }
+  /* روی همه audio elementهای پیرهای فعال اعمال کن */
+  for(const pn of Object.keys(peers)){
+    const el=peers[pn].audioEl;
+    if(!el) continue;
+    el.volume=speakerOn?1:1;
+    if(typeof el.setSinkId==='function'){
+      try{ await el.setSinkId(sinkId); }catch{}
+    }
+  }
+  /* اگه ولوم دستگاه پایینه، با speaker mode صدا رو کمی تقویت کن */
+  for(const pn of Object.keys(peers)){
+    const el=peers[pn].audioEl;
+    if(!el) continue;
+    if(!el._gainApplied){
+      try{
+        const ctx=window._speakerAudioCtx || (window._speakerAudioCtx=new (window.AudioContext||window.webkitAudioContext)());
+        const src=ctx.createMediaElementSource(el);
+        const gain=ctx.createGain();
+        src.connect(gain).connect(ctx.destination);
+        el._gainNode=gain;
+        el._gainApplied=true;
+      }catch{}
+    }
+    if(el._gainNode) el._gainNode.gain.value=speakerOn?1.6:1;
+  }
+}
 
 function updateVoiceUI(){
   const joinBtn=document.getElementById('vb-join-btn');

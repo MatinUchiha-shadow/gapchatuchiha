@@ -257,8 +257,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .tp-title{font-size:16px;font-weight:700}
 .tp-body{overflow-y:auto;padding:14px 18px 24px;display:flex;flex-direction:column;gap:18px}
 .tp-section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
-.tp-presets{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.tp-presets{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;cursor:grab}
 .tp-presets::-webkit-scrollbar{height:0}
+.tp-presets.dragging{cursor:grabbing;scroll-behavior:auto;user-select:none}
 .preset-chip{flex-shrink:0;width:68px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:16px;border:1.5px solid var(--border);background:var(--panel);transition:all var(--ease);cursor:pointer}
 .preset-chip:hover{transform:scale(1.06);border-color:var(--accent)}
 .preset-chip.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(124,109,250,.25)}
@@ -1125,6 +1126,47 @@ function applyPreset(name){
 }
 function resetTheme(){ applyPreset('پیش‌فرض'); toast('تم بازنشانی شد'); }
 
+/* اسکرول افقی پیش‌فرض‌های تم با موس (درگ + ویل) برای دسکتاپ */
+let _presetsScrollInit=false;
+function initPresetsScroll(){
+  if(_presetsScrollInit) return;
+  _presetsScrollInit=true;
+  const el=document.getElementById('tp-presets');
+  if(!el) return;
+
+  /* اسکرول با چرخ موس (wheel) -> اسکرول افقی */
+  el.addEventListener('wheel',(e)=>{
+    if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){
+      el.scrollLeft+=e.deltaY;
+      e.preventDefault();
+    }
+  },{passive:false});
+
+  /* درگ با موس برای اسکرول افقی */
+  let isDown=false, startX=0, scrollStart=0, moved=false;
+  el.addEventListener('mousedown',(e)=>{
+    isDown=true; moved=false;
+    startX=e.pageX; scrollStart=el.scrollLeft;
+    el.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',(e)=>{
+    if(!isDown) return;
+    const dx=e.pageX-startX;
+    if(Math.abs(dx)>3) moved=true;
+    el.scrollLeft=scrollStart-dx;
+  });
+  window.addEventListener('mouseup',()=>{
+    if(!isDown) return;
+    isDown=false;
+    el.classList.remove('dragging');
+    if(moved){
+      /* بعد از درگ، از کلیک شدن دکمه‌ها جلوگیری کن */
+      const blocker=(ev)=>{ ev.stopPropagation(); ev.preventDefault(); el.removeEventListener('click',blocker,true); };
+      el.addEventListener('click',blocker,true);
+    }
+  });
+}
+
 function renderThemePanel(){
   /* presets */
   const presetsEl=document.getElementById('tp-presets');
@@ -1188,6 +1230,7 @@ function toHex(c){
 
 window.openThemePanel=function(triggerEl){
   renderThemePanel();
+  initPresetsScroll();
   /* ripple from button */
   const ripple=document.getElementById('theme-ripple');
   let cx=window.innerWidth/2, cy=window.innerHeight;
@@ -1988,6 +2031,52 @@ async function handleAdminCommand(raw){
       }catch{ toast('❌ خطا در حذف روم'); }
       break;
     }
+    case '/takexp': {
+      const txpParts=arg.split(/\s+/);
+      const txpTarget=txpParts[0], txpAmount=parseInt(txpParts[1]);
+      if(!txpTarget||isNaN(txpAmount)||txpAmount<=0){
+        toast('فرمت: /takexp نام_کاربر مقدار_xp'); break;
+      }
+      try{
+        toast(`⏳ در حال کسر ${txpAmount} XP…`);
+        /* هر پیام = 10 XP → msgEquiv پیام معادل برای کسر */
+        const msgEquiv=Math.ceil(txpAmount/10);
+
+        const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(txpTarget)}&select=message_count,voice_seconds`).catch(()=>[]);
+        if(!rows||!rows[0]){ toast('❌ کاربر پیدا نشد'); break; }
+        const cur=rows[0];
+        const curXP=calcXP(cur.message_count||0, cur.voice_seconds||0);
+        const newXP=Math.max(0, curXP-txpAmount);
+
+        /* تبدیل XP جدید به message_count و voice_seconds:
+           اول از message_count کم می‌کنیم، اگه کافی نبود از voice_seconds هم کم می‌شه */
+        let newMsgCount=cur.message_count||0;
+        let newVoiceSeconds=cur.voice_seconds||0;
+        let remainingToRemove=curXP-newXP;
+
+        const removeFromMsg=Math.min(newMsgCount, Math.ceil(remainingToRemove/10));
+        newMsgCount-=removeFromMsg;
+        remainingToRemove-=removeFromMsg*10;
+
+        if(remainingToRemove>0){
+          const removeFromVoiceMinutes=Math.min(Math.floor(newVoiceSeconds/60), Math.ceil(remainingToRemove/5));
+          newVoiceSeconds-=removeFromVoiceMinutes*60;
+        }
+        newMsgCount=Math.max(0,newMsgCount);
+        newVoiceSeconds=Math.max(0,newVoiceSeconds);
+
+        await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(txpTarget)}`,{
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({message_count:newMsgCount, voice_seconds:newVoiceSeconds})
+        });
+
+        delete rankColorCache[txpTarget];
+        toast(`✅ ${txpAmount.toLocaleString()} XP از ${txpTarget} کم شد`);
+        await sysMsg(`⬇️ ادمین ${txpAmount.toLocaleString()} XP از ${txpTarget} کسر کرد`);
+      }catch(e){ toast('❌ خطا در کسر XP: '+e.message); }
+      break;
+    }
     case '/givexp': {
       const xpParts=arg.split(/\s+/);
       const xpTarget=xpParts[0], xpAmount=parseInt(xpParts[1]);
@@ -2062,6 +2151,7 @@ const ADMIN_COMMANDS=[
   {cmd:'/profile ',  desc:'مشاهده پروفایل',              placeholder:'نام_کاربر'},
   {cmd:'/delroom ',  desc:'حذف روم صوتی',                placeholder:'شناسه_روم'},
   {cmd:'/givexp ',   desc:'دادن XP به کاربر',             placeholder:'نام_کاربر مقدار'},
+  {cmd:'/takexp ',   desc:'کم کردن XP از کاربر',          placeholder:'نام_کاربر مقدار'},
   {cmd:'/Morty',     desc:'کد مخفی - +100 XP',           placeholder:''},
   {cmd:'/KMG',       desc:'کد مخفی - +100 XP',           placeholder:''},
 ];
@@ -2636,13 +2726,11 @@ window.scrollToPinned=function(){
 
 /* ══ ری‌اکشن‌ها ══ */
 const REACTION_EMOJIS=['❤️','😂','👍','🔥','😮','😢','👏','🎉'];
-/* هر ری‌اکشن مینیمم لولی که نیاز داره تا باز شه (بر اساس UNLOCK_REWARDS) */
+/* طبق سیستم جوایز: لول ۵ = "ری‌اکشن پایه" یعنی دسترسی به همه ایموجی‌های عادی.
+   لول‌های بالاتر (10/20/50/100/200/300/500) فقط افکت ویژه (ذره/صدا) به همون ری‌اکشن‌ها اضافه می‌کنن،
+   نه ایموجی جدید — پس همه با لول ۵ باز میشن. */
 const REACTION_UNLOCK_LEVEL={
-  '👍':5,'😊':5,'😢':5,'👏':5,
-  '❤️':10,'😮':10,
-  '🎉':20,
-  '🔥':200,
-  '😂':1, /* پایه همیشه باز */
+  '❤️':5,'😂':5,'👍':5,'🔥':5,'😮':5,'😢':5,'👏':5,'🎉':5,
 };
 function getUnlockedReactions(){
   return REACTION_EMOJIS.filter(e=>myLevel>=(REACTION_UNLOCK_LEVEL[e]||5));

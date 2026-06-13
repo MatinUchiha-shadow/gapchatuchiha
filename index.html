@@ -4529,29 +4529,26 @@ window.aiSend = async function(){
   aiShowTyping();
 
   try {
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+    var GEMINI_KEY = 'AQ.Ab8RN6LWobOIxNmYOhoD4y8TlnoardOWpLmW7_i5rP38NlgjqA';
+    var geminiContents = aiHistory.slice(-10).map(function(m){
+      return { role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] };
+    });
+    var resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_KEY, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': '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',
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        system: '\u062A\u0648 \u06CC\u0647 \u062F\u0633\u062A\u06CC\u0627\u0631 \u0647\u0648\u0634\u0645\u0646\u062F \u0641\u0627\u0631\u0633\u06CC\u200C\u0632\u0628\u0627\u0646 \u0647\u0633\u062A\u06CC \u0628\u0631\u0627\u06CC \u0627\u067E \u0686\u062A GapChat. \u0628\u0647 \u0633\u0648\u0627\u0644\u0627\u062A \u0633\u0627\u062F\u0647 \u06A9\u0627\u0631\u0628\u0631\u0627\u0646 \u0628\u0647 \u0641\u0627\u0631\u0633\u06CC \u0648 \u0628\u0647 \u0634\u06A9\u0644 \u0645\u062E\u062A\u0635\u0631 \u0648 \u0648\u0627\u0636\u062D \u062C\u0648\u0627\u0628 \u0628\u062F\u0647. \u0627\u0632 \u0627\u06CC\u0645\u0648\u062C\u06CC \u0627\u0633\u062A\u0641\u0627\u062F\u0647 \u06A9\u0646.',
-        messages: aiHistory.slice(-10)
+        system_instruction: { parts: [{ text: 'تو یه دستیار هوشمند فارسی‌زبان هستی برای اپ چت GapChat. به سوالات کاربران به فارسی و مختصر و واضح جواب بده. از ایموجی استفاده کن.' }] },
+        contents: geminiContents
       })
     });
     var data = await resp.json();
     aiRemoveTyping();
-    if(data.content && data.content[0]){
-      var answer = data.content[0].text;
+    if(data.candidates && data.candidates[0]){
+      var answer = data.candidates[0].content.parts[0].text;
       aiHistory.push({ role:'assistant', content: answer });
       aiAppendMsg('bot', answer);
     } else {
-      aiAppendMsg('bot', '\u274C \u0645\u0634\u06A9\u0644\u06CC \u067E\u06CC\u0634 \u0627\u0648\u0645\u062F. \u062F\u0648\u0628\u0627\u0631\u0647 \u0627\u0645\u062A\u062D\u0627\u0646 \u06A9\u0646!');
+      aiAppendMsg('bot', '❌ مشکلی پیش اومد. دوباره امتحان کن!');
     }
   } catch(e) {
     aiRemoveTyping();

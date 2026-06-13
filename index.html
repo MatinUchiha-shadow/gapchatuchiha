@@ -191,6 +191,59 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .tp-radius-row{display:flex;align-items:center;gap:12px;padding:10px 0}
 .tp-radius-row input[type=range]{flex:1;accent-color:var(--accent)}
 
+/* ── PROFILE MODAL ── */
+#profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:210;display:none;align-items:center;justify-content:center;padding:20px;transition:background .25s ease}
+#profile-overlay.show{display:flex;background:rgba(0,0,0,.55)}
+#profile-card{background:var(--surface);border-radius:24px;width:100%;max-width:360px;max-height:88vh;overflow-y:auto;transform:scale(.9) translateY(20px);opacity:0;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s ease}
+#profile-overlay.show #profile-card{transform:scale(1) translateY(0);opacity:1}
+.pf-header{position:relative;height:90px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:24px 24px 0 0;flex-shrink:0}
+.pf-close{position:absolute;top:10px;left:10px;width:32px;height:32px;border-radius:10px;background:rgba(0,0,0,.25);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;transition:background var(--ease)}
+.pf-close:hover{background:rgba(0,0,0,.4)}
+.pf-avatar-wrap{position:relative;width:84px;height:84px;border-radius:24px;margin:-42px auto 0;border:4px solid var(--surface);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden;animation:pfAvatarIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pfAvatarIn{from{opacity:0;transform:scale(.6) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.pf-avatar-wrap img{width:100%;height:100%;object-fit:cover}
+.pf-upload-btn{position:absolute;bottom:-2px;left:-2px;width:28px;height:28px;border-radius:9px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid var(--surface);transition:transform .15s cubic-bezier(.34,1.56,.64,1)}
+.pf-upload-btn:hover{transform:scale(1.1)}
+.pf-upload-btn:active{transform:scale(.9)}
+.pf-upload-btn input{display:none}
+.pf-body{padding:14px 20px 22px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.pf-name{font-size:18px;font-weight:700;display:flex;align-items:center;gap:6px}
+.pf-email{font-size:12px;color:var(--muted)}
+.pf-role-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;margin-top:6px;animation:badgeIn .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes badgeIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.pf-role-badge.member{background:var(--panel);color:var(--muted)}
+.pf-role-badge.helper{background:rgba(45,212,191,.15);color:var(--teal)}
+.pf-role-badge.admin{background:rgba(250,109,155,.15);color:var(--accent2)}
+.pf-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-top:16px}
+.pf-stat{background:var(--panel);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:4px;align-items:center;animation:fadeSlideUp .35s cubic-bezier(.16,1,.3,1) both}
+.pf-stat:nth-child(2){animation-delay:.05s}
+.pf-stat:nth-child(3){animation-delay:.1s}
+.pf-stat:nth-child(4){animation-delay:.15s}
+.pf-stat-val{font-size:18px;font-weight:700}
+.pf-stat-lbl{font-size:11px;color:var(--muted)}
+.pf-banned{margin-top:12px;padding:8px 14px;border-radius:12px;background:rgba(229,51,74,.12);color:var(--red);font-size:12px;font-weight:600;width:100%;text-align:center}
+.pf-admin-actions{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.pf-admin-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.pf-role-row{display:flex;gap:6px}
+.pf-role-btn{flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:600;background:var(--panel);border:1.5px solid var(--border);transition:all var(--ease)}
+.pf-role-btn.active{border-color:var(--accent);background:rgba(124,109,250,.12)}
+.pf-role-btn:hover{border-color:var(--accent)}
+.pf-action-row{display:flex;gap:8px}
+.pf-action-btn{flex:1;padding:9px;border-radius:10px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--panel);transition:all var(--ease)}
+.pf-action-btn.danger{color:var(--red);border-color:rgba(229,51,74,.3)}
+.pf-action-btn.danger:hover{background:rgba(229,51,74,.1)}
+.pf-action-btn.ok{color:var(--green);border-color:rgba(34,197,94,.3)}
+.pf-action-btn.ok:hover{background:rgba(34,197,94,.1)}
+.pf-loading{padding:30px;text-align:center;color:var(--muted);font-size:13px}
+
+/* clickable name/avatar */
+.sname.clickable,.mav.clickable{cursor:pointer;transition:transform .15s cubic-bezier(.34,1.56,.64,1)}
+.mav.clickable:hover{transform:scale(1.12)}
+.sname.clickable:hover{color:var(--accent)}
+.hav.clickable{cursor:pointer}
+.hav.clickable:hover{transform:scale(1.06)}
+.hav img,.mav img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+
 /* ── MISC ── */
 .spin{display:inline-block;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -199,8 +252,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 #err-bar{display:none;background:var(--red);color:#fff;font-size:12px;text-align:center;padding:7px}
 @media(max-width:480px){.bwrap{max-width:82%}}
 </style>
-
-<link rel="manifest" href="manifest.json">
 </head>
 <body data-theme="dark">
 <div id="app">
@@ -328,6 +379,18 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
         <button class="tp-action-btn" onclick="resetTheme()">بازنشانی</button>
         <button class="tp-action-btn primary" onclick="closeThemePanel()">ذخیره و بستن</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div id="profile-overlay" onclick="if(event.target===this) closeProfile()">
+  <div id="profile-card">
+    <div class="pf-header">
+      <button class="pf-close" onclick="closeProfile()">✕</button>
+    </div>
+    <div class="pf-body" id="profile-body">
+      <div class="pf-loading">در حال بارگذاری…</div>
     </div>
   </div>
 </div>
@@ -573,13 +636,35 @@ async function enterChat(){
   document.getElementById('voice-bar').style.display='flex';
   const chat=document.getElementById('chat');
   chat.style.display='flex'; chat.style.flexDirection='column';
-  document.getElementById('hav').textContent=myAv;
+  renderAvatarInto(document.getElementById('hav'), myAv, null);
   document.getElementById('hname').textContent=myName+(isAdmin?' 👑':'');
+  document.getElementById('hav').classList.add('clickable');
+  document.getElementById('hav').onclick=()=>openProfile(myName);
+  document.getElementById('hname').classList.add('clickable');
+  document.getElementById('hname').onclick=()=>openProfile(myName);
   if(isAdmin) document.getElementById('msg-input').placeholder='پیام بنویس… (یا /help برای دستورات ادمین)';
   await checkBanned();
+  await ensureOwnProfile();
   await loadMessages();
   startPolling();
   await syncVoiceMembers();
+}
+
+/* عکس/آواتار رو توی یه المان بگذار */
+function renderAvatarInto(el, av, photoUrl){
+  if(photoUrl){ el.innerHTML=`<img src="${esc(photoUrl)}" alt=""/>`; }
+  else { el.textContent=av||'🧑'; }
+}
+
+/* مطمئن شو پروفایل خودم توی جدول profiles وجود داره */
+async function ensureOwnProfile(){
+  try{
+    await api('/rest/v1/profiles',{
+      method:'POST',
+      headers:{'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({name:myName,email:myEmail,avatar:myAv,last_seen:new Date().toISOString()})
+    });
+  }catch{}
 }
 
 /* ══ SIGN OUT ══ */
@@ -664,6 +749,7 @@ window.sendMsg=async function(){
   try{
     const rows=await api('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text})});
     if(rows&&rows.length){const em=document.getElementById('empty-state');if(em)em.remove();if(rows[0].id>lastId){appendMsg(rows[0]);lastId=rows[0].id;scrollBottom();}}
+    api('/rest/v1/rpc/increment_message_count',{method:'POST',body:JSON.stringify({p_name:myName,p_email:myEmail,p_avatar:myAv})}).catch(()=>{});
   }catch(e){showErr('پیام ارسال نشد');inp.value=text;}
 };
 
@@ -721,8 +807,25 @@ async function handleAdminCommand(raw){
       }catch{ toast('❌ خطا'); }
       break;
     }
+    case '/role': {
+      const rparts=arg.split(/\s+/);
+      const targetName=rparts[0], role=rparts[1];
+      if(!targetName||!role||!['member','helper','admin'].includes(role)){
+        toast('فرمت: /role نام member|helper|admin'); break;
+      }
+      try{
+        await setUserRole(targetName, role);
+        toast(`✅ رول ${targetName} شد: ${role}`);
+      }catch{ toast('❌ خطا'); }
+      break;
+    }
+    case '/profile': {
+      if(!arg){ toast('فرمت: /profile نام_کاربر'); break; }
+      openProfile(arg);
+      break;
+    }
     case '/help': {
-      toast('دستورات: /clear /ban نام /unban نام /banlist /delmsg شناسه');
+      toast('دستورات: /clear /ban نام /unban نام /banlist /delmsg شناسه /role نام رول /profile نام');
       break;
     }
     default:
@@ -740,10 +843,190 @@ async function checkBanned(){
   }catch{}
 }
 
+/* ══════════════════════════════════════
+   PROFILE MODAL
+══════════════════════════════════════ */
+async function setUserRole(name, role){
+  await api('/rest/v1/profiles',{
+    method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates'},
+    body:JSON.stringify({name, role})
+  });
+}
+
+function fmtDuration(totalSeconds){
+  totalSeconds=totalSeconds||0;
+  const h=Math.floor(totalSeconds/3600);
+  const m=Math.floor((totalSeconds%3600)/60);
+  if(h>0) return `${h} ساعت ${m} دقیقه`;
+  if(m>0) return `${m} دقیقه`;
+  return `${totalSeconds} ثانیه`;
+}
+
+function fmtLastSeen(iso){
+  if(!iso) return '—';
+  const d=new Date(iso);
+  const diffMin=Math.floor((Date.now()-d.getTime())/60000);
+  if(diffMin<1) return 'هم‌اکنون';
+  if(diffMin<60) return `${diffMin} دقیقه پیش`;
+  const diffH=Math.floor(diffMin/60);
+  if(diffH<24) return `${diffH} ساعت پیش`;
+  const diffD=Math.floor(diffH/24);
+  return `${diffD} روز پیش`;
+}
+
+const ROLE_LABELS={member:'عضو',helper:'هلپر',admin:'ادمین'};
+
+window.openProfile=async function(name){
+  const overlay=document.getElementById('profile-overlay');
+  const body=document.getElementById('profile-body');
+  body.innerHTML='<div class="pf-loading">در حال بارگذاری…</div>';
+  overlay.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>overlay.classList.add('show')));
+
+  let profile=null, banInfo=null;
+  try{
+    const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(name)}&select=*`);
+    profile=rows[0]||{name,avatar:'🧑',message_count:0,voice_seconds:0,role:'member',email:'',photo_url:null,last_seen:null};
+  }catch{
+    profile={name,avatar:'🧑',message_count:0,voice_seconds:0,role:'member',email:'',photo_url:null,last_seen:null};
+  }
+  try{
+    const brows=await api(`/rest/v1/banned_users?name=eq.${encodeURIComponent(name)}&select=name`);
+    banInfo=brows.length>0;
+  }catch{ banInfo=false; }
+
+  renderProfile(profile, banInfo);
+};
+
+window.closeProfile=function(){
+  const overlay=document.getElementById('profile-overlay');
+  overlay.classList.remove('show');
+  setTimeout(()=>{ if(!overlay.classList.contains('show')) overlay.style.display='none'; }, 300);
+};
+
+function renderProfile(profile, isBanned){
+  const body=document.getElementById('profile-body');
+  const isSelf=profile.name===myName;
+  const role=profile.role||'member';
+  const avatarHtml=profile.photo_url
+    ? `<img src="${esc(profile.photo_url)}" alt=""/>`
+    : esc(profile.avatar||'🧑');
+
+  let html=`
+    <div class="pf-avatar-wrap">
+      ${avatarHtml}
+      ${isSelf?`<label class="pf-upload-btn" title="آپلود عکس">📷<input type="file" accept="image/*" id="pf-upload-input"/></label>`:''}
+    </div>
+    <div class="pf-name">${esc(profile.name)}${role==='admin'?' 👑':role==='helper'?' 🛟':''}</div>
+    ${profile.email?`<div class="pf-email">${esc(profile.email)}</div>`:''}
+    <div class="pf-role-badge ${role}">${ROLE_LABELS[role]||role}</div>
+    ${isBanned?'<div class="pf-banned">🚫 این کاربر بن شده است</div>':''}
+    <div class="pf-stats">
+      <div class="pf-stat"><div class="pf-stat-val">${profile.message_count||0}</div><div class="pf-stat-lbl">تعداد پیام</div></div>
+      <div class="pf-stat"><div class="pf-stat-val">${fmtDuration(profile.voice_seconds)}</div><div class="pf-stat-lbl">مدت وویس چت</div></div>
+      <div class="pf-stat"><div class="pf-stat-val">${isBanned?'بن':'آزاد'}</div><div class="pf-stat-lbl">وضعیت</div></div>
+      <div class="pf-stat"><div class="pf-stat-val">${fmtLastSeen(profile.last_seen)}</div><div class="pf-stat-lbl">آخرین بازدید</div></div>
+    </div>`;
+
+  if(isAdmin && !isSelf){
+    html+=`
+    <div class="pf-admin-actions">
+      <div class="pf-admin-title">تنظیم رول</div>
+      <div class="pf-role-row">
+        <button class="pf-role-btn ${role==='member'?'active':''}" onclick="adminSetRole('${escJs(profile.name)}','member')">عضو</button>
+        <button class="pf-role-btn ${role==='helper'?'active':''}" onclick="adminSetRole('${escJs(profile.name)}','helper')">هلپر</button>
+        <button class="pf-role-btn ${role==='admin'?'active':''}" onclick="adminSetRole('${escJs(profile.name)}','admin')">ادمین</button>
+      </div>
+      <div class="pf-action-row">
+        ${isBanned
+          ? `<button class="pf-action-btn ok" onclick="adminUnban('${escJs(profile.name)}')">✅ رفع بن</button>`
+          : `<button class="pf-action-btn danger" onclick="adminBan('${escJs(profile.name)}')">🚫 بن کردن</button>`}
+      </div>
+    </div>`;
+  }
+
+  body.innerHTML=html;
+
+  if(isSelf){
+    const inp=document.getElementById('pf-upload-input');
+    if(inp) inp.addEventListener('change', handleAvatarUpload);
+  }
+}
+
+function escJs(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+window.adminSetRole=async function(name, role){
+  try{
+    await setUserRole(name, role);
+    toast(`✅ رول ${name} شد: ${ROLE_LABELS[role]}`);
+    openProfile(name);
+  }catch{ toast('❌ خطا'); }
+};
+
+window.adminBan=async function(name){
+  try{
+    await api('/rest/v1/banned_users',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({name})});
+    toast(`🚫 ${name} بن شد`);
+    openProfile(name);
+  }catch{ toast('❌ خطا'); }
+};
+
+window.adminUnban=async function(name){
+  try{
+    await api(`/rest/v1/banned_users?name=eq.${encodeURIComponent(name)}`,{method:'DELETE',headers:{'Prefer':''}});
+    toast(`✅ ${name} از بن خارج شد`);
+    openProfile(name);
+  }catch{ toast('❌ خطا'); }
+};
+
+/* ─── آپلود عکس پروفایل ─── */
+async function handleAvatarUpload(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('فقط فایل عکس'); return; }
+  if(file.size > 5*1024*1024){ toast('حجم عکس باید کمتر از ۵ مگابایت باشه'); return; }
+
+  toast('در حال آپلود… ⏳');
+  try{
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+    const path=`${encodeURIComponent(myName)}-${Date.now()}.${ext}`;
+    const res=await fetch(`${SB_URL}/storage/v1/object/avatars/${path}`,{
+      method:'POST',
+      headers:{
+        'apikey':SB_KEY,
+        'Authorization':'Bearer '+(authToken||SB_KEY),
+        'Content-Type':file.type,
+        'x-upsert':'true'
+      },
+      body:file
+    });
+    if(!res.ok) throw new Error(await res.text());
+    const publicUrl=`${SB_URL}/storage/v1/object/public/avatars/${path}`;
+    await api('/rest/v1/profiles',{
+      method:'POST',
+      headers:{'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({name:myName,photo_url:publicUrl})
+    });
+    profilePhotos[myName]=publicUrl;
+    renderAvatarInto(document.getElementById('hav'), myAv, publicUrl);
+    /* آپدیت آواتارهای فعلی توی پیام‌ها */
+    document.querySelectorAll('.mav.clickable').forEach(el=>{
+      if(el.getAttribute('onclick')===`openProfile('${myName.replace(/'/g,"\\'")}')`){
+        el.innerHTML=`<img src="${esc(publicUrl)}" alt=""/>`;
+      }
+    });
+    toast('✅ عکس پروفایل آپدیت شد');
+    openProfile(myName);
+  }catch(err){
+    toast('❌ آپلود ناموفق بود');
+  }
+}
+
 
 function appendMsg(msg){
   const container=document.getElementById('messages');
-  const isMine=msg.name===myName;
+  const isMine=msg.name===msg.name&&msg.name===myName;
   const dt=new Date(msg.created_at);
   const timeStr=dt.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
   const gapTop=msg.name!==lastUid; lastUid=msg.name;
@@ -751,16 +1034,40 @@ function appendMsg(msg){
   const isSys=msg.text&&msg.text.startsWith('__EVT__');
   const displayText=isSys?msg.text.replace('__EVT__',''):esc(msg.text).replace(/\n/g,'<br>');
   const avatar=esc(msg.avatar||'🧑');
+  const photo=profilePhotos[msg.name];
+  const avInner=photo?`<img src="${esc(photo)}" alt=""/>`:avatar;
+  const safeName=esc(msg.name).replace(/'/g,"\\'");
   const row=document.createElement('div');
   row.className=`msg-row ${isMine?'mine':''} ${gapTop?'gtop':''}`;
   row.innerHTML=`
-    ${gapTop?`<div class="mav">${avatar}</div>`:`<div class="mav-ph"></div>`}
+    ${gapTop?`<div class="mav${!isSys?' clickable':''}" ${!isSys?`onclick="openProfile('${safeName}')"`:''}>${avInner}</div>`:`<div class="mav-ph"></div>`}
     <div class="bwrap">
-      ${(!isMine&&gapTop&&!isSys)?`<div class="sname">${esc(msg.name)}</div>`:''}
+      ${(!isMine&&gapTop&&!isSys)?`<div class="sname clickable" onclick="openProfile('${safeName}')">${esc(msg.name)}</div>`:''}
       <div class="bubble${isSys?' sys':''}">${displayText}</div>
       ${!isSys?`<div class="bmeta">${timeStr}${isMine?' ✓✓':''}${isAdmin?` <span style="opacity:.5">#${msg.id}</span>`:''}</div>`:''}
     </div>`;
   container.appendChild(row);
+
+  /* اگه عکس پروفایل این کاربر رو نداریم، بگیر */
+  if(!isSys && !(msg.name in profilePhotos)) fetchProfilePhoto(msg.name);
+}
+
+/* کش عکس‌های پروفایل */
+let profilePhotos={};
+async function fetchProfilePhoto(name){
+  profilePhotos[name]=null; /* جلوی درخواست تکراری */
+  try{
+    const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(name)}&select=photo_url`);
+    if(rows.length && rows[0].photo_url){
+      profilePhotos[name]=rows[0].photo_url;
+      /* آپدیت آواتارهای فعلی این کاربر توی صفحه */
+      document.querySelectorAll('.mav.clickable').forEach(el=>{
+        if(el.getAttribute('onclick')===`openProfile('${name.replace(/'/g,"\\'")}')`){
+          el.innerHTML=`<img src="${esc(rows[0].photo_url)}" alt=""/>`;
+        }
+      });
+    }
+  }catch{}
 }
 
 /* ══════════════════════════════════════
@@ -801,6 +1108,7 @@ async function joinVoiceRoom(){
   }
   inVoice=true;
   isMuted=false;
+  voiceJoinTime=Date.now();
   await api('/rest/v1/voice_presence',{
     method:'POST',
     headers:{'Prefer':'resolution=merge-duplicates'},
@@ -818,6 +1126,8 @@ async function joinVoiceRoom(){
   sysMsg('🎙 '+myName+' وارد روم صوتی شد');
 }
 
+let voiceJoinTime=null;
+
 async function leaveVoiceRoom(){
   inVoice=false;
   clearInterval(window._hbTimer);
@@ -828,6 +1138,12 @@ async function leaveVoiceRoom(){
   }
   peers={};
   if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
+  /* ثبت مدت زمان حضور در روم صوتی */
+  if(voiceJoinTime){
+    const seconds=Math.round((Date.now()-voiceJoinTime)/1000);
+    voiceJoinTime=null;
+    if(seconds>0) api('/rest/v1/rpc/increment_voice_seconds',{method:'POST',body:JSON.stringify({p_name:myName,p_seconds:seconds})}).catch(()=>{});
+  }
   updateVoiceUI();
   await syncVoiceMembers();
   sysMsg('🔇 '+myName+' از روم صوتی خارج شد');
@@ -1020,13 +1336,17 @@ function scrollBottom(){ const m=document.getElementById('messages'); m.scrollTo
 function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
 function showErr(msg){ const e=document.getElementById('err-bar'); e.textContent=msg; e.style.display='block'; setTimeout(()=>e.style.display='none',5000); }
-</script>
 
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./service-worker.js');
-}
+/* وقتی صفحه بسته می‌شه، اگه توی روم صوتی بودیم، مدت زمان رو ذخیره کن
+   و presence رو پاک کن (با sendBeacon چون async معمولی کار نمی‌کنه) */
+window.addEventListener('beforeunload',()=>{
+  if(!inVoice||!myName) return;
+  const seconds=voiceJoinTime?Math.round((Date.now()-voiceJoinTime)/1000):0;
+  const headers={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+(authToken||SB_KEY)};
+  if(seconds>0){
+    try{ navigator.sendBeacon(SB_URL+'/rest/v1/rpc/increment_voice_seconds', new Blob([JSON.stringify({p_name:myName,p_seconds:seconds})],{type:'application/json'})); }catch{}
+  }
+});
 </script>
-
 </body>
 </html>

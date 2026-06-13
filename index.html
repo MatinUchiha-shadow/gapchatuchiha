@@ -878,16 +878,6 @@ function restoreSession(data){
   if(data.refresh_token) localStorage.setItem('sb_refresh_token', data.refresh_token);
   scheduleTokenRefresh(data);
   enterChat();
-  /* بعد از ورود، role رو از database هم چک کن */
-  if(!isAdmin){
-    api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=role`).then(rows=>{
-      if(rows&&rows[0]&&rows[0].role==='admin'){
-        isAdmin=true;
-        document.getElementById('hname').textContent=myName+' 👑';
-        document.getElementById('msg-input').placeholder='پیام بنویس… (یا /help برای دستورات ادمین)';
-      }
-    }).catch(()=>{});
-  }
 }
 
 /* تجدید خودکار توکن قبل از انقضا */
@@ -935,16 +925,7 @@ async function enterChat(){
   await checkBanned();
   await ensureOwnProfile();
   /* چک role از database - ادمین‌هایی که از طریق /role ادمین شدن */
-  if(!isAdmin){
-    try{
-      const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=role`);
-      if(rows&&rows[0]&&rows[0].role==='admin'){
-        isAdmin=true;
-        document.getElementById('hname').textContent=myName+' 👑';
-        document.getElementById('msg-input').placeholder='پیام بنویس… (یا /help برای دستورات ادمین)';
-      }
-    }catch{}
-  }
+  await checkAdminRole();
   await loadMessages();
   startPolling();
   await syncVoiceMembers();
@@ -959,7 +940,35 @@ function renderAvatarInto(el, av, photoUrl){
   else { el.textContent=av||'🧑'; }
 }
 
-/* مطمئن شو پروفایل خودم توی جدول profiles وجود داره */
+/* چک role ادمین از database */
+async function checkAdminRole(){
+  if(myEmail.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
+    isAdmin=true;
+    applyAdminUI();
+    return;
+  }
+  try{
+    const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=role`);
+    if(rows&&rows[0]&&rows[0].role==='admin'){
+      isAdmin=true;
+      applyAdminUI();
+    } else if(rows&&rows[0]&&rows[0].role!=='admin'){
+      /* اگه role برداشته شد */
+      if(myEmail.toLowerCase()!==ADMIN_EMAIL.toLowerCase()){
+        isAdmin=false;
+        document.getElementById('hname').textContent=myName;
+        document.getElementById('msg-input').placeholder='پیام بنویس…';
+      }
+    }
+  }catch{}
+}
+
+function applyAdminUI(){
+  document.getElementById('hname').textContent=myName+' 👑';
+  document.getElementById('msg-input').placeholder='پیام بنویس… (یا /help برای دستورات ادمین)';
+}
+
+
 async function ensureOwnProfile(){
   try{
     await api('/rest/v1/profiles',{
@@ -1028,7 +1037,9 @@ async function cleanupOldMessages(){
 }
 
 function startPolling(){
+  let pollCount=0;
   pollTimer=setInterval(async()=>{
+    pollCount++;
     try{
       const rows=await api(`/rest/v1/messages?id=gt.${lastId}&order=id.asc&select=*`);
       if(rows.length){
@@ -1044,6 +1055,8 @@ function startPolling(){
       }
     }catch{}
     await pollSignals();
+    /* هر ۳۰ ثانیه role رو دوباره چک کن */
+    if(pollCount % 20 === 0) checkAdminRole();
   },1500);
 }
 

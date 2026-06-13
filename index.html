@@ -132,6 +132,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .sname{font-size:10px;color:var(--muted);margin-bottom:3px;padding:0 3px}
 .bubble{padding:9px 13px;border-radius:var(--radius);font-size:14px;line-height:1.6;word-break:break-word;transition:transform .15s ease,box-shadow .15s ease}
 .bubble:active{transform:scale(.985)}
+.bubble img.chat-media{max-width:220px;max-height:200px;border-radius:10px;display:block;cursor:pointer;margin-top:4px}
+.bubble video.chat-media{max-width:220px;max-height:200px;border-radius:10px;display:block;margin-top:4px}
 .msg-row:not(.mine) .bubble{background:var(--bubble-other);color:var(--bubble-other-text);border:1px solid var(--border);border-bottom-right-radius:5px}
 .msg-row.mine .bubble{background:var(--bubble-mine);color:var(--bubble-mine-text);border-bottom-left-radius:5px}
 .bubble.sys{background:transparent;border:1px dashed var(--border);color:var(--muted);font-size:12px;text-align:center;padding:5px 12px;border-radius:99px}
@@ -391,8 +393,19 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   <div id="input-bar">
     <div class="estrip" id="estrip"></div>
     <div class="irow">
+      <label class="icon-btn" id="media-btn" title="ارسال عکس/فیلم" style="flex-shrink:0;cursor:pointer">
+        📎
+        <input type="file" id="media-input" accept="image/*,video/*" style="display:none"/>
+      </label>
       <textarea id="msg-input" rows="1" placeholder="پیام بنویس…"></textarea>
       <button id="send-btn" onclick="sendMsg()">➤</button>
+    </div>
+    <div id="media-preview" style="display:none;padding:6px 0 2px;position:relative">
+      <div id="media-preview-inner" style="position:relative;display:inline-block;max-width:180px">
+        <img id="media-preview-img" style="max-width:180px;max-height:120px;border-radius:10px;display:none"/>
+        <video id="media-preview-vid" style="max-width:180px;max-height:120px;border-radius:10px;display:none" muted playsinline></video>
+        <button onclick="cancelMedia()" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;line-height:1">✕</button>
+      </div>
     </div>
   </div>
 </div>
@@ -826,6 +839,7 @@ async function loadMessages(){
    (علاوه بر pg_cron سمت سرور، اگه به هر دلیلی فعال نباشه) */
 async function cleanupOldMessages(){
   try{
+    await cleanupExpiredMedia();
     const cutoff=new Date(Date.now()-6*60*60*1000).toISOString();
     await api(`/rest/v1/messages?created_at=lt.${cutoff}`,{method:'DELETE',headers:{'Prefer':''}});
   }catch{}
@@ -848,7 +862,7 @@ function startPolling(){
 window.sendMsg=async function(){
   const inp=document.getElementById('msg-input');
   const text=inp.value.trim();
-  if(!text||!myName) return;
+  if(!text && !pendingMediaFile || !myName) return;
 
   /* ── دستورات ادمین ── */
   if(isAdmin && text.startsWith('/')){
@@ -858,6 +872,12 @@ window.sendMsg=async function(){
   }
 
   if(banned){ toast('شما از چت بن شده‌اید 🚫'); return; }
+
+  /* اگه فایل مدیا داریم اول آپلود کن */
+  if(pendingMediaFile){
+    await sendMediaMessage(inp, text);
+    return;
+  }
 
   inp.value=''; inp.style.height='';
   const sb=document.getElementById('send-btn');
@@ -870,8 +890,98 @@ window.sendMsg=async function(){
 };
 
 /* ══════════════════════════════════════
-   ADMIN COMMANDS
+   MEDIA UPLOAD (عکس و فیلم با حذف خودکار ۱ ساعته)
 ══════════════════════════════════════ */
+let pendingMediaFile=null;
+let pendingMediaIsVideo=false;
+
+(()=>{
+  const input=document.getElementById('media-input');
+  input.addEventListener('change',function(){
+    const file=input.files[0];
+    if(!file) return;
+    if(file.size > 50*1024*1024){ toast('حجم فایل باید کمتر از ۵۰ مگابایت باشه'); input.value=''; return; }
+    pendingMediaFile=file;
+    pendingMediaIsVideo=file.type.startsWith('video/');
+    const preview=document.getElementById('media-preview');
+    const img=document.getElementById('media-preview-img');
+    const vid=document.getElementById('media-preview-vid');
+    const url=URL.createObjectURL(file);
+    if(pendingMediaIsVideo){
+      vid.src=url; vid.style.display='block'; img.style.display='none';
+    } else {
+      img.src=url; img.style.display='block'; vid.style.display='none';
+    }
+    preview.style.display='block';
+    input.value='';
+  });
+})();
+
+window.cancelMedia=function(){
+  pendingMediaFile=null;
+  document.getElementById('media-preview').style.display='none';
+  document.getElementById('media-preview-img').src='';
+  document.getElementById('media-preview-vid').src='';
+};
+
+async function sendMediaMessage(inp, caption){
+  const file=pendingMediaFile;
+  const isVideo=pendingMediaIsVideo;
+  toast('در حال آپلود… ⏳');
+  try{
+    const ext=(file.name.split('.').pop()||(isVideo?'mp4':'jpg')).toLowerCase();
+    const path=`${Date.now()}-${encodeURIComponent(myName)}.${ext}`;
+    const bucket=isVideo?'chat-videos':'chat-images';
+    const res=await fetch(`${SB_URL}/storage/v1/object/${bucket}/${path}`,{
+      method:'POST',
+      headers:{
+        'apikey':SB_KEY,
+        'Authorization':'Bearer '+(authToken||SB_KEY),
+        'Content-Type':file.type,
+        'x-upsert':'true'
+      },
+      body:file
+    });
+    if(!res.ok) throw new Error(await res.text());
+    const publicUrl=`${SB_URL}/storage/v1/object/public/${bucket}/${path}`;
+    /* زمان انقضا: ۱ ساعت دیگه */
+    const expiresAt=new Date(Date.now()+60*60*1000).toISOString();
+    const msgText=`__MEDIA__${isVideo?'video':'image'}__${publicUrl}__${path}__${bucket}__EXPIRE__${expiresAt}__${caption?'CAP__'+caption:''}`;
+    cancelMedia();
+    inp.value=''; inp.style.height='';
+    const sb=document.getElementById('send-btn');
+    sb.classList.remove('sent'); void sb.offsetWidth; sb.classList.add('sent');
+    const rows=await api('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text:msgText})});
+    if(rows&&rows.length){const em=document.getElementById('empty-state');if(em)em.remove();if(rows[0].id>lastId){appendMsg(rows[0]);lastId=rows[0].id;scrollBottom();}}
+    api('/rest/v1/rpc/increment_message_count',{method:'POST',body:JSON.stringify({p_name:myName,p_email:myEmail,p_avatar:myAv})}).catch(()=>{});
+    toast('✅ ارسال شد');
+  }catch(err){
+    toast('❌ آپلود ناموفق بود');
+  }
+}
+
+/* پاکسازی فایل‌های منقضی‌شده از storage */
+async function cleanupExpiredMedia(){
+  try{
+    const cutoff=new Date(Date.now()-60*60*1000).toISOString();
+    /* پیدا کردن پیام‌های مدیای قدیمی */
+    const rows=await api(`/rest/v1/messages?created_at=lt.${cutoff}&select=id,text`);
+    for(const r of rows){
+      if(!r.text||!r.text.startsWith('__MEDIA__')) continue;
+      /* استخراج bucket و path */
+      const m=r.text.match(/__MEDIA__(?:image|video)__[^_]+__([^_]+)__([^_]+)__EXPIRE__/);
+      if(!m) continue;
+      const filePath=m[1], bucket=m[2];
+      /* حذف از storage */
+      fetch(`${SB_URL}/storage/v1/object/${bucket}/${filePath}`,{
+        method:'DELETE',
+        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(authToken||SB_KEY)}
+      }).catch(()=>{});
+    }
+  }catch{}
+}
+
+
 const ADMIN_EMAIL='matinuchiha9@gmail.com';
 let isAdmin=false, banned=false;
 
@@ -1199,7 +1309,28 @@ function appendMsg(msg){
   const gapTop=msg.name!==lastUid; lastUid=msg.name;
   if(msg.text&&(msg.text.startsWith('__SIG__')||msg.text.startsWith('__PRESENCE__'))) return;
   const isSys=msg.text&&msg.text.startsWith('__EVT__');
-  const displayText=isSys?msg.text.replace('__EVT__',''):esc(msg.text).replace(/\n/g,'<br>');
+  const isMedia=msg.text&&msg.text.startsWith('__MEDIA__');
+  let displayText='';
+  if(isSys){
+    displayText=msg.text.replace('__EVT__','');
+  } else if(isMedia){
+    /* پارس کردن مدیا */
+    const typeMatch=msg.text.match(/__MEDIA__(image|video)__/);
+    const urlMatch=msg.text.match(/__MEDIA__(?:image|video)__([^_]+(?:__[^_]+)*?)__[^_]+__[^_]+__EXPIRE__/);
+    /* ساده‌تر: URL مستقیم بگیر */
+    const parts=msg.text.split('__');
+    const mediaType=parts[1]; // image یا video
+    const mediaUrl=parts[2];
+    const capIdx=msg.text.indexOf('CAP__');
+    const caption=capIdx>-1?esc(msg.text.slice(capIdx+5)):'';
+    if(mediaType==='video'){
+      displayText=`<video class="chat-media" src="${esc(mediaUrl)}" controls playsinline></video>${caption?'<br>'+caption:''}`;
+    } else {
+      displayText=`<img class="chat-media" src="${esc(mediaUrl)}" alt="عکس" onclick="window.open(this.src,'_blank')" loading="lazy"/>${caption?'<br>'+caption:''}`;
+    }
+  } else {
+    displayText=esc(msg.text).replace(/\n/g,'<br>');
+  }
   const avatar=esc(msg.avatar||'🧑');
   const photo=profilePhotos[msg.name];
   const avInner=photo?`<img src="${esc(photo)}" alt=""/>`:avatar;
@@ -1252,6 +1383,30 @@ async function syncVoiceMembers(){
     voiceMembers={};
     rows.forEach(r=>{voiceMembers[r.name]={av:r.avatar,muted:r.muted||false};});
     renderVoiceBar();
+
+    /* بررسی خودکار بستن روم: اگه خالی بود و روم عمومی (id=0) نبود */
+    if(currentRoomId !== 0 && Object.keys(voiceMembers).length === 0){
+      if(!window._emptyRoomTimer){
+        window._emptyRoomTimer=setTimeout(async()=>{
+          /* دوباره چک کن هنوز خالیه */
+          const check=await api(`/rest/v1/voice_presence?room_id=eq.${currentRoomId}&select=name`).catch(()=>[]);
+          if(check.length===0 && currentRoomId!==0){
+            /* حذف روم */
+            await api(`/rest/v1/voice_rooms?id=eq.${currentRoomId}`,{method:'DELETE',headers:{'Prefer':''}}).catch(()=>{});
+            toast(`🔕 روم «${currentRoomName}» بعد از ۵ دقیقه خلوت بسته شد`);
+            /* برگرد به روم عمومی */
+            await switchVoiceRoom(0,'روم عمومی',false);
+          }
+          window._emptyRoomTimer=null;
+        }, 5*60*1000);
+      }
+    } else {
+      /* اگه کسی اومد تایمر رو کنسل کن */
+      if(window._emptyRoomTimer){
+        clearTimeout(window._emptyRoomTimer);
+        window._emptyRoomTimer=null;
+      }
+    }
   }catch{}
 }
 

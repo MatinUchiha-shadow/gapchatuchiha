@@ -4529,19 +4529,20 @@ window.aiSend = async function(){
   aiShowTyping();
 
   try {
-    var orMessages = aiHistory.slice(-10).map(function(m){
-      return { role: m.role, content: m.content };
-    });
-    orMessages.unshift({ role: 'system', content: 'تو یه دستیار هوشمند فارسی‌زبان هستی برای اپ چت GapChat. به سوالات کاربران به فارسی و مختصر و واضح جواب بده. از ایموجی استفاده کن.' });
-    var resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    var lastMsg = aiHistory[aiHistory.length - 1].content;
+    var resp = await fetch('https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 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'
+        'Authorization': 'Bearer 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'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-r1:free',
-        messages: orMessages
+        model: 'microsoft/Phi-3-mini-4k-instruct',
+        messages: [
+          { role: 'system', content: 'تو یه دستیار هوشمند فارسی‌زبان هستی. به فارسی جواب بده.' },
+          { role: 'user', content: lastMsg }
+        ],
+        max_tokens: 500
       })
     });
     var data = await resp.json();

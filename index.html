@@ -373,7 +373,7 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 }
 #unlock-overlay.show{display:flex;background:rgba(0,0,0,.6)}
 #unlock-panel{
-  width:100%;max-width:480px;max-height:90vh;
+  width:100%;max-width:480px;height:88vh;max-height:88vh;
   background:var(--surface);border-radius:28px 28px 0 0;
   display:flex;flex-direction:column;overflow:hidden;
   transform:translateY(100%) scale(.97);opacity:0;
@@ -387,7 +387,7 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 .unlock-title-wrap{display:flex;flex-direction:column;gap:3px}
 .unlock-title{font-size:17px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .unlock-subtitle{font-size:11px;color:var(--muted)}
-.unlock-body{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.unlock-body{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
 .unlock-my-level{
   background:linear-gradient(135deg,rgba(124,109,250,.15),rgba(250,109,155,.1));
   border:1px solid rgba(124,109,250,.25);border-radius:18px;padding:14px 16px;
@@ -1090,19 +1090,30 @@ window.toggleVoiceMsg=async function(){
   try{
     voiceStream=await navigator.mediaDevices.getUserMedia({audio:true});
     voiceChunks=[];
-    const mimeType=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/mp4';
-    voiceRecorder=new MediaRecorder(voiceStream,{mimeType});
+    /* بهترین فرمت رو پیدا کن */
+    const mimeTypes=[
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/ogg;codecs=opus',
+      'audio/ogg',
+      'audio/mp4',
+      ''
+    ];
+    const mimeType=mimeTypes.find(m=>m===''||MediaRecorder.isTypeSupported(m))||'';
+    const opts=mimeType?{mimeType}:{};
+    voiceRecorder=new MediaRecorder(voiceStream,opts);
+    const actualMime=voiceRecorder.mimeType||mimeType;
     voiceRecorder.ondataavailable=e=>{ if(e.data.size>0) voiceChunks.push(e.data); };
     voiceRecorder.onstop=async()=>{
       voiceStream.getTracks().forEach(t=>t.stop());
       clearInterval(voiceTimer);
       btn.classList.remove('recording'); btn.textContent='🎤';
       document.getElementById('voice-msg-preview').style.display='none';
-      const blob=new Blob(voiceChunks,{type:mimeType});
+      const blob=new Blob(voiceChunks,{type:actualMime||'audio/webm'});
       if(blob.size<500){ toast('پیام صوتی خیلی کوتاهه'); return; }
-      await sendVoiceMessage(blob, mimeType);
+      await sendVoiceMessage(blob, actualMime||'audio/webm');
     };
-    voiceRecorder.start();
+    voiceRecorder.start(200); /* timeslice برای دریافت منظم data */
     btn.classList.add('recording'); btn.textContent='⏹️';
     voiceSeconds=0;
     document.getElementById('vm-duration').textContent='0:00';
@@ -1128,7 +1139,10 @@ window.cancelVoiceMsg=function(){
   btn.classList.remove('recording'); btn.textContent='🎤';
 };
 async function sendVoiceMessage(blob, mimeType){
-  const ext=mimeType.includes('mp4')?'m4a':'webm';
+  let ext='webm';
+  if(mimeType.includes('ogg')) ext='ogg';
+  else if(mimeType.includes('mp4')) ext='m4a';
+  else if(mimeType.includes('webm')) ext='webm';
   const path=`voice_${Date.now()}.${ext}`;
   showUploadProgress(blob.size, false);
   try{
@@ -1348,7 +1362,7 @@ async function enterChat(){
   /* کش لول خودمون برای ری‌اکشن‌های سطحی */
   try{
     const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=message_count,voice_seconds`);
-    if(rows&&rows[0]){ const lv=getLevelInfo(rows[0].message_count||0,rows[0].voice_seconds||0); rankColorCache[myName]={...lv,level:lv.level}; }
+    if(rows&&rows[0]){ const lv=getLevelInfo(rows[0].message_count||0,rows[0].voice_seconds||0); rankColorCache[myName]=lv.rank.color; }
   }catch{}
 }
 
@@ -1778,6 +1792,33 @@ async function handleAdminCommand(raw){
       }catch{ toast('❌ خطا در حذف روم'); }
       break;
     }
+    case '/givexp': {
+      const xpParts=arg.split(/\s+/);
+      const xpTarget=xpParts[0], xpAmount=parseInt(xpParts[1]);
+      if(!xpTarget||isNaN(xpAmount)||xpAmount<=0){
+        toast('فرمت: /givexp نام_کاربر مقدار_xp'); break;
+      }
+      try{
+        /* هر XP = یه پیام معادل (هر پیام = 10 XP) */
+        const msgEquiv=Math.ceil(xpAmount/10);
+        await api('/rest/v1/rpc/add_xp_messages',{
+          method:'POST',
+          body:JSON.stringify({p_name:xpTarget,p_count:msgEquiv})
+        }).catch(async()=>{
+          for(let i=0;i<msgEquiv;i++){
+            await api('/rest/v1/rpc/increment_message_count',{
+              method:'POST',
+              body:JSON.stringify({p_name:xpTarget,p_email:'',p_avatar:'🧑'})
+            }).catch(()=>{});
+          }
+        });
+        /* invalidate cache رنگ */
+        delete rankColorCache[xpTarget];
+        toast(`✅ ${xpAmount} XP به ${xpTarget} داده شد`);
+        await sysMsg(`⭐ ادمین ${xpAmount} XP به ${xpTarget} داد`);
+      }catch{ toast('❌ خطا در دادن XP'); }
+      break;
+    }
     case '/help': {
       showAdminHelpMenu();
       break;
@@ -1797,6 +1838,7 @@ const ADMIN_COMMANDS=[
   {cmd:'/role ',     desc:'تغییر رول کاربر',             placeholder:'نام member|helper|admin'},
   {cmd:'/profile ',  desc:'مشاهده پروفایل',              placeholder:'نام_کاربر'},
   {cmd:'/delroom ',  desc:'حذف روم صوتی',                placeholder:'شناسه_روم'},
+  {cmd:'/givexp ',   desc:'دادن XP به کاربر',             placeholder:'نام_کاربر مقدار'},
   {cmd:'/Morty',     desc:'کد مخفی - +100 XP',           placeholder:''},
   {cmd:'/KMG',       desc:'کد مخفی - +100 XP',           placeholder:''},
 ];
@@ -2395,15 +2437,38 @@ window.vpToggle=function(pid){
   if(!el) return;
   let audio=vpAudios[pid];
   if(!audio){
-    audio=new Audio(el.dataset.src);
+    audio=new Audio();
+    audio.crossOrigin='anonymous';
+    audio.src=el.dataset.src;
     vpAudios[pid]=audio;
     audio.addEventListener('timeupdate',()=>vpUpdate(pid,audio));
     audio.addEventListener('ended',()=>{
-      document.querySelector(`#${pid} .vp-play-btn`).textContent='▶';
+      const btn=document.querySelector(`#${pid} .vp-play-btn`);
+      if(btn) btn.textContent='▶';
       vpSetProgress(pid,1,1);
     });
     audio.addEventListener('loadedmetadata',()=>{
-      document.getElementById(pid+'-time').textContent=fmtVpTime(audio.duration);
+      const timeEl=document.getElementById(pid+'-time');
+      if(timeEl) timeEl.textContent=fmtVpTime(audio.duration);
+    });
+    audio.addEventListener('error',()=>{
+      /* fallback: try without crossOrigin */
+      const fallback=new Audio(el.dataset.src);
+      vpAudios[pid]=fallback;
+      fallback.addEventListener('timeupdate',()=>vpUpdate(pid,fallback));
+      fallback.addEventListener('ended',()=>{
+        const btn=document.querySelector(`#${pid} .vp-play-btn`);
+        if(btn) btn.textContent='▶';
+        vpSetProgress(pid,1,1);
+      });
+      fallback.addEventListener('loadedmetadata',()=>{
+        const timeEl=document.getElementById(pid+'-time');
+        if(timeEl) timeEl.textContent=fmtVpTime(fallback.duration);
+      });
+      fallback.play().then(()=>{
+        const btn=document.querySelector(`#${pid} .vp-play-btn`);
+        if(btn) btn.textContent='⏸';
+      }).catch(()=>{ toast('❌ پخش صدا ممکن نشد'); });
     });
   }
   if(audio.paused){
@@ -2411,11 +2476,22 @@ window.vpToggle=function(pid){
     Object.entries(vpAudios).forEach(([k,a])=>{
       if(k!==pid&&!a.paused){ a.pause(); const b=document.querySelector(`#${k} .vp-play-btn`); if(b) b.textContent='▶'; }
     });
-    audio.play();
-    document.querySelector(`#${pid} .vp-play-btn`).textContent='⏸';
+    const playPromise=audio.play();
+    if(playPromise!==undefined){
+      playPromise.then(()=>{
+        const btn=document.querySelector(`#${pid} .vp-play-btn`);
+        if(btn) btn.textContent='⏸';
+      }).catch(()=>{
+        toast('❌ پخش صدا ممکن نشد — دوباره امتحان کن');
+      });
+    } else {
+      const btn=document.querySelector(`#${pid} .vp-play-btn`);
+      if(btn) btn.textContent='⏸';
+    }
   } else {
     audio.pause();
-    document.querySelector(`#${pid} .vp-play-btn`).textContent='▶';
+    const btn=document.querySelector(`#${pid} .vp-play-btn`);
+    if(btn) btn.textContent='▶';
   }
 };
 window.vpSeek=function(e,pid){
@@ -2461,7 +2537,7 @@ function addReaction(msgId, emoji){
   /* level-based effects when adding a reaction */
   if(isAdding){
     const lvInfo=getLevelInfo(0,0); /* will be overridden by cached */
-    const myLevel=rankColorCache[myName]?rankColorCache[myName].level:1;
+    const myLevel=rankColorCache[myName]&&typeof rankColorCache[myName]==='object'?rankColorCache[myName].level:1;
     triggerReactionEffect(emoji, myLevel);
   }
 }

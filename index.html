@@ -235,21 +235,36 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 }
 
 
+/* ── RIPPLE THEME TRANSITION ── */
+#theme-ripple{
+  position:fixed;border-radius:50%;pointer-events:none;z-index:199;
+  background:var(--surface);transform:scale(0);opacity:0;
+  transition:transform .65s cubic-bezier(.4,0,.2,1),opacity .65s ease;
+}
+#theme-ripple.expanding{transform:scale(1);opacity:1}
+#theme-ripple.collapsing{transform:scale(0);opacity:0}
+
 #theme-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:200;display:none;align-items:flex-end;justify-content:center;transition:background .25s ease}
-#theme-overlay.show{display:flex;background:rgba(0,0,0,.5)}
-#theme-panel{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;transform:translateY(100%);transition:transform .35s cubic-bezier(.34,1.1,.4,1)}
-#theme-overlay.show #theme-panel{transform:translateY(0)}
+#theme-overlay.show{display:flex;background:rgba(0,0,0,.55)}
+#theme-panel{
+  background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:88vh;
+  display:flex;flex-direction:column;overflow:hidden;
+  transform:translateY(100%) scale(.96);opacity:0;
+  transition:transform .42s cubic-bezier(.34,1.1,.4,1),opacity .3s ease;
+}
+#theme-overlay.show #theme-panel{transform:translateY(0) scale(1);opacity:1}
 .tp-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
 .tp-title{font-size:16px;font-weight:700}
 .tp-body{overflow-y:auto;padding:14px 18px 24px;display:flex;flex-direction:column;gap:18px}
 .tp-section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
 .tp-presets{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
 .tp-presets::-webkit-scrollbar{height:0}
-.preset-chip{flex-shrink:0;width:64px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:14px;border:1.5px solid var(--border);background:var(--panel);transition:all var(--ease)}
-.preset-chip.active{border-color:var(--accent)}
-.preset-swatch{width:40px;height:40px;border-radius:10px;display:flex;overflow:hidden}
+.preset-chip{flex-shrink:0;width:68px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:16px;border:1.5px solid var(--border);background:var(--panel);transition:all var(--ease);cursor:pointer}
+.preset-chip:hover{transform:scale(1.06);border-color:var(--accent)}
+.preset-chip.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(124,109,250,.25)}
+.preset-swatch{width:44px;height:44px;border-radius:12px;display:flex;overflow:hidden}
 .preset-swatch span{flex:1;height:100%}
-.preset-label{font-size:10px;color:var(--muted)}
+.preset-label{font-size:10px;color:var(--muted);text-align:center}
 .color-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
 .color-row:last-child{border-bottom:none}
 .color-row-info{display:flex;flex-direction:column;gap:2px}
@@ -263,6 +278,63 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .tp-action-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none}
 .tp-radius-row{display:flex;align-items:center;gap:12px;padding:10px 0}
 .tp-radius-row input[type=range]{flex:1;accent-color:var(--accent)}
+
+/* ── BG IMAGE PICKER ── */
+.bg-image-section{display:flex;flex-direction:column;gap:10px}
+.bg-image-preview{width:100%;height:80px;border-radius:14px;border:1.5px dashed var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);overflow:hidden;position:relative;cursor:pointer;transition:border-color var(--ease)}
+.bg-image-preview:hover{border-color:var(--accent)}
+.bg-image-preview img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.bg-image-preview .bg-add-txt{display:flex;flex-direction:column;align-items:center;gap:4px}
+.bg-image-preview .bg-add-txt span:first-child{font-size:22px}
+.bg-image-actions{display:flex;gap:8px}
+.bg-img-btn{flex:1;padding:9px;border-radius:11px;font-size:12px;font-weight:600;background:var(--panel);border:1px solid var(--border);color:var(--text);transition:all var(--ease);cursor:pointer}
+.bg-img-btn:hover{background:var(--border)}
+.bg-img-btn.remove{color:var(--red);border-color:rgba(229,51,74,.25);background:rgba(229,51,74,.06)}
+
+/* ── VOICE MESSAGE ── */
+.voice-msg-btn{
+  width:42px;height:42px;border-radius:13px;flex-shrink:0;
+  background:var(--panel);border:1.5px solid var(--border);
+  color:var(--text);font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s cubic-bezier(.34,1.56,.64,1);
+}
+.voice-msg-btn:hover{background:var(--border);transform:scale(1.08)}
+.voice-msg-btn.recording{
+  background:rgba(229,51,74,.15);border-color:var(--red);color:var(--red);
+  animation:recPulse 1.2s ease-in-out infinite;
+}
+@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,51,74,.3)}50%{box-shadow:0 0 0 6px rgba(229,51,74,.0)}}
+.voice-msg-preview{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;
+  background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  margin-bottom:6px;animation:fadeSlideUp .25s ease;
+}
+.vm-preview-wave{display:flex;align-items:center;gap:2px;flex:1}
+.vm-bar{width:3px;border-radius:99px;background:var(--accent);animation:waveAnim 1s ease-in-out infinite}
+.vm-bar:nth-child(1){height:8px;animation-delay:0s}
+.vm-bar:nth-child(2){height:14px;animation-delay:.1s}
+.vm-bar:nth-child(3){height:20px;animation-delay:.2s}
+.vm-bar:nth-child(4){height:14px;animation-delay:.3s}
+.vm-bar:nth-child(5){height:8px;animation-delay:.4s}
+.vm-bar:nth-child(6){height:18px;animation-delay:.15s}
+.vm-bar:nth-child(7){height:10px;animation-delay:.35s}
+@keyframes waveAnim{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.4)}}
+.vm-duration{font-size:12px;color:var(--muted);min-width:32px;text-align:left}
+.vm-cancel-btn{width:26px;height:26px;border-radius:8px;background:rgba(229,51,74,.1);color:var(--red);font-size:12px;display:flex;align-items:center;justify-content:center}
+/* audio bubble */
+.bubble audio{max-width:200px;width:100%;margin-top:4px;border-radius:8px}
+audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
+
+/* ── CAMERA BTN ── */
+.camera-msg-btn{
+  width:42px;height:42px;border-radius:13px;flex-shrink:0;
+  background:var(--panel);border:1.5px solid var(--border);
+  color:var(--text);font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s cubic-bezier(.34,1.56,.64,1);cursor:pointer;
+}
+.camera-msg-btn:hover{background:var(--border);transform:scale(1.08)}
 
 /* ── PROFILE MODAL ── */
 #profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:210;display:none;align-items:center;justify-content:center;padding:20px;transition:background .25s ease}
@@ -433,7 +505,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   <div class="hr">
     <button class="icon-btn" onclick="openVoiceRooms()" title="روم‌های صوتی">🔊</button>
     <button class="icon-btn" onclick="openDmList()" title="پیام‌های خصوصی">✉️</button>
-    <button class="icon-btn" onclick="openThemePanel()" title="شخصی‌سازی تم">🎨</button>
+    <button class="icon-btn" onclick="openThemePanel(this)" title="شخصی‌سازی تم">🎨</button>
     <button class="icon-btn" onclick="signOut()" title="خروج از حساب">🚪</button>
   </div>
 </header>
@@ -478,12 +550,26 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   </div>
   <div id="input-bar">
     <div class="estrip" id="estrip"></div>
+    <div id="voice-msg-preview" style="display:none" class="voice-msg-preview">
+      <div class="vm-preview-wave">
+        <div class="vm-bar"></div><div class="vm-bar"></div><div class="vm-bar"></div>
+        <div class="vm-bar"></div><div class="vm-bar"></div><div class="vm-bar"></div>
+        <div class="vm-bar"></div>
+      </div>
+      <span class="vm-duration" id="vm-duration">0:00</span>
+      <button class="vm-cancel-btn icon-btn" onclick="cancelVoiceMsg()">✕</button>
+    </div>
     <div class="irow">
       <label class="icon-btn" id="media-btn" title="ارسال عکس/فیلم" style="flex-shrink:0;cursor:pointer">
         📎
         <input type="file" id="media-input" accept="image/*,video/*" style="display:none"/>
       </label>
+      <label class="camera-msg-btn" title="دوربین" id="camera-btn">
+        📷
+        <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none"/>
+      </label>
       <textarea id="msg-input" rows="1" placeholder="پیام بنویس…"></textarea>
+      <button class="voice-msg-btn" id="voice-msg-btn" title="پیام صوتی" onclick="toggleVoiceMsg()">🎤</button>
       <button id="send-btn" onclick="sendMsg()">➤</button>
     </div>
     <div id="media-preview" style="display:none;padding:6px 0 2px;position:relative">
@@ -497,6 +583,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 </div>
 </div>
 
+<!-- RIPPLE ELEMENT -->
+<div id="theme-ripple"></div>
+
 <!-- THEME PANEL -->
 <div id="theme-overlay" onclick="if(event.target===this) closeThemePanel()">
   <div id="theme-panel">
@@ -508,6 +597,23 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
       <div>
         <div class="tp-section-title">پیش‌فرض‌ها</div>
         <div class="tp-presets" id="tp-presets"></div>
+      </div>
+
+      <div>
+        <div class="tp-section-title">🖼️ تصویر پس‌زمینه</div>
+        <div class="bg-image-section">
+          <div class="bg-image-preview" id="bg-preview" onclick="document.getElementById('bg-file-input').click()">
+            <div class="bg-add-txt" id="bg-add-txt">
+              <span>🖼️</span>
+              <span>انتخاب از گالری</span>
+            </div>
+          </div>
+          <input type="file" id="bg-file-input" accept="image/*" style="display:none" onchange="setBgImage(this)"/>
+          <div class="bg-image-actions">
+            <button class="bg-img-btn" onclick="document.getElementById('bg-file-input').click()">📁 انتخاب عکس</button>
+            <button class="bg-img-btn remove" id="bg-remove-btn" onclick="removeBgImage()" style="display:none">🗑️ حذف</button>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -677,6 +783,11 @@ function loadTheme(){
   if(saved){ try{ currentTheme=JSON.parse(saved); }catch{ currentTheme={...THEME_PRESETS['پیش‌فرض']}; } }
   else currentTheme={...THEME_PRESETS['پیش‌فرض']};
   applyTheme();
+  /* apply saved background image (deferred to after DOM) */
+  setTimeout(()=>{
+    const bgImg=localStorage.getItem('gapchat_bg_image');
+    if(bgImg && typeof applyBgImage==='function') applyBgImage(bgImg);
+  },0);
 }
 function applyTheme(){
   const root=document.documentElement;
@@ -740,17 +851,179 @@ function toHex(c){
   return ctx.fillStyle;
 }
 
-window.openThemePanel=function(){
+window.openThemePanel=function(triggerEl){
   renderThemePanel();
+  /* ripple from button */
+  const ripple=document.getElementById('theme-ripple');
+  let cx=window.innerWidth/2, cy=window.innerHeight;
+  if(triggerEl){
+    const r=triggerEl.getBoundingClientRect();
+    cx=r.left+r.width/2; cy=r.top+r.height/2;
+  }
+  const maxDim=Math.max(window.innerWidth,window.innerHeight)*2.6;
+  ripple.style.cssText=`
+    width:${maxDim}px;height:${maxDim}px;
+    left:${cx-maxDim/2}px;top:${cy-maxDim/2}px;
+    display:block;transform:scale(0);opacity:1;
+    transition:transform .6s cubic-bezier(.4,0,.2,1),opacity .6s ease;
+  `;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    ripple.style.transform='scale(1)';
+  }));
   const ov=document.getElementById('theme-overlay');
   ov.style.display='flex';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('show')));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    ov.classList.add('show');
+    setTimeout(()=>{ ripple.style.opacity='0'; ripple.style.transform='scale(0)'; },500);
+  }));
+  /* load bg image preview */
+  refreshBgPreview();
 };
 window.closeThemePanel=function(){
   const ov=document.getElementById('theme-overlay');
   ov.classList.remove('show');
-  setTimeout(()=>{ if(!ov.classList.contains('show')) ov.style.display='none'; }, 350);
+  setTimeout(()=>{ if(!ov.classList.contains('show')) ov.style.display='none'; }, 420);
 };
+
+/* ══ BACKGROUND IMAGE ══ */
+function refreshBgPreview(){
+  const stored=localStorage.getItem('gapchat_bg_image');
+  const preview=document.getElementById('bg-preview');
+  const addTxt=document.getElementById('bg-add-txt');
+  const removeBtn=document.getElementById('bg-remove-btn');
+  if(!preview) return;
+  if(stored){
+    addTxt.style.display='none';
+    let img=preview.querySelector('img');
+    if(!img){ img=document.createElement('img'); preview.appendChild(img); }
+    img.src=stored;
+    if(removeBtn) removeBtn.style.display='flex';
+    applyBgImage(stored);
+  } else {
+    const img=preview.querySelector('img'); if(img) img.remove();
+    addTxt.style.display='flex';
+    if(removeBtn) removeBtn.style.display='none';
+  }
+}
+function applyBgImage(dataUrl){
+  const msgs=document.getElementById('messages');
+  const app=document.getElementById('app');
+  if(dataUrl){
+    app.style.backgroundImage=`url('${dataUrl}')`;
+    app.style.backgroundSize='cover';
+    app.style.backgroundPosition='center';
+    app.style.backgroundAttachment='fixed';
+  } else {
+    app.style.backgroundImage='';
+    app.style.backgroundSize='';
+    app.style.backgroundPosition='';
+  }
+}
+window.setBgImage=function(input){
+  const file=input.files[0]; if(!file) return;
+  if(file.size>10*1024*1024){ toast('حجم عکس باید کمتر از ۱۰ مگابایت باشه'); return; }
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=e.target.result;
+    localStorage.setItem('gapchat_bg_image',data);
+    refreshBgPreview();
+    toast('✅ تصویر پس‌زمینه ست شد');
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+};
+window.removeBgImage=function(){
+  localStorage.removeItem('gapchat_bg_image');
+  applyBgImage(null);
+  refreshBgPreview();
+  toast('تصویر پس‌زمینه حذف شد');
+};
+
+/* ══ VOICE MESSAGE ══ */
+let voiceRecorder=null, voiceChunks=[], voiceTimer=null, voiceSeconds=0, voiceStream=null;
+
+window.toggleVoiceMsg=async function(){
+  const btn=document.getElementById('voice-msg-btn');
+  if(voiceRecorder && voiceRecorder.state==='recording'){
+    voiceRecorder.stop(); return;
+  }
+  try{
+    voiceStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    voiceChunks=[];
+    const mimeType=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/mp4';
+    voiceRecorder=new MediaRecorder(voiceStream,{mimeType});
+    voiceRecorder.ondataavailable=e=>{ if(e.data.size>0) voiceChunks.push(e.data); };
+    voiceRecorder.onstop=async()=>{
+      voiceStream.getTracks().forEach(t=>t.stop());
+      clearInterval(voiceTimer);
+      btn.classList.remove('recording'); btn.textContent='🎤';
+      document.getElementById('voice-msg-preview').style.display='none';
+      const blob=new Blob(voiceChunks,{type:mimeType});
+      if(blob.size<500){ toast('پیام صوتی خیلی کوتاهه'); return; }
+      await sendVoiceMessage(blob, mimeType);
+    };
+    voiceRecorder.start();
+    btn.classList.add('recording'); btn.textContent='⏹️';
+    voiceSeconds=0;
+    document.getElementById('vm-duration').textContent='0:00';
+    document.getElementById('voice-msg-preview').style.display='flex';
+    voiceTimer=setInterval(()=>{
+      voiceSeconds++;
+      const m=Math.floor(voiceSeconds/60), s=voiceSeconds%60;
+      document.getElementById('vm-duration').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+      if(voiceSeconds>=120) voiceRecorder.stop();
+    },1000);
+    toast('🎙️ در حال ضبط… دوباره بزن تا ارسال کنه');
+  }catch(e){ toast('❌ دسترسی به میکروفون رد شد'); }
+};
+window.cancelVoiceMsg=function(){
+  if(voiceRecorder && voiceRecorder.state==='recording'){
+    voiceRecorder.ondataavailable=()=>{}; voiceRecorder.onstop=()=>{};
+    voiceRecorder.stop();
+  }
+  if(voiceStream) voiceStream.getTracks().forEach(t=>t.stop());
+  clearInterval(voiceTimer); voiceChunks=[];
+  document.getElementById('voice-msg-preview').style.display='none';
+  const btn=document.getElementById('voice-msg-btn');
+  btn.classList.remove('recording'); btn.textContent='🎤';
+};
+async function sendVoiceMessage(blob, mimeType){
+  const ext=mimeType.includes('mp4')?'m4a':'webm';
+  const path=`voice_${Date.now()}.${ext}`;
+  showUploadProgress(blob.size, false);
+  try{
+    await uploadWithProgress(
+      `${SB_URL}/storage/v1/object/chat-images/${path}`,
+      {method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(authToken||SB_KEY),'Content-Type':mimeType,'x-upsert':'true'}},
+      blob,(pct)=>updateUploadProgress(pct)
+    );
+    hideUploadProgress();
+    const publicUrl=`${SB_URL}/storage/v1/object/public/chat-images/${path}`;
+    const expiresAt=new Date(Date.now()+60*60*1000).toISOString();
+    const msgText=`__MEDIA__audio__${publicUrl}__${path}__chat-images__EXPIRE__${expiresAt}__`;
+    const sb=document.getElementById('send-btn');
+    sb.classList.remove('sent'); void sb.offsetWidth; sb.classList.add('sent');
+    const rows=await api('/rest/v1/messages',{method:'POST',body:JSON.stringify({name:myName,avatar:myAv,text:msgText})});
+    if(rows&&rows.length){ const em=document.getElementById('empty-state');if(em)em.remove();if(!seenMsgIds.has(rows[0].id)){seenMsgIds.add(rows[0].id);appendMsg(rows[0]);lastId=rows[0].id;scrollBottom();} }
+    toast('✅ پیام صوتی ارسال شد');
+  }catch(err){ hideUploadProgress(); toast('❌ ارسال ناموفق بود'); }
+}
+
+/* ══ CAMERA CAPTURE ══ */
+(()=>{
+  const camInput=document.getElementById('camera-input');
+  if(!camInput) return;
+  camInput.addEventListener('change',function(){
+    const file=camInput.files[0]; if(!file) return;
+    pendingMediaFile=file; pendingMediaIsVideo=false;
+    const preview=document.getElementById('media-preview');
+    const img=document.getElementById('media-preview-img');
+    const vid=document.getElementById('media-preview-vid');
+    img.src=URL.createObjectURL(file); img.style.display='block'; vid.style.display='none';
+    preview.style.display='block'; camInput.value='';
+    toast('📷 عکس آماده ارسال است');
+  });
+})();
 
 /* ══ INIT ══ */
 (()=>{
@@ -1742,17 +2015,21 @@ function appendMsg(msg){
     displayText=msg.text.replace('__EVT__','');
     plainText=displayText;
   } else if(isMedia){
-    const typeM=msg.text.match(/__MEDIA__(image|video)__/);
+    const typeM=msg.text.match(/__MEDIA__(image|video|audio)__/);
     const mediaType=typeM?typeM[1]:'image';
-    const afterType=msg.text.replace(/^__MEDIA__(?:image|video)__/,'');
+    const afterType=msg.text.replace(/^__MEDIA__(?:image|video|audio)__/,'');
     const urlM=afterType.match(/^(https?:\/\/[^\s]+?\/storage\/v1\/object\/public\/chat-(?:images|videos)\/[^_]+\.[a-z0-9]+)/i);
     const mediaUrl=urlM?urlM[1]:'';
     const capIdx=msg.text.indexOf('CAP__');
     const caption=capIdx>-1?esc(msg.text.slice(capIdx+5)):'';
-    plainText=mediaType==='video'?'📹 فیلم':'🖼 عکس';
-    if(mediaType==='video'){
+    if(mediaType==='audio'){
+      plainText='🎤 پیام صوتی';
+      displayText=`<div style="display:flex;align-items:center;gap:6px;padding:4px 0"><span>🎤</span><audio controls src="${esc(mediaUrl)}" style="flex:1;max-width:200px;height:36px"></audio></div>`;
+    } else if(mediaType==='video'){
+      plainText='📹 فیلم';
       displayText=`<video class="chat-media" src="${esc(mediaUrl)}" controls playsinline></video>${caption?'<br>'+caption:''}`;
     } else {
+      plainText='🖼 عکس';
       displayText=`<img class="chat-media" src="${esc(mediaUrl)}" alt="عکس" onclick="window.open('${esc(mediaUrl)}','_blank')" loading="lazy"/>${caption?'<br>'+caption:''}`;
     }
   } else {

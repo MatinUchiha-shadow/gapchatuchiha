@@ -1686,7 +1686,7 @@ async function cleanupExpiredMedia(){
     for(const r of rows){
       if(!r.text||!r.text.startsWith('__MEDIA__')) continue;
       /* استخراج bucket و path */
-      const m=r.text.match(/__MEDIA__(?:image|video)__[^_]+__([^_]+)__([^_]+)__EXPIRE__/);
+      const m=r.text.match(/__MEDIA__(?:image|video|audio)__[^_]+__([^_]+)__([^_]+)__EXPIRE__/);
       if(!m) continue;
       const filePath=m[1], bucket=m[2];
       /* حذف از storage */
@@ -2163,7 +2163,7 @@ function appendMsg(msg){
     const typeM=msg.text.match(/__MEDIA__(image|video|audio)__/);
     const mediaType=typeM?typeM[1]:'image';
     const afterType=msg.text.replace(/^__MEDIA__(?:image|video|audio)__/,'');
-    const urlM=afterType.match(/^(https?:\/\/[^\s]+?\/storage\/v1\/object\/public\/chat-(?:images|videos)\/[^_]+\.[a-z0-9]+)/i);
+    const urlM=afterType.match(/^(https?:\/\/[^\s]+?\/storage\/v1\/object\/public\/[a-z0-9_-]+\/[^_\s]+\.(?:jpg|jpeg|png|gif|webp|mp4|mov|webm|m4a|ogg|mp3))/i);
     const mediaUrl=urlM?urlM[1]:'';
     const capIdx=msg.text.indexOf('CAP__');
     const caption=capIdx>-1?esc(msg.text.slice(capIdx+5)):'';
@@ -2589,60 +2589,99 @@ window.closeUnlockPanel=function(){
 
 async function renderUnlockBody(){
   const body=document.getElementById('unlock-body');
+  body.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px">در حال بارگذاری…</div>';
+
   let profile={message_count:0,voice_seconds:0};
   try{
-    const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=message_count,voice_seconds`);
+    const rows=await api('/rest/v1/profiles?name=eq.'+encodeURIComponent(myName)+'&select=message_count,voice_seconds');
     if(rows&&rows[0]) profile=rows[0];
-  }catch{}
-  const lv=getLevelInfo(profile.message_count||0,profile.voice_seconds||0);
-  const myLevel=lv.level;
+  }catch(e){}
 
-  /* find next reward */
-  const nextReward=UNLOCK_REWARDS.find(r=>r.lvl>myLevel);
+  const lv=getLevelInfo(profile.message_count||0, profile.voice_seconds||0);
+  const myLevel=lv.level;
+  const nextReward=UNLOCK_REWARDS.find(function(r){return r.lvl>myLevel;});
   const levelsToNext=nextReward?nextReward.lvl-myLevel:0;
 
-  body.innerHTML=`
-    <div class="unlock-my-level">
-      <div class="unlock-lv-row">
-        <div class="unlock-lv-badge">
-          <div class="unlock-lv-num">${myLevel}</div>
-          <div class="unlock-lv-lbl">LEVEL</div>
-        </div>
-        <div class="unlock-lv-info">
-          <div class="unlock-lv-rank" style="color:${lv.color}">${lv.rank.name}</div>
-          <div class="unlock-lv-xp">${lv.xpInLevel} / ${lv.xpNeeded} XP تا لول بعدی</div>
-        </div>
-      </div>
-      <div class="unlock-progress-wrap">
-        <div class="unlock-progress-bar" style="width:${lv.progress}%"></div>
-      </div>
-      <div class="unlock-progress-txt">${lv.progress}% پیشرفت ${nextReward?`· ${levelsToNext} لول تا جایزه بعدی (${nextReward.icon} ${nextReward.name})`:'· همه جوایز باز شده!'}</div>
-    </div>
-    ${UNLOCK_REWARDS.map(r=>{
-      const isUnlocked=myLevel>=r.lvl;
-      const isNext=nextReward&&r.lvl===nextReward.lvl;
-      const lvNeed=r.lvl-myLevel;
-      const cls=isUnlocked?'unlocked':isNext?'next-up':'locked';
-      const badge=isUnlocked?'✅ باز شده':isNext?`${levelsToNext} لول دیگه`:`${lvNeed} لول دیگه`;
-      /* progress toward this reward */
-      const prog=isUnlocked?100:Math.min(99,Math.round((myLevel/r.lvl)*100));
-      return `<div class="unlock-card ${cls}">
-        <div class="unlock-card-inner">
-          <div class="unlock-card-icon">${r.icon}</div>
-          <div class="unlock-card-info">
-            <div class="unlock-card-name">${r.name} <span style="font-size:10px;color:var(--muted);font-weight:400">· لول ${r.lvl}</span></div>
-            <div class="unlock-card-desc">${r.desc}</div>
-          </div>
-          <div class="unlock-card-badge">${badge}</div>
-        </div>
-        ${!isUnlocked?`<div class="unlock-card-progress">
-          <div class="unlock-card-pbar-wrap">
-            <div class="unlock-card-pbar" style="width:${prog}%"></div>
-          </div>
-        </div>`:''}
-      </div>`;
-    }).join('')}
-  `;
+  body.innerHTML='';
+
+  /* ── MY LEVEL CARD ── */
+  var lvCard=document.createElement('div');
+  lvCard.className='unlock-my-level';
+  var nextTxt=nextReward
+    ? (levelsToNext+' لول تا جایزه بعدی ('+nextReward.icon+' '+nextReward.name+')')
+    : 'همه جوایز باز شده!';
+  lvCard.innerHTML=
+    '<div class="unlock-lv-row">'+
+      '<div class="unlock-lv-badge">'+
+        '<div class="unlock-lv-num">'+myLevel+'</div>'+
+        '<div class="unlock-lv-lbl">LEVEL</div>'+
+      '</div>'+
+      '<div class="unlock-lv-info">'+
+        '<div class="unlock-lv-rank" style="color:'+lv.color+'">'+esc(lv.rank.name)+'</div>'+
+        '<div class="unlock-lv-xp">'+lv.xpInLevel+' / '+lv.xpNeeded+' XP تا لول بعدی</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="unlock-progress-wrap">'+
+      '<div class="unlock-progress-bar" style="width:'+lv.progress+'%"></div>'+
+    '</div>'+
+    '<div class="unlock-progress-txt">'+lv.progress+'% پیشرفت · '+nextTxt+'</div>';
+  body.appendChild(lvCard);
+
+  /* ── REWARD CARDS ── */
+  UNLOCK_REWARDS.forEach(function(r){
+    var isUnlocked=myLevel>=r.lvl;
+    var isNext=nextReward&&r.lvl===nextReward.lvl;
+    var lvNeed=r.lvl-myLevel;
+    var cls=isUnlocked?'unlocked':isNext?'next-up':'locked';
+    var badgeTxt=isUnlocked?'✅ باز شده':isNext?(levelsToNext+' لول دیگه'):(lvNeed+' لول دیگه');
+    var prog=isUnlocked?100:Math.min(99,Math.round((myLevel/r.lvl)*100));
+
+    var card=document.createElement('div');
+    card.className='unlock-card '+cls;
+
+    var inner=document.createElement('div');
+    inner.className='unlock-card-inner';
+
+    var iconEl=document.createElement('div');
+    iconEl.className='unlock-card-icon';
+    iconEl.textContent=r.icon;
+
+    var infoEl=document.createElement('div');
+    infoEl.className='unlock-card-info';
+
+    var nameEl=document.createElement('div');
+    nameEl.className='unlock-card-name';
+    nameEl.textContent=r.name;
+    var lvlSpan=document.createElement('span');
+    lvlSpan.style.cssText='font-size:10px;color:var(--muted);font-weight:400;margin-right:4px';
+    lvlSpan.textContent=' · لول '+r.lvl;
+    nameEl.appendChild(lvlSpan);
+
+    var descEl=document.createElement('div');
+    descEl.className='unlock-card-desc';
+    descEl.textContent=r.desc;
+
+    infoEl.appendChild(nameEl);
+    infoEl.appendChild(descEl);
+
+    var badgeEl=document.createElement('div');
+    badgeEl.className='unlock-card-badge';
+    badgeEl.textContent=badgeTxt;
+
+    inner.appendChild(iconEl);
+    inner.appendChild(infoEl);
+    inner.appendChild(badgeEl);
+    card.appendChild(inner);
+
+    if(!isUnlocked){
+      var progWrap=document.createElement('div');
+      progWrap.className='unlock-card-progress';
+      progWrap.innerHTML='<div class="unlock-card-pbar-wrap"><div class="unlock-card-pbar" style="width:'+prog+'%"></div></div>';
+      card.appendChild(progWrap);
+    }
+
+    body.appendChild(card);
+  });
 }
 
 /* ══ حذف پیام ══ */

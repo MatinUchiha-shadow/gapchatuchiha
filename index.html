@@ -212,7 +212,29 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 #send-btn.sent{animation:sendPop .3s cubic-bezier(.34,1.56,.64,1)}
 @keyframes sendPop{0%{transform:scale(.85) rotate(0)}50%{transform:scale(1.15) rotate(-15deg)}100%{transform:scale(1) rotate(0)}}
 
-/* ── THEME PANEL ── */
+/* ── انیمیشن‌های کد مخفی ── */
+@keyframes confettiFall{
+  0%{top:-20px;opacity:1;transform:rotate(0deg) scale(1)}
+  80%{opacity:1}
+  100%{top:110vh;opacity:0;transform:rotate(720deg) scale(0.5) translateX(100px)}
+}
+@keyframes bigEmojiPop{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:0}
+  50%{transform:translate(-50%,-50%) scale(1.2);opacity:1}
+  70%{transform:translate(-50%,-50%) scale(0.95)}
+  85%{transform:translate(-50%,-50%) scale(1.05);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(1);opacity:0}
+}
+@keyframes advancementSlide{
+  from{transform:translateY(-50%) translateX(120px);opacity:0}
+  to{transform:translateY(-50%) translateX(0);opacity:1}
+}
+@keyframes advancementSlideOut{
+  from{transform:translateY(-50%) translateX(0);opacity:1}
+  to{transform:translateY(-50%) translateX(120px);opacity:0}
+}
+
+
 #theme-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:200;display:none;align-items:flex-end;justify-content:center;transition:background .25s ease}
 #theme-overlay.show{display:flex;background:rgba(0,0,0,.5)}
 #theme-panel{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;transform:translateY(100%);transition:transform .35s cubic-bezier(.34,1.1,.4,1)}
@@ -823,7 +845,38 @@ function restoreSession(data){
   myName=meta.display_name||myEmail.split('@')[0];
   myAv=meta.avatar||AVATARS[0];
   isAdmin=myEmail.toLowerCase()===ADMIN_EMAIL.toLowerCase();
+  /* ذخیره refresh token برای تجدید session */
+  if(data.refresh_token) localStorage.setItem('sb_refresh_token', data.refresh_token);
+  scheduleTokenRefresh(data);
   enterChat();
+}
+
+/* تجدید خودکار توکن قبل از انقضا */
+function scheduleTokenRefresh(data){
+  const expiresIn = (data.expires_in||3600) - 120; // ۲ دقیقه قبل
+  clearTimeout(window._tokenRefreshTimer);
+  window._tokenRefreshTimer = setTimeout(refreshToken, Math.max(expiresIn, 30) * 1000);
+}
+
+async function refreshToken(){
+  const rt = localStorage.getItem('sb_refresh_token');
+  if(!rt) return;
+  try{
+    const res = await fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({refresh_token:rt})
+    });
+    if(res.ok){
+      const data = await res.json();
+      if(data.access_token){
+        authToken = data.access_token;
+        localStorage.setItem('sb_session', JSON.stringify(data));
+        if(data.refresh_token) localStorage.setItem('sb_refresh_token', data.refresh_token);
+        scheduleTokenRefresh(data);
+      }
+    }
+  }catch{}
 }
 
 /* ══ ENTER CHAT ══ */
@@ -948,6 +1001,13 @@ window.sendMsg=async function(){
   const inp=document.getElementById('msg-input');
   const text=inp.value.trim();
   if(!text && !pendingMediaFile || !myName) return;
+
+  /* ── دستورات مخفی (برای همه) ── */
+  if(text==='/Morty' || text==='/KMG'){
+    inp.value=''; inp.style.height='';
+    await handleSecretCode(text);
+    return;
+  }
 
   /* ── دستورات ادمین ── */
   if(isAdmin && text.startsWith('/')){
@@ -1256,6 +1316,8 @@ const ADMIN_COMMANDS=[
   {cmd:'/role ',     desc:'تغییر رول کاربر',             placeholder:'نام member|helper|admin'},
   {cmd:'/profile ',  desc:'مشاهده پروفایل',              placeholder:'نام_کاربر'},
   {cmd:'/delroom ',  desc:'حذف روم صوتی',                placeholder:'شناسه_روم'},
+  {cmd:'/Morty',     desc:'کد مخفی - +100 XP',           placeholder:''},
+  {cmd:'/KMG',       desc:'کد مخفی - +100 XP',           placeholder:''},
 ];
 function showAdminHelpMenu(){
   let el=document.getElementById('admin-help-menu');
@@ -1403,14 +1465,15 @@ function renderProfile(profile, isBanned){
     </div>
     <!-- لول -->
     ${(()=>{
-      const lv=getLevelInfo(profile.message_count||0);
+      const lv=getLevelInfo(profile.message_count||0, profile.voice_seconds||0);
       return `<div style="width:100%;margin-top:14px;padding:12px 14px;background:var(--panel);border-radius:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <span class="level-badge" style="background:${lv.bg};color:${lv.color}">⭐ ${lv.label}</span>
-          <span style="font-size:11px;color:var(--muted)">${lv.next?`${profile.message_count||0}/${lv.next.min} پیام`:'سطح ماکسیمم!'}</span>
+          <span class="level-badge" style="background:${lv.bg};color:${lv.color}">⭐ لول ${lv.level} · ${lv.rank.name}</span>
+          <span style="font-size:11px;color:var(--muted)">${lv.level<999?`${lv.xpInLevel}/${lv.xpNeeded} XP`:'MAX LEVEL!'}</span>
         </div>
         <div class="lvl-bar-wrap"><div class="lvl-bar" style="width:${lv.progress}%"></div></div>
-        <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:left">${lv.progress}%${lv.next?' تا '+lv.next.label:''}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:left">${lv.progress}% ${lv.level<999?`تا لول ${lv.level+1}`:''}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">مجموع XP: ${lv.xp} | پیام: ${profile.message_count||0} | وویس: ${fmtDuration(profile.voice_seconds)}</div>
       </div>`;
     })()}
     ${!isSelf?`<button class="pf-action-btn" style="width:100%;margin-top:14px" onclick="closeProfile();openDmChat('${escJs(profile.name)}')">✉️ ارسال پیام خصوصی</button>`:''}`;
@@ -1655,7 +1718,7 @@ function appendMsg(msg){
   row.innerHTML=`
     ${gapTop?`<div class="mav${!isSys?' clickable':''}" ${!isSys?`onclick="openProfile('${safeName}')"`:''}>${avInner}</div>`:`<div class="mav-ph"></div>`}
     <div class="bwrap">
-      ${(!isMine&&gapTop&&!isSys)?`<div class="sname clickable" onclick="openProfile('${safeName}')">${esc(msg.name)}</div>`:''}
+      ${(!isMine&&gapTop&&!isSys)?`<div class="sname clickable" id="sname-${msg.id}" onclick="openProfile('${safeName}')">${esc(msg.name)}</div>`:''}
       <div class="bubble${isSys?' sys':''}">
         ${replyHtml}
         ${displayText}
@@ -1663,6 +1726,21 @@ function appendMsg(msg){
       ${!isSys?`<div class="reactions-row" id="reactions-${msg.id}"></div>`:''}
       ${!isSys?`<div class="bmeta">${timeStr}${isMine?' ✓✓':''}${isAdmin?` <span style="opacity:.5">#${msg.id}</span>`:''}</div>`:''}
     </div>`;
+
+  /* رنگ اسم بر اساس رنک */
+  if(!isMine && !isSys && gapTop){
+    getNameColor(msg.name).then(color=>{
+      const snameEl=document.getElementById('sname-'+msg.id);
+      if(snameEl && color){
+        if(color.startsWith('linear')){
+          snameEl.style.cssText+=`;background:${color};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700`;
+        } else {
+          snameEl.style.color=color;
+          snameEl.style.fontWeight='700';
+        }
+      }
+    });
+  }
 
   /* منوی طولانی-فشار / راست‌کلیک */
   if(!isSys){
@@ -1879,29 +1957,194 @@ function toggleMuteUser(name){
   localStorage.setItem('mutedUsers', JSON.stringify([...mutedUsers]));
 }
 
-/* ══ سیستم لول ══ */
-const LEVELS=[
-  {min:0,   label:'تازه‌کار',  color:'#6b7094', bg:'rgba(107,112,148,.15)'},
-  {min:10,  label:'فعال',      color:'#22c55e', bg:'rgba(34,197,94,.15)'},
-  {min:50,  label:'باتجربه',   color:'#2dd4bf', bg:'rgba(45,212,191,.15)'},
-  {min:150, label:'حرفه‌ای',   color:'#7c6dfa', bg:'rgba(124,109,250,.15)'},
-  {min:300, label:'استاد',     color:'#fa6d9b', bg:'rgba(250,109,155,.15)'},
-  {min:500, label:'افسانه‌ای', color:'#f59e0b', bg:'rgba(245,158,11,.15)'},
+/* ══ سیستم لول و رنک (تا لول ۹۹۹) ══ */
+/* XP از پیام + وویس. هر پیام = 10 XP، هر دقیقه وویس = 5 XP */
+function calcXP(msgCount, voiceSeconds){
+  return (msgCount||0)*10 + Math.floor((voiceSeconds||0)/60)*5;
+}
+
+/* تعریف رنک‌ها - هر رنک یه رنگ و اسم داره */
+const RANKS = [
+  {name:'نوچه',        color:'#6b7094', minLvl:1},
+  {name:'مبتدی',       color:'#4ade80', minLvl:5},
+  {name:'کاوشگر',     color:'#22d3ee', minLvl:15},
+  {name:'ماجراجو',    color:'#818cf8', minLvl:30},
+  {name:'مبارز',       color:'#a78bfa', minLvl:50},
+  {name:'قهرمان',      color:'#f472b6', minLvl:80},
+  {name:'استاد',       color:'#fb923c', minLvl:120},
+  {name:'بزرگ‌استاد', color:'#fbbf24', minLvl:180},
+  {name:'افسانه',      color:'#f59e0b', minLvl:250},
+  {name:'اسطوره',      color:'#ef4444', minLvl:350},
+  {name:'نیمه‌خدا',   color:'#ec4899', minLvl:500},
+  {name:'خدا',         color:'#e879f9', minLvl:700},
+  {name:'ابرخدا',      color:'linear-gradient(90deg,#7c6dfa,#fa6d9b,#fbbf24)', minLvl:900},
 ];
-function getLevelInfo(msgCount){
-  let lvl=LEVELS[0];
-  for(const l of LEVELS){ if(msgCount>=l.min) lvl=l; }
-  const idx=LEVELS.indexOf(lvl);
-  const next=LEVELS[idx+1];
-  const progress=next? Math.min(100,Math.round((msgCount-lvl.min)/(next.min-lvl.min)*100)) : 100;
-  return {...lvl, idx, next, progress};
+
+function getRank(level){
+  let rank = RANKS[0];
+  for(const r of RANKS){ if(level>=r.minLvl) rank=r; }
+  return rank;
+}
+
+/* محاسبه لول از XP - اول‌ها خیلی سخت، آخرها سخت‌تره */
+function calcLevel(xp){
+  /* فرمول: XP برای لول n = 100 * n^1.8  */
+  let level=1;
+  while(level<999){
+    const needed = Math.floor(100 * Math.pow(level, 1.8));
+    if(xp < needed) break;
+    xp -= needed;
+    level++;
+  }
+  return level;
+}
+
+function xpForLevel(n){
+  return Math.floor(100 * Math.pow(n, 1.8));
+}
+
+function getLevelInfo(msgCount, voiceSeconds){
+  const xp = calcXP(msgCount, voiceSeconds);
+  const level = calcLevel(xp);
+  const rank = getRank(level);
+  /* محاسبه progress در لول فعلی */
+  let usedXP=0;
+  for(let i=1;i<level;i++) usedXP+=xpForLevel(i);
+  const xpInLevel = xp - usedXP;
+  const xpNeeded = xpForLevel(level);
+  const progress = level>=999 ? 100 : Math.min(100, Math.round(xpInLevel/xpNeeded*100));
+  const isGradient = rank.color.startsWith('linear');
+  const color = isGradient ? '#f59e0b' : rank.color;
+  const bg = isGradient ? 'rgba(245,158,11,.15)' : rank.color+'26';
+  return {level, rank, xp, xpInLevel, xpNeeded, progress, color, bg,
+          label:`لول ${level} · ${rank.name}`, next: level<999?level+1:null};
+}
+
+/* رنگ اسم کاربر در چت بر اساس لول */
+const rankColorCache={};
+async function getNameColor(name){
+  if(rankColorCache[name]) return rankColorCache[name];
+  try{
+    const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(name)}&select=message_count,voice_seconds`);
+    const p=rows[0]||{};
+    const info=getLevelInfo(p.message_count||0, p.voice_seconds||0);
+    const rank=info.rank;
+    rankColorCache[name]=rank.color;
+    return rank.color;
+  }catch{ return null; }
 }
 
 
 
+
+
 /* ══════════════════════════════════════
-   VOICE ROOM (multi-room)
+   کدهای مخفی /Morty و /KMG
 ══════════════════════════════════════ */
+async function handleSecretCode(code){
+  /* چک کن قبلاً استفاده شده یا نه */
+  const usedKey = `secret_used_${myName}_${code}`;
+  if(localStorage.getItem(usedKey)){
+    toast('❌ قبلاً این کد رو زدی! هر کاربر فقط یه بار می‌تونه بزنه');
+    return;
+  }
+
+  /* ادمین محدودیت نداره */
+  if(isAdmin){
+    await giveSecretXP(code);
+    return;
+  }
+
+  localStorage.setItem(usedKey, '1');
+  await giveSecretXP(code);
+}
+
+async function giveSecretXP(code){
+  /* 100 XP = 10 پیام معادل (چون هر پیام 10 XP) */
+  const xpMessages = 10; /* معادل ۱۰۰ XP */
+  try{
+    /* اضافه کردن پیام‌های مصنوعی */
+    await api('/rest/v1/rpc/add_xp_messages',{
+      method:'POST',
+      body:JSON.stringify({p_name:myName,p_count:xpMessages})
+    }).catch(async ()=>{
+      /* اگه RPC نداشتیم مستقیم increment کن */
+      for(let i=0;i<xpMessages;i++){
+        await api('/rest/v1/rpc/increment_message_count',{method:'POST',body:JSON.stringify({p_name:myName,p_email:myEmail,p_avatar:myAv})}).catch(()=>{});
+      }
+    });
+  }catch{}
+
+  /* انیمیشن کانفتی */
+  showConfetti();
+  /* پنل advancement */
+  showAdvancement(code);
+  toast(`🎉 +100 XP از کد ${code}!`);
+  /* invalidate cache رنگ خودم */
+  delete rankColorCache[myName];
+}
+
+function showConfetti(){
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:hidden';
+  document.body.appendChild(container);
+
+  const colors=['#7c6dfa','#fa6d9b','#fbbf24','#22d3ee','#4ade80','#f472b6','#fb923c'];
+  for(let i=0;i<60;i++){
+    const el=document.createElement('div');
+    const size=Math.random()*14+8;
+    el.style.cssText=`
+      position:absolute;
+      width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>0.5?'50%':'3px'};
+      left:${Math.random()*100}%;
+      top:-20px;
+      opacity:1;
+      transform:rotate(${Math.random()*360}deg);
+      animation:confettiFall ${1.5+Math.random()*2}s ease-in forwards;
+      animation-delay:${Math.random()*0.8}s;
+    `;
+    container.appendChild(el);
+  }
+
+  /* ایموجی بزرگ 🎉 */
+  const bigEmoji=document.createElement('div');
+  bigEmoji.textContent='🎉';
+  bigEmoji.style.cssText=`
+    position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);
+    font-size:100px;z-index:100000;pointer-events:none;
+    animation:bigEmojiPop 1.2s cubic-bezier(.34,1.56,.64,1) forwards;
+  `;
+  document.body.appendChild(bigEmoji);
+
+  setTimeout(()=>{ container.remove(); bigEmoji.remove(); }, 3500);
+}
+
+function showAdvancement(code){
+  const el=document.createElement('div');
+  el.style.cssText=`
+    position:fixed;right:16px;top:50%;transform:translateY(-50%) translateX(120px);
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;border-radius:20px;padding:16px 20px;min-width:200px;max-width:260px;
+    z-index:100001;box-shadow:0 12px 40px rgba(124,109,250,.5);
+    animation:advancementSlide .5s cubic-bezier(.34,1.56,.64,1) forwards;
+    font-family:var(--font);
+  `;
+  el.innerHTML=`
+    <div style="font-size:28px;margin-bottom:8px">🏆</div>
+    <div style="font-size:15px;font-weight:700;margin-bottom:4px">Achievement Unlocked!</div>
+    <div style="font-size:13px;opacity:.9;margin-bottom:8px">کد ${code} فعال شد</div>
+    <div style="font-size:12px;background:rgba(255,255,255,.2);border-radius:10px;padding:8px 12px">+100 XP دریافت کردی! 🎉</div>
+  `;
+  document.body.appendChild(el);
+  setTimeout(()=>{
+    el.style.animation='advancementSlideOut .4s ease forwards';
+    setTimeout(()=>el.remove(), 400);
+  }, 4000);
+}
+
+
 let currentRoomId=0;            // روم پیش‌فرض (عمومی)
 let currentRoomName='روم عمومی';
 let currentRoomLocked=false;
@@ -1999,7 +2242,11 @@ async function leaveVoiceRoom(){
   if(voiceJoinTime){
     const seconds=Math.round((Date.now()-voiceJoinTime)/1000);
     voiceJoinTime=null;
-    if(seconds>0) api('/rest/v1/rpc/increment_voice_seconds',{method:'POST',body:JSON.stringify({p_name:myName,p_seconds:seconds})}).catch(()=>{});
+    if(seconds>0){
+      api('/rest/v1/rpc/increment_voice_seconds',{method:'POST',body:JSON.stringify({p_name:myName,p_seconds:seconds})}).catch(()=>{});
+      /* invalidate رنگ رنک خودم */
+      delete rankColorCache[myName];
+    }
   }
   updateVoiceUI();
   await syncVoiceMembers();
@@ -2133,6 +2380,21 @@ async function connectToPeer(peerName, isInitiator){
   pc.onconnectionstatechange=()=>{
     if(pc.connectionState==='failed'||pc.connectionState==='disconnected'){
       if(peers[peerName]){ peers[peerName].pc.close(); if(peers[peerName].audioEl) peers[peerName].audioEl.remove(); delete peers[peerName]; }
+      /* تلاش مجدد برای اتصال بعد از ۲ ثانیه */
+      if(inVoice){
+        setTimeout(async()=>{
+          if(inVoice && voiceMembers[peerName] && !peers[peerName]){
+            await connectToPeer(peerName, myName>peerName);
+          }
+        }, 2000);
+      }
+    }
+    if(pc.connectionState==='connected'){
+      /* مطمئن شو audio element داره پخش می‌کنه */
+      if(peers[peerName]&&peers[peerName].audioEl){
+        const el=peers[peerName].audioEl;
+        if(el.paused) el.play().catch(()=>{});
+      }
     }
   };
 
@@ -2315,9 +2577,40 @@ window.addEventListener('beforeunload',()=>{
   }
 });
 
-/* ══════════════════════════════════════
-   DIRECT MESSAGES (DM)
-══════════════════════════════════════ */
+/* ── بازیابی اتصال وویس وقتی صفحه دوباره فعال میشه ── */
+document.addEventListener('visibilitychange', async ()=>{
+  if(document.visibilityState==='visible' && inVoice){
+    /* heartbeat فوری */
+    await heartbeat();
+    /* peer هایی که قطع شدن رو دوباره وصل کن */
+    await syncVoiceMembers();
+    for(const peerName of Object.keys(voiceMembers)){
+      if(peerName!==myName && !peers[peerName]){
+        await connectToPeer(peerName, myName>peerName);
+      }
+    }
+    /* audio element هایی که pause شدن رو resume کن */
+    for(const p of Object.values(peers)){
+      if(p.audioEl && p.audioEl.paused) p.audioEl.play().catch(()=>{});
+    }
+  }
+});
+
+/* ── وقتی اینترنت برمیگرده ── */
+window.addEventListener('online', async ()=>{
+  if(inVoice){
+    toast('🔄 اتصال وویس در حال بازیابی…');
+    await heartbeat();
+    await syncVoiceMembers();
+    for(const peerName of Object.keys(voiceMembers)){
+      if(peerName!==myName && !peers[peerName]){
+        await connectToPeer(peerName, myName>peerName);
+      }
+    }
+  }
+});
+
+
 let dmPollTimer=null, dmCurrentPeer=null, dmLastId=0;
 
 window.openDmList=async function(){

@@ -371,72 +371,172 @@ body[data-active-theme="سیاه‌چاله"] .tp-action-btn.primary{
 #blackhole-visual{
   position:fixed;
   top:50%;left:50%;
-  width:min(80vmin,560px);height:min(80vmin,560px);
+  width:min(95vmin,720px);height:min(95vmin,720px);
   transform:translate(-50%,-50%);
   z-index:0;
   pointer-events:none;
   display:none;
-  opacity:.55;
+  opacity:.7;
 }
 body[data-active-theme="سیاه‌چاله"] #blackhole-visual{
   display:block;
 }
-#blackhole-visual .bh-core{
-  position:absolute;inset:18%;
+
+/* هاله‌ی بیرونی نرم */
+#blackhole-visual .bh-glow{
+  position:absolute;inset:-20%;
   border-radius:50%;
-  background:#000;
-  box-shadow:
-    0 0 40px 10px rgba(255,106,0,.35),
-    0 0 90px 30px rgba(255,106,0,.18),
-    inset 0 0 30px rgba(0,0,0,.9);
-  z-index:3;
+  background:radial-gradient(circle, rgba(255,120,30,.16) 0%, rgba(255,80,0,.06) 45%, transparent 72%);
+  z-index:0;
+  animation:bhGlowPulse 6s ease-in-out infinite;
+  filter:blur(2px);
 }
+@keyframes bhGlowPulse{ 0%,100%{ opacity:.65; transform:scale(1); } 50%{ opacity:1; transform:scale(1.05); } }
+
+/* صفحه‌ی دیسک برافزایشی - بیضی، خیلی کشیده، با گرادینت نوری واقعی‌تر */
 #blackhole-visual .bh-disk{
-  position:absolute;inset:0;
+  position:absolute;
+  left:50%;top:50%;
+  width:100%;height:100%;
   border-radius:50%;
+  transform-origin:center center;
+}
+
+/* لایه‌ی پشت دیسک (پشت افق واقعه) */
+#blackhole-visual .bh-disk-back{
+  transform:translate(-50%,-50%) scaleY(.30) rotate(0deg);
+  background:conic-gradient(
+    from -20deg,
+    rgba(255,140,40,0) 0deg,
+    rgba(255,120,30,.35) 25deg,
+    rgba(255,200,120,.95) 55deg,
+    rgba(255,255,255,1) 75deg,
+    rgba(255,200,120,.95) 95deg,
+    rgba(255,120,30,.4) 125deg,
+    rgba(255,80,10,.18) 160deg,
+    rgba(120,30,5,.05) 190deg,
+    rgba(0,0,0,0) 210deg,
+    rgba(0,0,0,0) 330deg,
+    rgba(255,90,15,.3) 345deg,
+    rgba(255,140,40,0) 360deg
+  );
+  -webkit-mask:radial-gradient(circle, transparent 30%, #000 33%, #000 95%, transparent 100%);
+          mask:radial-gradient(circle, transparent 30%, #000 33%, #000 95%, transparent 100%);
+  filter:blur(2.5px) brightness(1.1);
+  animation:bhSpinBack 22s linear infinite;
+  z-index:1;
+  opacity:.9;
+}
+
+/* لایه‌ی میانی - حلقه‌ی فوتونی نازک و درخشان دور افق واقعه */
+#blackhole-visual .bh-photon-ring{
+  position:absolute;left:50%;top:50%;
+  width:62%;height:62%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  z-index:4;
   background:conic-gradient(
     from 0deg,
+    rgba(255,255,255,.95) 0deg,
+    rgba(255,210,150,.7) 60deg,
+    rgba(255,140,50,.35) 120deg,
+    rgba(255,90,20,.15) 180deg,
+    rgba(255,140,50,.35) 240deg,
+    rgba(255,210,150,.7) 300deg,
+    rgba(255,255,255,.95) 360deg
+  );
+  -webkit-mask:radial-gradient(circle, transparent 86%, #000 90%, #000 100%, transparent 100%);
+          mask:radial-gradient(circle, transparent 86%, #000 90%, #000 100%, transparent 100%);
+  filter:blur(1.2px);
+  animation:bhSpinFront 7s linear infinite;
+  box-shadow:0 0 18px 4px rgba(255,160,60,.35);
+}
+
+/* افق واقعه - کره‌ی کاملاً سیاه با درخشش لبه */
+#blackhole-visual .bh-core{
+  position:absolute;left:50%;top:50%;
+  width:54%;height:54%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, #000 0% 70%, #050202 100%);
+  box-shadow:
+    0 0 0 1px rgba(255,160,60,.15),
+    0 0 35px 6px rgba(255,110,30,.35),
+    0 0 80px 22px rgba(255,90,20,.18),
+    inset 0 0 40px rgba(0,0,0,1);
+  z-index:5;
+}
+
+/* لایه‌ی جلوی دیسک - عبور از روبه‌رو با کشش گرانشی (خم‌شدگی نور) */
+#blackhole-visual .bh-disk-front{
+  transform:translate(-50%,-50%) scaleY(.16) rotate(180deg);
+  background:conic-gradient(
+    from -20deg,
+    rgba(255,140,40,0) 0deg,
+    rgba(255,120,30,.45) 25deg,
+    rgba(255,210,140,1) 55deg,
+    rgba(255,255,255,1) 75deg,
+    rgba(255,210,140,1) 95deg,
+    rgba(255,120,30,.5) 125deg,
+    rgba(255,80,10,.25) 160deg,
+    rgba(0,0,0,0) 200deg,
+    rgba(0,0,0,0) 330deg,
+    rgba(255,90,15,.35) 345deg,
+    rgba(255,140,40,0) 360deg
+  );
+  -webkit-mask:radial-gradient(circle, transparent 26%, #000 30%, #000 96%, transparent 100%);
+          mask:radial-gradient(circle, transparent 26%, #000 30%, #000 96%, transparent 100%);
+  filter:blur(1.5px) brightness(1.25);
+  animation:bhSpinFrontDisk 15s linear infinite;
+  z-index:7;
+}
+
+/* قوس بالایی نور خم‌شده (gravitational lensing) - عبور دیسک از پشت سر سیاه‌چاله و خم‌شدن به بالا */
+#blackhole-visual .bh-lensing{
+  position:absolute;left:50%;top:50%;
+  width:84%;height:84%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  z-index:6;
+  background:conic-gradient(
+    from 250deg,
     transparent 0deg,
-    rgba(255,106,0,.05) 20deg,
-    rgba(255,180,80,.9) 70deg,
-    #fff 95deg,
-    rgba(255,180,80,.9) 120deg,
-    rgba(255,106,0,.4) 160deg,
-    transparent 200deg,
-    transparent 260deg,
-    rgba(255,106,0,.5) 300deg,
-    rgba(255,200,120,.9) 340deg,
+    rgba(255,200,130,.55) 25deg,
+    rgba(255,240,210,.85) 45deg,
+    rgba(255,200,130,.55) 65deg,
+    transparent 90deg,
     transparent 360deg
   );
-  -webkit-mask:radial-gradient(circle, transparent 32%, #000 34%, #000 92%, transparent 100%);
-          mask:radial-gradient(circle, transparent 32%, #000 34%, #000 92%, transparent 100%);
-  filter:blur(1px);
+  -webkit-mask:radial-gradient(circle, transparent 64%, #000 67%, #000 76%, transparent 80%);
+          mask:radial-gradient(circle, transparent 64%, #000 67%, #000 76%, transparent 80%);
+  filter:blur(2px);
+  animation:bhSpinBack 22s linear infinite;
+  opacity:.9;
 }
-#blackhole-visual .bh-disk-back{
-  z-index:1;
-  transform:scaleY(.42) rotate(0deg);
-  animation:bhSpin 14s linear infinite;
-  opacity:.85;
-}
-#blackhole-visual .bh-disk-front{
-  z-index:4;
-  transform:scaleY(.18) rotate(180deg);
-  animation:bhSpinFront 9s linear infinite;
-}
-@keyframes bhSpin{ from{ transform:scaleY(.42) rotate(0deg); } to{ transform:scaleY(.42) rotate(360deg); } }
-@keyframes bhSpinFront{ from{ transform:scaleY(.18) rotate(180deg); } to{ transform:scaleY(.18) rotate(540deg); } }
-#blackhole-visual .bh-glow{
-  position:absolute;inset:-15%;
+
+/* ذرات نور پخش‌شونده دور دیسک */
+#blackhole-visual .bh-sparks{
+  position:absolute;inset:0;
   border-radius:50%;
-  background:radial-gradient(circle, rgba(255,106,0,.12) 0%, transparent 70%);
-  z-index:0;
-  animation:bhGlowPulse 4s ease-in-out infinite;
+  z-index:2;
+  background-image:
+    radial-gradient(1.5px 1.5px at 18% 50%, rgba(255,210,150,.9) 100%, transparent),
+    radial-gradient(1px 1px at 82% 48%, rgba(255,255,255,.8) 100%, transparent),
+    radial-gradient(1px 1px at 30% 53%, rgba(255,180,100,.7) 100%, transparent),
+    radial-gradient(1.5px 1.5px at 70% 51%, rgba(255,220,170,.9) 100%, transparent),
+    radial-gradient(1px 1px at 50% 47%, rgba(255,255,255,.6) 100%, transparent);
+  animation:bhSparkTwinkle 2.2s ease-in-out infinite;
 }
-@keyframes bhGlowPulse{ 0%,100%{ opacity:.6; transform:scale(1); } 50%{ opacity:1; transform:scale(1.06); } }
+@keyframes bhSparkTwinkle{ 0%,100%{ opacity:.4; } 50%{ opacity:1; } }
+
+@keyframes bhSpinBack{ from{ transform:translate(-50%,-50%) scaleY(.30) rotate(0deg); } to{ transform:translate(-50%,-50%) scaleY(.30) rotate(360deg); } }
+@keyframes bhSpinFront{ from{ transform:translate(-50%,-50%) rotate(0deg); } to{ transform:translate(-50%,-50%) rotate(360deg); } }
+@keyframes bhSpinFrontDisk{ from{ transform:translate(-50%,-50%) scaleY(.16) rotate(180deg); } to{ transform:translate(-50%,-50%) scaleY(.16) rotate(540deg); } }
 
 @media (max-width:600px){
-  #blackhole-visual{ opacity:.4; width:90vmin; height:90vmin; }
+  #blackhole-visual{ opacity:.55; width:100vmin; height:100vmin; }
 }
+
 
 
 /* ── فعال‌بودن تم کهکشان روی کل اپ ── */
@@ -801,10 +901,13 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 </head>
 <body data-theme="dark">
 <div id="blackhole-visual" aria-hidden="true">
-  <div class="bh-disk bh-disk-back"></div>
-  <div class="bh-core"></div>
-  <div class="bh-disk bh-disk-front"></div>
   <div class="bh-glow"></div>
+  <div class="bh-disk bh-disk-back"></div>
+  <div class="bh-sparks"></div>
+  <div class="bh-lensing"></div>
+  <div class="bh-core"></div>
+  <div class="bh-photon-ring"></div>
+  <div class="bh-disk bh-disk-front"></div>
 </div>
 <div id="app">
 <div id="err-bar"></div>

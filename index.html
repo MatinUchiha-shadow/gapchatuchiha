@@ -442,7 +442,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <div id="voice-bar" style="display:none">
   <div class="vb-left">
     <div>
-      <div class="vb-title" id="vb-room-name">🔊 روم عمومی</div>
+      <div class="vb-title" id="vb-room-name" onclick="showVoiceMembersMenu()" style="cursor:pointer;user-select:none" title="مشاهده اعضا">🔊 روم عمومی</div>
       <div class="vb-members" id="vb-members"><span class="vb-empty">کسی اینجا نیست</span></div>
     </div>
   </div>
@@ -451,6 +451,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   </div>
   <button class="vb-join-btn" id="vb-join-btn" onclick="toggleVoiceRoom()">ورود به صدا</button>
 </div>
+
+<!-- VOICE MEMBERS POPUP -->
+<div id="voice-members-popup" style="display:none;position:fixed;z-index:9998;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:10px;min-width:200px;max-width:280px;box-shadow:0 8px 30px rgba(0,0,0,.45);animation:fadeSlideDown .2s ease"></div>
 
 <!-- CHAT -->
 <div id="chat" style="display:none;flex:1;flex-direction:column;overflow:hidden">
@@ -769,7 +772,33 @@ window.closeThemePanel=function(){
   });
   /* اگه session قبلی داشتیم */
   const saved=localStorage.getItem('sb_session');
-  if(saved){ try{ const s=JSON.parse(saved); restoreSession(s); }catch{ localStorage.removeItem('sb_session'); } }
+  if(saved){
+    try{
+      const s=JSON.parse(saved);
+      /* چک کن token منقضی شده یا نه */
+      const expiresAt = s.expires_at || (s.created_at + (s.expires_in||3600));
+      const nowSec = Math.floor(Date.now()/1000);
+      if(expiresAt && nowSec >= expiresAt - 60){
+        /* token منقضیه، با refresh token تجدید کن */
+        const rt = s.refresh_token || localStorage.getItem('sb_refresh_token');
+        if(rt){
+          fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{
+            method:'POST',
+            headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+            body:JSON.stringify({refresh_token:rt})
+          }).then(r=>r.json()).then(data=>{
+            if(data.access_token){
+              localStorage.setItem('sb_session',JSON.stringify(data));
+              if(data.refresh_token) localStorage.setItem('sb_refresh_token',data.refresh_token);
+              restoreSession(data);
+            } else { localStorage.removeItem('sb_session'); }
+          }).catch(()=>localStorage.removeItem('sb_session'));
+        } else { localStorage.removeItem('sb_session'); }
+      } else {
+        restoreSession(s);
+      }
+    }catch{ localStorage.removeItem('sb_session'); }
+  }
 })();
 
 /* ══ AUTH TAB ══ */
@@ -849,6 +878,16 @@ function restoreSession(data){
   if(data.refresh_token) localStorage.setItem('sb_refresh_token', data.refresh_token);
   scheduleTokenRefresh(data);
   enterChat();
+  /* بعد از ورود، role رو از database هم چک کن */
+  if(!isAdmin){
+    api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=role`).then(rows=>{
+      if(rows&&rows[0]&&rows[0].role==='admin'){
+        isAdmin=true;
+        document.getElementById('hname').textContent=myName+' 👑';
+        document.getElementById('msg-input').placeholder='پیام بنویس… (یا /help برای دستورات ادمین)';
+      }
+    }).catch(()=>{});
+  }
 }
 
 /* تجدید خودکار توکن قبل از انقضا */
@@ -895,6 +934,17 @@ async function enterChat(){
   if(isAdmin) document.getElementById('msg-input').placeholder='پیام بنویس… (یا /help برای دستورات ادمین)';
   await checkBanned();
   await ensureOwnProfile();
+  /* چک role از database - ادمین‌هایی که از طریق /role ادمین شدن */
+  if(!isAdmin){
+    try{
+      const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=role`);
+      if(rows&&rows[0]&&rows[0].role==='admin'){
+        isAdmin=true;
+        document.getElementById('hname').textContent=myName+' 👑';
+        document.getElementById('msg-input').placeholder='پیام بنویس… (یا /help برای دستورات ادمین)';
+      }
+    }catch{}
+  }
   await loadMessages();
   startPolling();
   await syncVoiceMembers();
@@ -2577,7 +2627,59 @@ window.addEventListener('beforeunload',()=>{
   }
 });
 
-/* ── بازیابی اتصال وویس وقتی صفحه دوباره فعال میشه ── */
+/* ── منوی اعضای روم صوتی ── */
+window.showVoiceMembersMenu = function(){
+  const popup = document.getElementById('voice-members-popup');
+  if(popup.style.display !== 'none'){ popup.style.display='none'; return; }
+
+  const names = Object.keys(voiceMembers);
+  const titleEl = document.getElementById('vb-room-name');
+  const rect = titleEl.getBoundingClientRect();
+
+  let html = `<div style="font-size:11px;font-weight:700;color:var(--muted);padding:4px 8px 8px;border-bottom:1px solid var(--border);margin-bottom:6px">
+    👥 اعضای ${currentRoomName} (${names.length} نفر)
+  </div>`;
+
+  if(names.length === 0){
+    html += `<div style="font-size:12px;color:var(--muted);padding:6px 8px;text-align:center">کسی اینجا نیست</div>`;
+  } else {
+    html += names.map(n => {
+      const m = voiceMembers[n];
+      const isMe = n === myName;
+      const isSpeaking = isMe && window._localSpeaking && window._localSpeaking();
+      return `<div onclick="closeVoiceMembersMenu();openProfile('${escJs(n)}')" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--panel)'" onmouseout="this.style.background='transparent'">
+        <div style="width:32px;height:32px;border-radius:10px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:16px;border:${isSpeaking?'2px solid var(--green)':'2px solid var(--border)'}">
+          ${profilePhotos[n]?`<img src="${esc(profilePhotos[n])}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>`:(esc(m.av||'🧑'))}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(n)}${isMe?' (من)':''}</div>
+          <div style="font-size:11px;color:${isSpeaking?'var(--green)':m.muted?'var(--red)':'var(--muted)'}">
+            ${isSpeaking?'🎙 در حال صحبت':m.muted?'🔇 میوت':'🎤 آنلاین'}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  popup.innerHTML = html;
+  popup.style.display = 'block';
+  /* موقعیت زیر عنوان روم */
+  popup.style.top = (rect.bottom + 6) + 'px';
+  popup.style.left = Math.min(rect.left, window.innerWidth - 290) + 'px';
+
+  setTimeout(()=>document.addEventListener('click', function h(e){
+    if(!popup.contains(e.target) && e.target!==titleEl){
+      popup.style.display='none';
+      document.removeEventListener('click',h);
+    }
+  }), 100);
+};
+
+window.closeVoiceMembersMenu = function(){
+  document.getElementById('voice-members-popup').style.display='none';
+};
+
+
 document.addEventListener('visibilitychange', async ()=>{
   if(document.visibilityState==='visible' && inVoice){
     /* heartbeat فوری */

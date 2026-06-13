@@ -4551,7 +4551,7 @@ window.aiSend = async function(){
       aiHistory.push({ role:'assistant', content: answer });
       aiAppendMsg('bot', answer);
     } else {
-      aiAppendMsg('bot', '❌ مشکلی پیش اومد. دوباره امتحان کن!');
+      aiAppendMsg('bot', '❌ ' + JSON.stringify(data).slice(0,200));
     }
   } catch(e) {
     aiRemoveTyping();

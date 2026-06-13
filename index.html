@@ -262,8 +262,121 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .preset-chip{flex-shrink:0;width:68px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:16px;border:1.5px solid var(--border);background:var(--panel);transition:all var(--ease);cursor:pointer}
 .preset-chip:hover{transform:scale(1.06);border-color:var(--accent)}
 .preset-chip.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(124,109,250,.25)}
-.preset-swatch{width:44px;height:44px;border-radius:12px;display:flex;overflow:hidden}
+.preset-swatch{width:44px;height:44px;border-radius:12px;display:flex;overflow:hidden;position:relative}
 .preset-swatch span{flex:1;height:100%}
+
+/* locked preset overlay */
+.preset-chip.locked{opacity:.55;filter:grayscale(.35)}
+.preset-chip.locked:hover{transform:none;border-color:var(--border)}
+.preset-lock-badge{
+  position:absolute;inset:0;border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:rgba(0,0,0,.55);font-size:13px;font-weight:700;color:#fff;
+  pointer-events:none;
+}
+.preset-lock-badge span{font-size:8px;font-weight:600;color:#ddd;white-space:nowrap}
+.preset-chip{position:relative}
+
+/* ── کهکشان preset: animated starfield swatch ── */
+.preset-chip.preset-galaxy .preset-swatch{
+  background:radial-gradient(circle at 30% 30%, #a855f7 0%, #15123a 55%, #05030f 100%);
+}
+.preset-galaxy-stars{
+  position:absolute;inset:0;z-index:2;
+  background-image:
+    radial-gradient(1.5px 1.5px at 15% 25%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 70% 60%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 40% 80%, #22d3ee 100%, transparent),
+    radial-gradient(1.5px 1.5px at 85% 20%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 55% 40%, #fff 100%, transparent);
+  animation:galaxyTwinkle 2.4s ease-in-out infinite;
+}
+@keyframes galaxyTwinkle{0%,100%{opacity:.5}50%{opacity:1}}
+.preset-chip.preset-galaxy:not(.locked):hover .preset-swatch{
+  box-shadow:0 0 14px rgba(168,85,247,.6);
+}
+.preset-chip.preset-galaxy .preset-label{
+  background:linear-gradient(90deg,#a855f7,#22d3ee,#a855f7);
+  background-size:200% auto;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:galaxyLabel 3s linear infinite;font-weight:700;
+}
+@keyframes galaxyLabel{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+/* ── سیاه‌چاله preset: animated black hole swatch ── */
+.preset-chip.preset-blackhole .preset-swatch{
+  background:radial-gradient(circle at 50% 50%, #000 0% 35%, #ff6a00 55%, #000 80%);
+}
+.preset-blackhole-core{
+  position:absolute;inset:0;z-index:2;border-radius:12px;overflow:hidden;
+}
+.preset-blackhole-core::before{
+  content:'';position:absolute;inset:0;
+  background:conic-gradient(from 0deg, transparent 0deg, #ff6a00 60deg, transparent 120deg, #ffffff 180deg, transparent 240deg, #ff6a00 300deg, transparent 360deg);
+  animation:blackholeSpin 2.5s linear infinite;
+  opacity:.85;
+}
+.preset-blackhole-core::after{
+  content:'';position:absolute;inset:30%;border-radius:50%;
+  background:#000;box-shadow:0 0 10px 3px rgba(255,106,0,.5);
+}
+@keyframes blackholeSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.preset-chip.preset-blackhole:not(.locked):hover .preset-swatch{
+  box-shadow:0 0 18px rgba(255,106,0,.7);
+}
+.preset-chip.preset-blackhole .preset-label{
+  color:#ff6a00;font-weight:800;letter-spacing:.03em;
+  animation:blackholePulse 1.6s ease-in-out infinite;
+}
+@keyframes blackholePulse{0%,100%{text-shadow:0 0 4px rgba(255,106,0,.4)}50%{text-shadow:0 0 10px rgba(255,106,0,.9)}}
+
+/* ── فعال‌بودن تم سیاه‌چاله روی کل اپ: افکت‌های ویژه ── */
+body[data-active-theme="سیاه‌چاله"] header,
+body[data-active-theme="سیاه‌چاله"] #voice-bar{
+  border-color:#1a1a1a;
+}
+body[data-active-theme="سیاه‌چاله"] .auth-logo,
+body[data-active-theme="سیاه‌چاله"] .hav,
+body[data-active-theme="سیاه‌چاله"] .mav{
+  background:radial-gradient(circle at 50% 50%, #000 0% 30%, #ff6a00 60%, #000 100%);
+  box-shadow:0 0 10px rgba(255,106,0,.5);
+}
+body[data-active-theme="سیاه‌چاله"] #app{
+  position:relative;
+}
+body[data-active-theme="سیاه‌چاله"] #app::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(circle at 50% 100%, rgba(255,106,0,.08) 0%, transparent 55%);
+}
+body[data-active-theme="سیاه‌چاله"] .bubble.mine,
+body[data-active-theme="سیاه‌چاله"] .msg-row.mine .bubble{
+  box-shadow:0 0 12px rgba(255,106,0,.25);
+}
+body[data-active-theme="سیاه‌چاله"] .auth-btn,
+body[data-active-theme="سیاه‌چاله"] .tp-action-btn.primary{
+  background:linear-gradient(135deg,#ff6a00,#000000);
+  box-shadow:0 4px 16px rgba(255,106,0,.4);
+}
+
+/* ── فعال‌بودن تم کهکشان روی کل اپ ── */
+body[data-active-theme="کهکشان"] #app{
+  position:relative;
+}
+body[data-active-theme="کهکشان"] #app::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 20%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 80% 10%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 60% 70%, #22d3ee 100%, transparent),
+    radial-gradient(1.5px 1.5px at 30% 85%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 90% 60%, #a855f7 100%, transparent),
+    radial-gradient(1px 1px at 45% 45%, #fff 100%, transparent);
+  opacity:.6;animation:galaxyTwinkle 3s ease-in-out infinite;
+}
+body[data-active-theme="کهکشان"] .auth-btn,
+body[data-active-theme="کهکشان"] .tp-action-btn.primary{
+  background:linear-gradient(135deg,#a855f7,#22d3ee,#f472b6);
+}
 .preset-label{font-size:10px;color:var(--muted);text-align:center}
 .color-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
 .color-row:last-child{border-bottom:none}
@@ -952,9 +1065,33 @@ const THEME_PRESETS = {
   'رزگلد': {'--bg':'#1c1416','--surface':'#2a1f22','--panel':'#3a2a2e','--border':'#4f383d','--accent':'#f4a8b3','--accent2':'#e8c4a0','--text':'#fbeef0','--muted':'#bb909a','--bubble-mine':'#f4a8b3','--bubble-mine-text':'#2a0e14','--bubble-other':'#2a1f22','--bubble-other-text':'#fbeef0','--radius':'20px'},
   'کهربایی': {'--bg':'#170f06','--surface':'#241808','--panel':'#33220c','--border':'#4a3413','--accent':'#f59e0b','--accent2':'#fbbf24','--text':'#fdf2e0','--muted':'#bb9b6e','--bubble-mine':'#f59e0b','--bubble-mine-text':'#241404','--bubble-other':'#241808','--bubble-other-text':'#fdf2e0','--radius':'14px'},
   'بنفش شب': {'--bg':'#0e0a1a','--surface':'#181228','--panel':'#241b3a','--border':'#352a52','--accent':'#a78bfa','--accent2':'#f472b6','--text':'#ede9fe','--muted':'#9183b8','--bubble-mine':'#a78bfa','--bubble-mine-text':'#1a1330','--bubble-other':'#181228','--bubble-other-text':'#ede9fe','--radius':'18px'},
+  'کهکشان': {'--bg':'#05030f','--surface':'#0c0a22','--panel':'#15123a','--border':'#2a235c','--accent':'#a855f7','--accent2':'#22d3ee','--text':'#f0eaff','--muted':'#8b80c4','--bubble-mine':'#a855f7','--bubble-mine-text':'#ffffff','--bubble-other':'#0c0a22','--bubble-other-text':'#f0eaff','--radius':'18px'},
+  'سیاه‌چاله': {'--bg':'#000000','--surface':'#000000','--panel':'#0a0a0a','--border':'#1a1a1a','--accent':'#ff6a00','--accent2':'#ffffff','--text':'#ffffff','--muted':'#555555','--bubble-mine':'#000000','--bubble-mine-text':'#ffffff','--bubble-other':'#0a0a0a','--bubble-other-text':'#ffffff','--radius':'16px'},
 };
 
+/* پریست‌های قفل‌شده: نام => شرط دسترسی */
+const LOCKED_PRESETS = {
+  'کهکشان': {minLevel:30, label:'لول ۳۰'},
+  'سیاه‌چاله': {adminOnly:true, label:'مخصوص ادمین'},
+};
+function isPresetLocked(name){
+  const rule=LOCKED_PRESETS[name];
+  if(!rule) return false;
+  if(rule.adminOnly) return !isAdmin;
+  if(rule.minLevel) return myLevel<rule.minLevel;
+  return false;
+}
+
 let currentTheme = {};
+let currentThemeName = 'پیش‌فرض';
+function detectThemeName(){
+  for(const [name,vars] of Object.entries(THEME_PRESETS)){
+    if(currentTheme['--accent']===vars['--accent'] && currentTheme['--bg']===vars['--bg'] && currentTheme['--accent2']===vars['--accent2']){
+      return name;
+    }
+  }
+  return null;
+}
 function loadTheme(){
   const saved=localStorage.getItem('gapchat_theme');
   if(saved){ try{ currentTheme=JSON.parse(saved); }catch{ currentTheme={...THEME_PRESETS['پیش‌فرض']}; } }
@@ -969,11 +1106,23 @@ function loadTheme(){
 function applyTheme(){
   const root=document.documentElement;
   Object.entries(currentTheme).forEach(([k,v])=>root.style.setProperty(k,v));
+  const name=detectThemeName();
+  if(name) document.body.setAttribute('data-active-theme', name);
+  else document.body.removeAttribute('data-active-theme');
 }
 function saveTheme(){ localStorage.setItem('gapchat_theme',JSON.stringify(currentTheme)); }
 function setThemeVar(key,val){ currentTheme[key]=val; applyTheme(); saveTheme(); renderThemePanel(); }
 function updateRadius(val){ currentTheme['--radius']=val+'px'; document.getElementById('tp-radius-val').textContent=val+'px'; applyTheme(); saveTheme(); }
-function applyPreset(name){ currentTheme={...THEME_PRESETS[name]}; if(!currentTheme['--radius']) currentTheme['--radius']='16px'; applyTheme(); saveTheme(); renderThemePanel(); }
+function applyPreset(name){
+  if(isPresetLocked(name)){
+    const rule=LOCKED_PRESETS[name];
+    toast(rule.adminOnly?'🔒 این تم مخصوص ادمین‌هاست':`🔒 این تم در لول ${rule.minLevel} باز میشه`);
+    return;
+  }
+  currentTheme={...THEME_PRESETS[name]}; if(!currentTheme['--radius']) currentTheme['--radius']='16px'; applyTheme(); saveTheme(); renderThemePanel();
+  if(name==='کهکشان') toast('🌌 تم کهکشان فعال شد!');
+  if(name==='سیاه‌چاله') toast('🕳 تم سیاه‌چاله فعال شد!');
+}
 function resetTheme(){ applyPreset('پیش‌فرض'); toast('تم بازنشانی شد'); }
 
 function renderThemePanel(){
@@ -982,15 +1131,24 @@ function renderThemePanel(){
   presetsEl.innerHTML='';
   Object.entries(THEME_PRESETS).forEach(([name,vars])=>{
     const isActive=JSON.stringify(vars)===JSON.stringify({...vars,...Object.fromEntries(Object.entries(currentTheme).filter(([k])=>k in vars))}) && currentTheme['--accent']===vars['--accent'] && currentTheme['--bg']===vars['--bg'];
+    const locked=isPresetLocked(name);
     const chip=document.createElement('button');
-    chip.className='preset-chip'+(isActive?' active':'');
+    chip.className='preset-chip'+(isActive?' active':'')+(locked?' locked':'')+(name==='کهکشان'?' preset-galaxy':'')+(name==='سیاه‌چاله'?' preset-blackhole':'');
     chip.onclick=()=>applyPreset(name);
+    const lockBadge=locked
+      ? `<div class="preset-lock-badge">🔒<span>${LOCKED_PRESETS[name].label}</span></div>`
+      : '';
+    const extraDeco = name==='کهکشان'
+      ? '<div class="preset-galaxy-stars"></div>'
+      : (name==='سیاه‌چاله' ? '<div class="preset-blackhole-core"></div>' : '');
     chip.innerHTML=`<div class="preset-swatch">
+        ${extraDeco}
         <span style="background:${vars['--bg']}"></span>
         <span style="background:${vars['--accent']}"></span>
         <span style="background:${vars['--accent2']}"></span>
       </div>
-      <div class="preset-label">${name}</div>`;
+      <div class="preset-label">${name}</div>
+      ${lockBadge}`;
     presetsEl.appendChild(chip);
   });
 
@@ -1399,7 +1557,7 @@ async function enterChat(){
   /* کش لول خودمون برای ری‌اکشن‌های سطحی */
   try{
     const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=message_count,voice_seconds`);
-    if(rows&&rows[0]){ const lv=getLevelInfo(rows[0].message_count||0,rows[0].voice_seconds||0); rankColorCache[myName]=lv.rank.color; }
+    if(rows&&rows[0]){ const lv=getLevelInfo(rows[0].message_count||0,rows[0].voice_seconds||0); rankColorCache[myName]=lv.rank.color; myLevel=lv.level; }
   }catch{}
 }
 
@@ -1752,6 +1910,7 @@ async function cleanupExpiredMedia(){
 
 const ADMIN_EMAIL='matinuchiha9@gmail.com';
 let isAdmin=false, banned=false;
+let myLevel=1;
 
 async function handleAdminCommand(raw){
   const parts=raw.trim().split(/\s+/);
@@ -2477,11 +2636,27 @@ window.scrollToPinned=function(){
 
 /* ══ ری‌اکشن‌ها ══ */
 const REACTION_EMOJIS=['❤️','😂','👍','🔥','😮','😢','👏','🎉'];
+/* هر ری‌اکشن مینیمم لولی که نیاز داره تا باز شه (بر اساس UNLOCK_REWARDS) */
+const REACTION_UNLOCK_LEVEL={
+  '👍':5,'😊':5,'😢':5,'👏':5,
+  '❤️':10,'😮':10,
+  '🎉':20,
+  '🔥':200,
+  '😂':1, /* پایه همیشه باز */
+};
+function getUnlockedReactions(){
+  return REACTION_EMOJIS.filter(e=>myLevel>=(REACTION_UNLOCK_LEVEL[e]||5));
+}
 function showReactionPicker(msgId, row){
   document.getElementById('reaction-picker')?.remove();
   const picker=document.createElement('div');
   picker.id='reaction-picker';
-  REACTION_EMOJIS.forEach(e=>{
+  const unlocked=getUnlockedReactions();
+  if(unlocked.length===0){
+    toast('🔒 برای استفاده از ری‌اکشن باید حداقل لول 5 باشی');
+    return;
+  }
+  unlocked.forEach(e=>{
     const btn=document.createElement('button');
     btn.className='rp-emoji'; btn.textContent=e;
     btn.onclick=()=>{ picker.remove(); addReaction(msgId, e); };

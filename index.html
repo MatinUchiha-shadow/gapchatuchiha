@@ -326,6 +326,36 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .bubble audio{max-width:200px;width:100%;margin-top:4px;border-radius:8px}
 audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 
+/* ── CUSTOM VOICE PLAYER ── */
+.voice-player{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:14px;min-width:190px;max-width:240px;
+  background:rgba(255,255,255,.07);margin-top:2px;
+}
+.vp-play-btn{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:13px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:transform .15s cubic-bezier(.34,1.56,.64,1),box-shadow .15s ease;
+  box-shadow:0 2px 8px rgba(124,109,250,.4);
+}
+.vp-play-btn:hover{transform:scale(1.1);box-shadow:0 4px 14px rgba(124,109,250,.5)}
+.vp-play-btn:active{transform:scale(.92)}
+.vp-info{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.vp-waveform{
+  display:flex;align-items:center;gap:1.5px;height:24px;cursor:pointer;
+  position:relative;
+}
+.vp-wave-bar{
+  width:3px;border-radius:99px;flex-shrink:0;
+  background:rgba(255,255,255,.25);transition:background .15s ease;
+}
+.vp-wave-bar.played{background:var(--accent)}
+.msg-row.mine .vp-wave-bar{background:rgba(255,255,255,.4)}
+.msg-row.mine .vp-wave-bar.played{background:rgba(255,255,255,.9)}
+.vp-time{font-size:10px;color:var(--muted);letter-spacing:.03em}
+.msg-row.mine .vp-time{color:rgba(255,255,255,.7)}
+
 /* ── CAMERA BTN ── */
 .camera-msg-btn{
   width:42px;height:42px;border-radius:13px;flex-shrink:0;
@@ -335,6 +365,99 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
   transition:all .15s cubic-bezier(.34,1.56,.64,1);cursor:pointer;
 }
 .camera-msg-btn:hover{background:var(--border);transform:scale(1.08)}
+
+/* ── UNLOCK PANEL ── */
+#unlock-overlay{
+  position:fixed;inset:0;z-index:300;display:none;align-items:flex-end;justify-content:center;
+  background:rgba(0,0,0,0);transition:background .3s ease;
+}
+#unlock-overlay.show{display:flex;background:rgba(0,0,0,.6)}
+#unlock-panel{
+  width:100%;max-width:480px;max-height:90vh;
+  background:var(--surface);border-radius:28px 28px 0 0;
+  display:flex;flex-direction:column;overflow:hidden;
+  transform:translateY(100%) scale(.97);opacity:0;
+  transition:transform .44s cubic-bezier(.34,1.1,.4,1),opacity .3s ease;
+}
+#unlock-overlay.show #unlock-panel{transform:translateY(0) scale(1);opacity:1}
+.unlock-header{
+  padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.unlock-title-wrap{display:flex;flex-direction:column;gap:3px}
+.unlock-title{font-size:17px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.unlock-subtitle{font-size:11px;color:var(--muted)}
+.unlock-body{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.unlock-my-level{
+  background:linear-gradient(135deg,rgba(124,109,250,.15),rgba(250,109,155,.1));
+  border:1px solid rgba(124,109,250,.25);border-radius:18px;padding:14px 16px;
+}
+.unlock-lv-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.unlock-lv-badge{
+  width:52px;height:52px;border-radius:16px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 4px 16px rgba(124,109,250,.4);
+}
+.unlock-lv-num{font-size:18px;font-weight:900;color:#fff;line-height:1}
+.unlock-lv-lbl{font-size:8px;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:.08em}
+.unlock-lv-info{flex:1}
+.unlock-lv-rank{font-size:14px;font-weight:700}
+.unlock-lv-xp{font-size:11px;color:var(--muted);margin-top:2px}
+.unlock-progress-wrap{width:100%;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.unlock-progress-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .8s cubic-bezier(.16,1,.3,1)}
+.unlock-progress-txt{font-size:10px;color:var(--muted);margin-top:5px}
+
+/* Reward cards */
+.unlock-card{
+  border-radius:18px;border:1.5px solid var(--border);
+  background:var(--panel);overflow:hidden;
+  transition:border-color var(--ease);
+}
+.unlock-card.unlocked{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)}
+.unlock-card.next-up{border-color:rgba(124,109,250,.5);background:rgba(124,109,250,.06);animation:nextUpPulse 2.5s ease-in-out infinite}
+@keyframes nextUpPulse{0%,100%{box-shadow:0 0 0 0 rgba(124,109,250,.0)}50%{box-shadow:0 0 0 4px rgba(124,109,250,.12)}}
+.unlock-card-inner{display:flex;align-items:center;gap:12px;padding:13px 14px}
+.unlock-card-icon{
+  width:46px;height:46px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  background:var(--surface);
+}
+.unlock-card.unlocked .unlock-card-icon{background:rgba(34,197,94,.12)}
+.unlock-card.next-up .unlock-card-icon{background:rgba(124,109,250,.15)}
+.unlock-card.locked .unlock-card-icon{filter:grayscale(1);opacity:.45}
+.unlock-card-info{flex:1;min-width:0}
+.unlock-card-name{font-size:13px;font-weight:700}
+.unlock-card.locked .unlock-card-name{color:var(--muted)}
+.unlock-card-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.unlock-card-badge{
+  flex-shrink:0;padding:4px 10px;border-radius:99px;font-size:10px;font-weight:700;
+}
+.unlock-card.unlocked .unlock-card-badge{background:rgba(34,197,94,.15);color:#22c55e}
+.unlock-card.next-up .unlock-card-badge{background:rgba(124,109,250,.15);color:var(--accent)}
+.unlock-card.locked .unlock-card-badge{background:var(--surface);color:var(--muted)}
+.unlock-card-progress{padding:0 14px 12px}
+.unlock-card-pbar-wrap{height:4px;background:var(--border);border-radius:99px;overflow:hidden}
+.unlock-card-pbar{height:100%;border-radius:99px;background:var(--accent);transition:width .6s ease}
+
+/* ── LEVEL REACTION PARTICLES ── */
+.reaction-particle{
+  position:fixed;pointer-events:none;z-index:9999;
+  font-size:18px;animation:particleFly .9s cubic-bezier(.2,.8,.4,1) forwards;
+}
+@keyframes particleFly{
+  0%{opacity:1;transform:translate(0,0) scale(1)}
+  100%{opacity:0;transform:translate(var(--px),var(--py)) scale(.3)}
+}
+.reaction-ring{
+  position:fixed;pointer-events:none;z-index:9998;
+  border-radius:50%;border:2px solid var(--accent);
+  animation:ringExpand .5s ease-out forwards;
+}
+@keyframes ringExpand{
+  0%{opacity:.8;transform:scale(0)}
+  100%{opacity:0;transform:scale(3)}
+}
 
 /* ── PROFILE MODAL ── */
 #profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:210;display:none;align-items:center;justify-content:center;padding:20px;transition:background .25s ease}
@@ -505,6 +628,7 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
   <div class="hr">
     <button class="icon-btn" onclick="openVoiceRooms()" title="روم‌های صوتی">🔊</button>
     <button class="icon-btn" onclick="openDmList()" title="پیام‌های خصوصی">✉️</button>
+    <button class="icon-btn" onclick="openUnlockPanel()" title="جوایز و سطح‌ها" id="unlock-btn">🏆</button>
     <button class="icon-btn" onclick="openThemePanel(this)" title="شخصی‌سازی تم">🎨</button>
     <button class="icon-btn" onclick="signOut()" title="خروج از حساب">🚪</button>
   </div>
@@ -657,6 +781,22 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 </div>
 
 <div id="toast"></div>
+
+<!-- UNLOCK PANEL -->
+<div id="unlock-overlay" onclick="if(event.target===this) closeUnlockPanel()">
+  <div id="unlock-panel">
+    <div class="unlock-header">
+      <div class="unlock-title-wrap">
+        <div class="unlock-title">🔓 سیستم جوایز</div>
+        <div class="unlock-subtitle">با فعالیت جوایز بیشتری باز کن</div>
+      </div>
+      <button class="icon-btn" onclick="closeUnlockPanel()">✕</button>
+    </div>
+    <div class="unlock-body" id="unlock-body">
+      <div style="text-align:center;color:var(--muted);padding:20px">در حال بارگذاری…</div>
+    </div>
+  </div>
+</div>
 
 <!-- VOICE ROOMS BROWSER -->
 <div class="fp-overlay" id="rooms-overlay" onclick="if(event.target===this) closeVoiceRooms()">
@@ -1205,6 +1345,11 @@ async function enterChat(){
   /* بارگذاری پین و ری‌اکشن‌های ذخیره‌شده */
   try{ pinnedMsg=JSON.parse(localStorage.getItem('pinnedMsg')||'null'); renderPinnedBar(); }catch{}
   try{ reactions=JSON.parse(localStorage.getItem('reactions')||'{}'); }catch{}
+  /* کش لول خودمون برای ری‌اکشن‌های سطحی */
+  try{
+    const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=message_count,voice_seconds`);
+    if(rows&&rows[0]){ const lv=getLevelInfo(rows[0].message_count||0,rows[0].voice_seconds||0); rankColorCache[myName]={...lv,level:lv.level}; }
+  }catch{}
 }
 
 /* عکس/آواتار رو توی یه المان بگذار */
@@ -2024,7 +2169,18 @@ function appendMsg(msg){
     const caption=capIdx>-1?esc(msg.text.slice(capIdx+5)):'';
     if(mediaType==='audio'){
       plainText='🎤 پیام صوتی';
-      displayText=`<div style="display:flex;align-items:center;gap:6px;padding:4px 0"><span>🎤</span><audio controls src="${esc(mediaUrl)}" style="flex:1;max-width:200px;height:36px"></audio></div>`;
+      const pid='vp-'+Math.random().toString(36).slice(2);
+      const bars=Array.from({length:20},(_,i)=>{
+        const h=8+Math.round(Math.sin(i*0.7+1)*8+Math.random()*12);
+        return `<div class="vp-wave-bar" style="height:${h}px" data-idx="${i}"></div>`;
+      }).join('');
+      displayText=`<div class="voice-player" id="${pid}" data-src="${esc(mediaUrl)}">
+        <button class="vp-play-btn" onclick="vpToggle('${pid}')">▶</button>
+        <div class="vp-info">
+          <div class="vp-waveform" onclick="vpSeek(event,'${pid}')">${bars}</div>
+          <div class="vp-time" id="${pid}-time">0:00</div>
+        </div>
+      </div>`;
     } else if(mediaType==='video'){
       plainText='📹 فیلم';
       displayText=`<video class="chat-media" src="${esc(mediaUrl)}" controls playsinline></video>${caption?'<br>'+caption:''}`;
@@ -2232,17 +2388,164 @@ function showReactionPicker(msgId, row){
   picker.style.left=Math.max(6,Math.min(rect.left, window.innerWidth-picker.offsetWidth-10))+'px';
   setTimeout(()=>document.addEventListener('click',function h(){picker.remove();document.removeEventListener('click',h);},{once:true}),50);
 }
+/* ══ CUSTOM VOICE PLAYER ══ */
+const vpAudios={};
+window.vpToggle=function(pid){
+  const el=document.getElementById(pid);
+  if(!el) return;
+  let audio=vpAudios[pid];
+  if(!audio){
+    audio=new Audio(el.dataset.src);
+    vpAudios[pid]=audio;
+    audio.addEventListener('timeupdate',()=>vpUpdate(pid,audio));
+    audio.addEventListener('ended',()=>{
+      document.querySelector(`#${pid} .vp-play-btn`).textContent='▶';
+      vpSetProgress(pid,1,1);
+    });
+    audio.addEventListener('loadedmetadata',()=>{
+      document.getElementById(pid+'-time').textContent=fmtVpTime(audio.duration);
+    });
+  }
+  if(audio.paused){
+    /* pause all others */
+    Object.entries(vpAudios).forEach(([k,a])=>{
+      if(k!==pid&&!a.paused){ a.pause(); const b=document.querySelector(`#${k} .vp-play-btn`); if(b) b.textContent='▶'; }
+    });
+    audio.play();
+    document.querySelector(`#${pid} .vp-play-btn`).textContent='⏸';
+  } else {
+    audio.pause();
+    document.querySelector(`#${pid} .vp-play-btn`).textContent='▶';
+  }
+};
+window.vpSeek=function(e,pid){
+  const audio=vpAudios[pid]; if(!audio||!audio.duration) return;
+  const wf=document.querySelector(`#${pid} .vp-waveform`);
+  const rect=wf.getBoundingClientRect();
+  const ratio=(e.clientX-rect.left)/rect.width;
+  audio.currentTime=ratio*audio.duration;
+};
+function vpUpdate(pid,audio){
+  if(!audio.duration) return;
+  vpSetProgress(pid,audio.currentTime,audio.duration);
+  document.getElementById(pid+'-time').textContent=fmtVpTime(audio.currentTime)+' / '+fmtVpTime(audio.duration);
+}
+function vpSetProgress(pid,cur,dur){
+  const bars=document.querySelectorAll(`#${pid} .vp-wave-bar`);
+  const ratio=dur?cur/dur:0;
+  bars.forEach((b,i)=>{ const idx=parseInt(b.dataset.idx); b.classList.toggle('played',idx/bars.length<=ratio); });
+}
+function fmtVpTime(s){
+  if(!s||isNaN(s)) return '0:00';
+  const m=Math.floor(s/60), sec=Math.floor(s%60);
+  return `${m}:${sec.toString().padStart(2,'0')}`;
+}
+
+/* ══ LEVEL-BASED REACTIONS WITH PARTICLES ══ */
+function getUserLevel(name){
+  /* cached from rankColorCache if available, else default 1 */
+  if(rankColorCache[name]) return rankColorCache[name].level||1;
+  return 1;
+}
+
 function addReaction(msgId, emoji){
   if(!reactions[msgId]) reactions[msgId]={};
   if(!reactions[msgId][emoji]) reactions[msgId][emoji]=[];
   const list=reactions[msgId][emoji];
   const idx=list.indexOf(myName);
+  const isAdding=idx===-1;
   if(idx>-1) list.splice(idx,1); else list.push(myName);
   if(list.length===0) delete reactions[msgId][emoji];
-  /* ذخیره در localStorage (سمت کلاینت — برای سرور باید جدول جداگانه بسازی) */
   localStorage.setItem('reactions', JSON.stringify(reactions));
   renderReactions(msgId);
+  /* level-based effects when adding a reaction */
+  if(isAdding){
+    const lvInfo=getLevelInfo(0,0); /* will be overridden by cached */
+    const myLevel=rankColorCache[myName]?rankColorCache[myName].level:1;
+    triggerReactionEffect(emoji, myLevel);
+  }
 }
+
+function triggerReactionEffect(emoji, level){
+  /* Find the chip DOM element for visual origin */
+  const origin={x:window.innerWidth/2, y:window.innerHeight*0.6};
+
+  /* Level thresholds for effects */
+  if(level>=100){
+    /* MAX: explosion + ring + sound + many particles */
+    spawnParticles(emoji, origin, 18, true);
+    spawnRing(origin, '#f59e0b');
+    spawnRing(origin, 'var(--accent)', 80);
+    playReactionSound('epic');
+  } else if(level>=50){
+    spawnParticles(emoji, origin, 10, false);
+    spawnRing(origin, 'var(--accent)');
+    playReactionSound('medium');
+  } else if(level>=20){
+    spawnParticles(emoji, origin, 5, false);
+    playReactionSound('light');
+  } else if(level>=10){
+    spawnParticles(emoji, origin, 3, false);
+  }
+  /* level < 10: no effect, plain reaction */
+}
+
+function spawnParticles(emoji, origin, count, rainbow){
+  for(let i=0;i<count;i++){
+    const el=document.createElement('div');
+    el.className='reaction-particle';
+    el.textContent=emoji;
+    const angle=(Math.PI*2/count)*i + (Math.random()-.5)*.8;
+    const dist=60+Math.random()*100;
+    const px=Math.cos(angle)*dist;
+    const py=-(40+Math.sin(angle)*dist+Math.random()*60);
+    el.style.left=origin.x+'px';
+    el.style.top=origin.y+'px';
+    el.style.setProperty('--px',px+'px');
+    el.style.setProperty('--py',py+'px');
+    el.style.animationDelay=(i*30)+'ms';
+    if(rainbow) el.style.filter=`hue-rotate(${i*20}deg)`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 950+i*30);
+  }
+}
+
+function spawnRing(origin, color, size=50){
+  const el=document.createElement('div');
+  el.className='reaction-ring';
+  el.style.cssText=`width:${size}px;height:${size}px;left:${origin.x-size/2}px;top:${origin.y-size/2}px;border-color:${color}`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 520);
+}
+
+const _ac=new(window.AudioContext||window.webkitAudioContext||function(){})();
+function playReactionSound(type){
+  if(!_ac||_ac.state==='closed') return;
+  try{
+    const resume=_ac.state==='suspended'?_ac.resume():Promise.resolve();
+    resume.then(()=>{
+      if(type==='light'){
+        tone(_ac, 880, .08, 'sine', .12);
+      } else if(type==='medium'){
+        tone(_ac, 660, .1, 'sine', .1);
+        setTimeout(()=>tone(_ac, 880, .08, 'sine', .1),80);
+      } else if(type==='epic'){
+        [440,554,659,880].forEach((f,i)=>setTimeout(()=>tone(_ac,f,.15,'triangle',.15),i*60));
+      }
+    });
+  }catch{}
+}
+function tone(ac, freq, gain, type, dur){
+  try{
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(gain,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+dur);
+    o.start(ac.currentTime); o.stop(ac.currentTime+dur);
+  }catch{}
+}
+
 function renderReactions(msgId){
   const el=document.getElementById('reactions-'+msgId);
   if(!el||!reactions[msgId]) return;
@@ -2252,6 +2555,94 @@ function renderReactions(msgId){
       <button class="reaction-chip${list.includes(myName)?' mine':''}" onclick="addReaction(${msgId},'${emoji}')">
         <span class="rc">${emoji}</span><span class="cnt">${list.length}</span>
       </button>`).join('');
+}
+
+/* ══ UNLOCK / REWARD SYSTEM ══ */
+const UNLOCK_REWARDS = [
+  {lvl:1,  icon:'💬', name:'چت‌کار',           desc:'ارسال اولین پیام — به دنیای گپ‌چت خوش اومدی!',      type:'badge'},
+  {lvl:5,  icon:'😊', name:'ری‌اکشن پایه',     desc:'دسترسی به ری‌اکشن‌های عادی با ایموجی',              type:'reaction_basic'},
+  {lvl:10, icon:'✨', name:'ری‌اکشن درخشان',   desc:'ری‌اکشن‌هات با 3 ذره‌بازی همراه میشه!',             type:'reaction_glow'},
+  {lvl:20, icon:'🎇', name:'ری‌اکشن جرقه',    desc:'5 ذره + افکت نور هنگام ری‌اکشن',                    type:'reaction_spark'},
+  {lvl:30, icon:'🎨', name:'تم ویژه کهکشان',  desc:'یه پریست تم اختصاصی باز میشه',                      type:'theme_galaxy'},
+  {lvl:50, icon:'🌊', name:'ری‌اکشن موجی',    desc:'10 ذره + رینگ نور + صدای سبک',                      type:'reaction_wave'},
+  {lvl:75, icon:'🏅', name:'بج طلایی',         desc:'بج طلایی کنار اسمت در پروفایل',                     type:'badge_gold'},
+  {lvl:100,icon:'💥', name:'ری‌اکشن انفجاری', desc:'18 ذره + 2 رینگ + صدای حماسی + رنگین‌کمان',         type:'reaction_epic'},
+  {lvl:150,icon:'🎭', name:'قاب ویژه',         desc:'قاب آواتار اختصاصی در چت',                           type:'frame'},
+  {lvl:200,icon:'🔥', name:'ری‌اکشن آتشین',   desc:'ری‌اکشن‌هات با افکت آتش',                           type:'reaction_fire'},
+  {lvl:300,icon:'⚡', name:'ری‌اکشن رعد',      desc:'انیمیشن رعد + صدا + ذره‌های برقی',                  type:'reaction_thunder'},
+  {lvl:500,icon:'🌈', name:'ری‌اکشن رنگین',   desc:'ذره‌های رنگین‌کمانی با هر ری‌اکشن',                 type:'reaction_rainbow'},
+  {lvl:700,icon:'👑', name:'تاج افسانه',       desc:'تاج طلایی کنار اسمت در همه جا',                     type:'crown'},
+  {lvl:999,icon:'🌌', name:'اسطوره ابدی',      desc:'بالاترین جایگاه — ری‌اکشن‌هات جهانی میشن!',         type:'legend'},
+];
+
+window.openUnlockPanel=async function(){
+  const ov=document.getElementById('unlock-overlay');
+  ov.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('show')));
+  await renderUnlockBody();
+};
+window.closeUnlockPanel=function(){
+  const ov=document.getElementById('unlock-overlay');
+  ov.classList.remove('show');
+  setTimeout(()=>{ if(!ov.classList.contains('show')) ov.style.display='none'; }, 440);
+};
+
+async function renderUnlockBody(){
+  const body=document.getElementById('unlock-body');
+  let profile={message_count:0,voice_seconds:0};
+  try{
+    const rows=await api(`/rest/v1/profiles?name=eq.${encodeURIComponent(myName)}&select=message_count,voice_seconds`);
+    if(rows&&rows[0]) profile=rows[0];
+  }catch{}
+  const lv=getLevelInfo(profile.message_count||0,profile.voice_seconds||0);
+  const myLevel=lv.level;
+
+  /* find next reward */
+  const nextReward=UNLOCK_REWARDS.find(r=>r.lvl>myLevel);
+  const levelsToNext=nextReward?nextReward.lvl-myLevel:0;
+
+  body.innerHTML=`
+    <div class="unlock-my-level">
+      <div class="unlock-lv-row">
+        <div class="unlock-lv-badge">
+          <div class="unlock-lv-num">${myLevel}</div>
+          <div class="unlock-lv-lbl">LEVEL</div>
+        </div>
+        <div class="unlock-lv-info">
+          <div class="unlock-lv-rank" style="color:${lv.color}">${lv.rank.name}</div>
+          <div class="unlock-lv-xp">${lv.xpInLevel} / ${lv.xpNeeded} XP تا لول بعدی</div>
+        </div>
+      </div>
+      <div class="unlock-progress-wrap">
+        <div class="unlock-progress-bar" style="width:${lv.progress}%"></div>
+      </div>
+      <div class="unlock-progress-txt">${lv.progress}% پیشرفت ${nextReward?`· ${levelsToNext} لول تا جایزه بعدی (${nextReward.icon} ${nextReward.name})`:'· همه جوایز باز شده!'}</div>
+    </div>
+    ${UNLOCK_REWARDS.map(r=>{
+      const isUnlocked=myLevel>=r.lvl;
+      const isNext=nextReward&&r.lvl===nextReward.lvl;
+      const lvNeed=r.lvl-myLevel;
+      const cls=isUnlocked?'unlocked':isNext?'next-up':'locked';
+      const badge=isUnlocked?'✅ باز شده':isNext?`${levelsToNext} لول دیگه`:`${lvNeed} لول دیگه`;
+      /* progress toward this reward */
+      const prog=isUnlocked?100:Math.min(99,Math.round((myLevel/r.lvl)*100));
+      return `<div class="unlock-card ${cls}">
+        <div class="unlock-card-inner">
+          <div class="unlock-card-icon">${r.icon}</div>
+          <div class="unlock-card-info">
+            <div class="unlock-card-name">${r.name} <span style="font-size:10px;color:var(--muted);font-weight:400">· لول ${r.lvl}</span></div>
+            <div class="unlock-card-desc">${r.desc}</div>
+          </div>
+          <div class="unlock-card-badge">${badge}</div>
+        </div>
+        ${!isUnlocked?`<div class="unlock-card-progress">
+          <div class="unlock-card-pbar-wrap">
+            <div class="unlock-card-pbar" style="width:${prog}%"></div>
+          </div>
+        </div>`:''}
+      </div>`;
+    }).join('')}
+  `;
 }
 
 /* ══ حذف پیام ══ */

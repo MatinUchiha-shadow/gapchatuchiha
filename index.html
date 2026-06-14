@@ -866,47 +866,6 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 .dm-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;opacity:.4}
 
 /* ── MISC ── */
-/* ── AI PANEL ── */
-#ai-overlay{position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,0);display:none;align-items:flex-end;justify-content:center;transition:background .25s ease}
-#ai-overlay.show{display:flex;background:rgba(0,0,0,.55)}
-#ai-panel{background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:520px;height:82vh;display:flex;flex-direction:column;overflow:hidden;transform:translateY(100%);opacity:0;transition:transform .42s cubic-bezier(.34,1.1,.4,1),opacity .3s ease}
-#ai-overlay.show #ai-panel{transform:translateY(0);opacity:1}
-.ai-header{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
-.ai-header-icon{width:36px;height:36px;border-radius:11px;font-size:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(124,109,250,.3);animation:aiPulse 2.5s ease-in-out infinite}
-@keyframes aiPulse{0%,100%{box-shadow:0 4px 12px rgba(124,109,250,.3)}50%{box-shadow:0 4px 20px rgba(250,109,155,.5)}}
-.ai-header-info{flex:1}
-.ai-header-title{font-size:15px;font-weight:700}
-.ai-header-sub{font-size:11px;color:var(--muted)}
-.ai-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.ai-msg{display:flex;gap:8px;align-items:flex-end;animation:mi .3s cubic-bezier(.34,1.56,.64,1)}
-.ai-msg.user{flex-direction:row-reverse}
-.ai-msg-av{width:28px;height:28px;border-radius:8px;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--panel)}
-.ai-msg.user .ai-msg-av{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
-.ai-bubble{max-width:78%;padding:10px 14px;border-radius:16px;font-size:13.5px;line-height:1.65;word-break:break-word}
-.ai-msg.user .ai-bubble{background:var(--bubble-mine);color:var(--bubble-mine-text);border-bottom-left-radius:5px}
-.ai-msg.bot .ai-bubble{background:var(--panel);color:var(--text);border:1px solid var(--border);border-bottom-right-radius:5px}
-.ai-typing{display:flex;gap:4px;align-items:center;padding:4px 2px}
-.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:aiDot 1.2s ease-in-out infinite}
-.ai-dot:nth-child(2){animation-delay:.2s}
-.ai-dot:nth-child(3){animation-delay:.4s}
-@keyframes aiDot{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1);opacity:1}}
-.ai-suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px 4px;border-top:1px solid var(--border);flex-shrink:0;overflow-x:auto}
-.ai-chip{padding:6px 12px;border-radius:99px;font-size:12px;font-weight:500;background:var(--panel);border:1.5px solid var(--border);color:var(--text);cursor:pointer;transition:all .15s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;font-family:var(--font)}
-.ai-chip:hover{border-color:var(--accent);color:var(--accent);transform:scale(1.05)}
-.ai-chip:active{transform:scale(.95)}
-.ai-input-bar{padding:10px 14px 18px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
-.ai-input{flex:1;padding:10px 14px;background:var(--panel);border:1.5px solid var(--border);border-radius:14px;font-size:14px;resize:none;max-height:90px;line-height:1.5;font-family:var(--font);color:var(--text);transition:border-color var(--ease)}
-.ai-input:focus{border-color:var(--accent);outline:none}
-.ai-input::placeholder{color:var(--muted)}
-.ai-send{width:42px;height:42px;border-radius:13px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;transition:transform .15s cubic-bezier(.34,1.56,.64,1),opacity var(--ease);box-shadow:0 3px 12px rgba(124,109,250,.3);cursor:pointer;border:none}
-.ai-send:hover{transform:scale(1.08) rotate(-8deg)}
-.ai-send:active{transform:scale(.9)}
-.ai-send:disabled{opacity:.5;pointer-events:none}
-.ai-welcome{text-align:center;padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:.75}
-.ai-welcome-icon{font-size:42px;animation:emptyFloat 3s ease-in-out infinite}
-.ai-welcome-title{font-size:15px;font-weight:700}
-.ai-welcome-sub{font-size:12px;color:var(--muted);line-height:1.6}
-
 .spin{display:inline-block;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px) scale(.9);background:var(--panel);border:1px solid var(--border);padding:9px 18px;border-radius:99px;font-size:13px;opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;z-index:99;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.25)}
@@ -1036,9 +995,9 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
     </div>
   </div>
   <div class="hr">
-    <button class="icon-btn" onclick="openAiPanel()" title="دستیار هوش مصنوعی" id="ai-header-btn">🤖</button>
     <button class="icon-btn" onclick="openVoiceRooms()" title="روم‌های صوتی">🔊</button>
     <button class="icon-btn" onclick="openDmList()" title="پیام‌های خصوصی">✉️</button>
+    <button class="icon-btn" onclick="openAiPanel()" title="دستیار هوش مصنوعی" id="ai-btn" style="position:relative">🤖<span id="ai-notif-dot" style="display:none;position:absolute;top:4px;right:4px;width:7px;height:7px;background:#22c55e;border-radius:50%;border:1.5px solid var(--surface)"></span></button>
     <button class="icon-btn" onclick="openUnlockPanel()" title="جوایز و سطح‌ها" id="unlock-btn">🏆</button>
     <button class="icon-btn" onclick="openThemePanel(this)" title="شخصی‌سازی تم">🎨</button>
     <button class="icon-btn" onclick="signOut()" title="خروج از حساب">🚪</button>
@@ -1193,39 +1152,6 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 </div>
 
 <div id="toast"></div>
-
-<!-- AI PANEL -->
-<div id="ai-overlay" onclick="if(event.target===this) closeAiPanel()">
-  <div id="ai-panel">
-    <div class="ai-header">
-      <div class="ai-header-icon">🤖</div>
-      <div class="ai-header-info">
-        <div class="ai-header-title">دستیار هوشمند GapChat</div>
-        <div class="ai-header-sub" id="ai-status-sub">آماده پاسخ‌گویی ✨</div>
-      </div>
-      <button class="icon-btn" onclick="closeAiPanel()">✕</button>
-    </div>
-    <div class="ai-messages" id="ai-messages">
-      <div class="ai-welcome" id="ai-welcome">
-        <div class="ai-welcome-icon">🤖</div>
-        <div class="ai-welcome-title">سلام! چه کمکی می‌تونم بکنم؟</div>
-        <div class="ai-welcome-sub">سوالات ساده‌ات رو بپرس — تاریخ، علم، بازی، فناوری و هر چیز دیگه‌ای!</div>
-      </div>
-    </div>
-    <div class="ai-suggestions" id="ai-suggestions">
-      <button class="ai-chip" onclick="aiAskChip('ماینکرافت چیست؟')">⛏️ ماینکرافت چیست؟</button>
-      <button class="ai-chip" onclick="aiAskChip('هوش مصنوعی چیست؟')">🧠 هوش مصنوعی چیست؟</button>
-      <button class="ai-chip" onclick="aiAskChip('بلک هول چیست؟')">🌌 بلک هول چیست؟</button>
-      <button class="ai-chip" onclick="aiAskChip('پایتون زبان برنامه‌نویسی چیست؟')">🐍 پایتون چیست؟</button>
-      <button class="ai-chip" onclick="aiAskChip('اینترنت چطور کار می‌کند؟')">🌐 اینترنت چطور کار می‌کنه؟</button>
-    </div>
-    <div class="ai-input-bar">
-      <textarea class="ai-input" id="ai-input" placeholder="سوالت رو بنویس…" rows="1"></textarea>
-      <button class="ai-send" id="ai-send-btn" onclick="aiSend()">➤</button>
-    </div>
-  </div>
-</div>
-
 
 <!-- REWARDS PANEL -->
 <div id="unlock-overlay" onclick="if(event.target===this) closeUnlockPanel()">
@@ -4454,124 +4380,203 @@ document.getElementById('dm-input').addEventListener('keydown',function(e){
   if(e.key==='Enter'){ e.preventDefault(); sendDm(); }
 });
 
+/* ═══════════════════════════════════════════
+   هوش مصنوعی – GapChat AI Assistant
+   ═══════════════════════════════════════════ */
+const AI_API_KEY = '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';
+const AI_MODEL   = 'openai/gpt-4o-mini';
+let aiHistory    = [];
+let aiTyping     = false;
 
-
-/* ══ AI PANEL ══ */
-let aiHistory = [];
-let aiIsLoading = false;
-
-window.openAiPanel = function(){
-  var ov = document.getElementById('ai-overlay');
+function openAiPanel(){
+  const ov = document.getElementById('ai-overlay');
   ov.style.display = 'flex';
-  requestAnimationFrame(function(){ requestAnimationFrame(function(){ ov.classList.add('show'); }); });
-  setTimeout(function(){ document.getElementById('ai-input').focus(); }, 400);
-};
+  requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('show')));
+  document.getElementById('ai-notif-dot').style.display = 'none';
+  setTimeout(()=>document.getElementById('ai-input').focus(), 350);
+}
+window.openAiPanel = openAiPanel;
 
 window.closeAiPanel = function(){
-  var ov = document.getElementById('ai-overlay');
+  const ov = document.getElementById('ai-overlay');
   ov.classList.remove('show');
-  setTimeout(function(){ if(!ov.classList.contains('show')) ov.style.display = 'none'; }, 400);
+  setTimeout(()=>{ if(!ov.classList.contains('show')) ov.style.display='none'; }, 380);
 };
 
-function aiAppendMsg(role, text){
-  var welcome = document.getElementById('ai-welcome');
-  if(welcome) welcome.remove();
-  var container = document.getElementById('ai-messages');
-  var div = document.createElement('div');
-  div.className = 'ai-msg ' + role;
-  var avatar = role === 'user' ? (myAv || '\uD83E\uDDD1') : '\uD83E\uDD16';
-  var safe = text.split('\n').map(function(l){ return l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }).join('<br>');
-  div.innerHTML = '<div class="ai-msg-av">' + avatar + '</div><div class="ai-bubble">' + safe + '</div>';
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-}
-
-function aiShowTyping(){
-  var welcome = document.getElementById('ai-welcome');
-  if(welcome) welcome.remove();
-  var container = document.getElementById('ai-messages');
-  var div = document.createElement('div');
-  div.className = 'ai-msg bot';
-  div.id = 'ai-typing-row';
-  div.innerHTML = '<div class="ai-msg-av">\uD83E\uDD16</div><div class="ai-bubble"><div class="ai-typing"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div></div>';
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-}
-
-function aiRemoveTyping(){
-  var t = document.getElementById('ai-typing-row');
-  if(t) t.remove();
-}
-
-window.aiAskChip = function(q){
-  document.getElementById('ai-input').value = q;
-  window.aiSend();
+window.clearAiChat = function(){
+  aiHistory = [];
+  document.getElementById('ai-messages').innerHTML =
+    `<div class="ai-welcome">
+       <div class="ai-welcome-icon">🤖</div>
+       <div class="ai-welcome-title">دستیار هوش مصنوعی</div>
+       <div class="ai-welcome-sub">هر سوالی داری بپرس، اینجام!</div>
+     </div>`;
 };
 
-window.aiSend = async function(){
-  if(aiIsLoading) return;
-  var inp = document.getElementById('ai-input');
-  var text = inp.value.trim();
+window.sendAiMsg = async function(){
+  if(aiTyping) return;
+  const inp = document.getElementById('ai-input');
+  const text = inp.value.trim();
   if(!text) return;
   inp.value = '';
-  inp.style.height = '';
+  inp.style.height = 'auto';
 
+  // پیام کاربر
+  appendAiMsg('user', text);
   aiHistory.push({ role:'user', content: text });
-  aiAppendMsg('user', text);
 
-  var sug = document.getElementById('ai-suggestions');
-  if(sug) sug.style.display = 'none';
-
-  aiIsLoading = true;
-  var btn = document.getElementById('ai-send-btn');
-  btn.disabled = true;
-  document.getElementById('ai-status-sub').textContent = '\u062F\u0631 \u062D\u0627\u0644 \u0641\u06A9\u0631 \u06A9\u0631\u062F\u0646... \uD83E\uDD14';
-  aiShowTyping();
+  // اندیکاتور تایپ
+  aiTyping = true;
+  const loadEl = appendAiTyping();
 
   try {
-    var lastMsg = aiHistory[aiHistory.length - 1].content;
-    var resp = await fetch('https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct/v1/chat/completions', {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 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'
+        'Authorization': `Bearer ${AI_API_KEY}`,
+        'HTTP-Referer': location.origin,
+        'X-Title': 'GapChat AI'
       },
       body: JSON.stringify({
-        model: 'microsoft/Phi-3-mini-4k-instruct',
+        model: AI_MODEL,
         messages: [
-          { role: 'system', content: 'تو یه دستیار هوشمند فارسی‌زبان هستی. به فارسی جواب بده.' },
-          { role: 'user', content: lastMsg }
+          { role:'system', content:'تو یه دستیار هوشمند فارسی‌زبان هستی که به کاربران GapChat کمک می‌کنی. با لحنی دوستانه و مفید جواب بده. اگه سوال فنی یا عمومی بود به فارسی جواب بده.' },
+          ...aiHistory
         ],
-        max_tokens: 500
+        max_tokens: 1024,
+        temperature: 0.7
       })
     });
-    var data = await resp.json();
-    aiRemoveTyping();
-    if(data.choices && data.choices[0]){
-      var answer = data.choices[0].message.content;
-      aiHistory.push({ role:'assistant', content: answer });
-      aiAppendMsg('bot', answer);
-    } else {
-      aiAppendMsg('bot', '❌ ' + JSON.stringify(data).slice(0,200));
-    }
-  } catch(e) {
-    aiRemoveTyping();
-    aiAppendMsg('bot', '❌ ' + String(e));
-  }
 
-  aiIsLoading = false;
-  btn.disabled = false;
-  document.getElementById('ai-status-sub').textContent = '\u0622\u0645\u0627\u062F\u0647 \u067E\u0627\u0633\u062E\u200C\u06AF\u0648\u06CC\u06CC \u2728';
+    loadEl.remove();
+
+    if(!res.ok){
+      const errData = await res.json().catch(()=>({}));
+      throw new Error(errData?.error?.message || `خطای سرور: ${res.status}`);
+    }
+
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || '❌ پاسخی دریافت نشد.';
+    aiHistory.push({ role:'assistant', content: reply });
+    appendAiMsg('assistant', reply);
+
+  } catch(e){
+    loadEl && loadEl.remove && loadEl.remove();
+    appendAiMsg('error', `❌ خطا: ${e.message}`);
+  } finally {
+    aiTyping = false;
+  }
 };
 
-document.getElementById('ai-input').addEventListener('keydown', function(e){
-  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); window.aiSend(); }
-});
-document.getElementById('ai-input').addEventListener('input', function(){
-  this.style.height = 'auto';
-  this.style.height = Math.min(this.scrollHeight, 90) + 'px';
+function appendAiMsg(role, text){
+  const wrap = document.getElementById('ai-messages');
+  // حذف welcome اگر وجود داشت
+  const wl = wrap.querySelector('.ai-welcome');
+  if(wl) wl.remove();
+
+  const div = document.createElement('div');
+  div.className = `ai-msg-row ai-msg-${role}`;
+
+  const formatted = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`(.+?)`/g,'<code>$1</code>')
+    .replace(/\n/g,'<br>');
+
+  div.innerHTML = role === 'user'
+    ? `<div class="ai-bubble ai-bubble-user">${formatted}</div>`
+    : role === 'error'
+    ? `<div class="ai-bubble ai-bubble-err">${formatted}</div>`
+    : `<div class="ai-bubble-ai-wrap"><div class="ai-avatar-sm">🤖</div><div class="ai-bubble ai-bubble-ai">${formatted}</div></div>`;
+
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
+}
+
+function appendAiTyping(){
+  const wrap = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = 'ai-msg-row ai-msg-assistant';
+  div.innerHTML = `<div class="ai-bubble-ai-wrap"><div class="ai-avatar-sm">🤖</div><div class="ai-bubble ai-bubble-ai ai-typing-bubble"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></div></div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
+}
+
+// event listener‌های ai-input بعد از لود کامل DOM اجرا می‌شن
+window.addEventListener('load', function(){
+  const aiInp = document.getElementById('ai-input');
+  if(!aiInp) return;
+  aiInp.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendAiMsg(); }
+  });
+  aiInp.addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  });
 });
 
 </script>
+
+<!-- ══ AI PANEL HTML ══ -->
+<div id="ai-overlay" class="fp-overlay" onclick="if(event.target===this) closeAiPanel()">
+  <div class="fp-panel" style="height:88vh;max-width:520px">
+    <div class="fp-header" style="padding:14px 16px">
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
+        <div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#7c6dfa,#fa6d9b);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(124,109,250,.35);flex-shrink:0">🤖</div>
+        <div>
+          <div style="font-size:15px;font-weight:700">دستیار هوش مصنوعی</div>
+          <div style="font-size:11px;color:var(--muted)">GPT-4o Mini · OpenRouter</div>
+        </div>
+      </div>
+      <button class="icon-btn" onclick="clearAiChat()" title="پاک کردن مکالمه" style="font-size:13px">🗑️</button>
+      <button class="icon-btn" onclick="closeAiPanel()">✕</button>
+    </div>
+
+    <div id="ai-messages" style="flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px">
+      <div class="ai-welcome">
+        <div class="ai-welcome-icon">🤖</div>
+        <div class="ai-welcome-title">دستیار هوش مصنوعی</div>
+        <div class="ai-welcome-sub">هر سوالی داری بپرس، اینجام!</div>
+      </div>
+    </div>
+
+    <div style="padding:10px 14px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;flex-shrink:0">
+      <textarea id="ai-input" placeholder="پیامت رو بنویس… (Enter برای ارسال)" rows="1"
+        style="flex:1;padding:10px 14px;background:var(--panel);border:1.5px solid var(--border);border-radius:14px;font-size:14px;font-family:var(--font);resize:none;max-height:120px;line-height:1.55;transition:border-color .18s;color:var(--text);outline:none"></textarea>
+      <button onclick="sendAiMsg()" title="ارسال"
+        style="width:42px;height:42px;border-radius:13px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 3px 12px rgba(124,109,250,.3);transition:transform .15s cubic-bezier(.34,1.56,.64,1)">➤</button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ── AI Panel ── */
+.ai-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:40px 20px;opacity:.6;flex:1;text-align:center}
+.ai-welcome-icon{font-size:48px;animation:emptyFloat 3s ease-in-out infinite}
+.ai-welcome-title{font-size:15px;font-weight:700;color:var(--text)}
+.ai-welcome-sub{font-size:12px;color:var(--muted)}
+.ai-msg-row{display:flex;flex-direction:column;animation:mi .3s cubic-bezier(.34,1.56,.64,1)}
+.ai-msg-user{align-items:flex-end}
+.ai-msg-assistant,.ai-msg-error{align-items:flex-start}
+.ai-bubble{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.65;word-break:break-word;max-width:82%}
+.ai-bubble-user{background:var(--accent);color:#fff;border-bottom-left-radius:5px}
+.ai-bubble-ai{background:var(--surface);border:1px solid var(--border);color:var(--text);border-bottom-right-radius:5px}
+.ai-bubble-err{background:rgba(229,51,74,.12);border:1px solid rgba(229,51,74,.3);color:var(--red);border-radius:12px}
+.ai-bubble-ai-wrap{display:flex;align-items:flex-start;gap:8px}
+.ai-avatar-sm{width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:0 2px 8px rgba(124,109,250,.3)}
+.ai-bubble code{background:rgba(124,109,250,.15);border-radius:5px;padding:1px 5px;font-size:12px;font-family:monospace}
+/* typing dots */
+.ai-typing-bubble{display:flex;align-items:center;gap:5px;padding:12px 16px}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:aiDot 1.2s ease-in-out infinite}
+.ai-dot:nth-child(2){animation-delay:.2s}
+.ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes aiDot{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1);opacity:1}}
+#ai-input:focus{border-color:var(--accent) !important}
+#ai-messages::-webkit-scrollbar{width:3px}
+#ai-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+</style>
 </body>
 </html>

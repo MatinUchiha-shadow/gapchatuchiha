@@ -872,6 +872,79 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
 #err-bar{display:none;background:var(--red);color:#fff;font-size:12px;text-align:center;padding:7px}
 @media(max-width:480px){.bwrap{max-width:82%}}
+
+/* ══ ZOMBIE GAME ══ */
+#tg-overlay{
+  display:none;position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,.92);
+  align-items:center;justify-content:center;
+}
+#tg-overlay.on{ display:flex; }
+#tg-box{
+  width:min(700px,98vw);
+  height:min(520px,94vh);
+  background:#0a0a0a;
+  border-radius:16px;
+  border:1px solid #1a1a1a;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.9);
+  position:relative;
+}
+#tg-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;background:#0d0d0d;
+  border-bottom:1px solid #1a1a1a;flex-shrink:0;
+  font-family:'Courier New',monospace;
+}
+#tg-topbar span{font-size:13px;font-weight:700;color:#ff4422;text-shadow:0 0 8px #ff4422}
+#tg-close{
+  width:28px;height:28px;border-radius:6px;
+  background:#1a1a1a;border:1px solid #333;
+  color:#888;font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+#tg-wrap{flex:1;position:relative;overflow:hidden;background:#0a0a0a}
+#zg-canvas{display:block;width:100%;height:100%}
+#zg-ui{position:absolute;top:0;left:0;right:0;pointer-events:none;font-family:'Courier New',monospace;}
+#zg-hud{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px;color:#fff}
+.zg-hblock{display:flex;flex-direction:column;gap:4px}
+.zg-lbl{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:2px}
+.zg-val{font-size:18px;font-weight:bold;color:#e8e8e8;text-shadow:0 0 8px currentColor}
+#zg-hpbar{width:140px;height:8px;background:#1a1a1a;border:1px solid #333;border-radius:4px;overflow:hidden}
+#zg-hpfill{height:100%;background:linear-gradient(90deg,#ff2244,#ff6644);border-radius:4px;box-shadow:0 0 6px #ff2244;transition:width .3s}
+#zg-waveinfo{text-align:center;font-size:12px;color:#ff4422;text-shadow:0 0 8px #ff4422;letter-spacing:1px}
+#zg-ammobar{display:flex;gap:3px;flex-wrap:wrap;max-width:160px}
+.zg-blt{width:6px;height:12px;background:#f0c040;border-radius:2px;box-shadow:0 0 3px #f0c040}
+.zg-blt.empty{background:#333;box-shadow:none}
+#zg-announce{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:36px;color:#ff2244;text-shadow:0 0 30px #ff2244;pointer-events:none;opacity:0;letter-spacing:5px;font-weight:bold;white-space:nowrap;font-family:'Courier New',monospace}
+#zg-weapon{position:absolute;bottom:8px;right:12px;color:#fff;text-align:right;pointer-events:none;font-family:'Courier New',monospace}
+#zg-weapname{font-size:16px;color:#f0c040;text-shadow:0 0 8px #f0c040}
+#zg-weapammo{font-size:11px;color:#666;margin-top:2px}
+#zg-killfeed{position:absolute;top:70px;left:12px;pointer-events:none}
+.zg-km{color:#ff4422;font-size:11px;text-shadow:0 0 5px #ff4422;margin-bottom:2px;font-family:'Courier New',monospace}
+#zg-xpbar{position:absolute;bottom:0;left:0;right:0;height:3px;background:#111}
+#zg-xpfill{height:100%;background:linear-gradient(90deg,#4488ff,#44ffdd);box-shadow:0 0 6px #4488ff;transition:width .4s}
+#zg-lvl{position:absolute;bottom:8px;left:12px;color:#4488ff;font-size:11px;pointer-events:none;text-shadow:0 0 6px #4488ff;font-family:'Courier New',monospace}
+#zg-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88);color:#fff;z-index:10;font-family:'Courier New',monospace}
+#zg-overlay h1{font-size:42px;color:#ff2244;text-shadow:0 0 30px #ff2244,0 0 60px #ff0000;letter-spacing:5px;margin-bottom:8px;animation:zgFlicker 2s infinite}
+@keyframes zgFlicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.7}95%{opacity:1}97%{opacity:.8}}
+#zg-overlay p{color:#666;margin-bottom:20px;font-size:13px;letter-spacing:2px}
+#zg-overlay .zg-sub{color:#ff6644;font-size:15px;margin-bottom:4px}
+#zg-startbtn{padding:12px 40px;font-size:16px;font-family:'Courier New',monospace;background:transparent;color:#ff2244;border:2px solid #ff2244;cursor:pointer;letter-spacing:3px;text-transform:uppercase;transition:all .2s;box-shadow:0 0 16px #ff224455}
+#zg-startbtn:hover{background:#ff2244;color:#000;box-shadow:0 0 30px #ff2244}
+.zg-hint{margin-top:18px;color:#333;font-size:11px;text-align:center;line-height:2}
+.zg-hint span{color:#555}
+#zg-perkmenu{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.92);z-index:20;pointer-events:all;font-family:'Courier New',monospace}
+#zg-perkmenu h2{color:#4488ff;font-size:24px;letter-spacing:3px;margin-bottom:6px;text-shadow:0 0 16px #4488ff}
+#zg-perkmenu p{color:#555;font-size:11px;margin-bottom:24px}
+.zg-perkcards{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;padding:0 16px}
+.zg-pcard{width:130px;padding:16px 12px;border:1px solid #333;background:#111;cursor:pointer;text-align:center;transition:all .2s;border-radius:4px}
+.zg-pcard:hover{border-color:#4488ff;background:#1a2240;box-shadow:0 0 16px #4488ff44;transform:translateY(-3px)}
+.zg-picon{font-size:30px;margin-bottom:8px}
+.zg-pname{color:#fff;font-size:12px;font-weight:bold;margin-bottom:4px}
+.zg-pdesc{color:#555;font-size:10px;line-height:1.5}
+
 </style>
 </head>
 <body data-theme="dark">
@@ -997,8 +1070,8 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
   <div class="hr">
     <button class="icon-btn" onclick="openVoiceRooms()" title="روم‌های صوتی">🔊</button>
     <button class="icon-btn" onclick="openDmList()" title="پیام‌های خصوصی">✉️</button>
-    <button class="icon-btn" onclick="openAiPanel()" title="دستیار هوش مصنوعی" id="ai-btn" style="position:relative">🤖<span id="ai-notif-dot" style="display:none;position:absolute;top:4px;right:4px;width:7px;height:7px;background:#22c55e;border-radius:50%;border:1.5px solid var(--surface)"></span></button>
     <button class="icon-btn" onclick="openUnlockPanel()" title="جوایز و سطح‌ها" id="unlock-btn">🏆</button>
+    <button class="icon-btn" id="game-btn" onclick="openGame()" title="بازی">🎮</button>
     <button class="icon-btn" onclick="openThemePanel(this)" title="شخصی‌سازی تم">🎨</button>
     <button class="icon-btn" onclick="signOut()" title="خروج از حساب">🚪</button>
   </div>
@@ -3306,20 +3379,51 @@ async function renderUnlockBody(filter){
 
 /* ══ حذف پیام ══ */
 async function deleteMyMsg(id, text){
-  const choice=confirm('پیام رو برای همه پاک کنی یا فقط برای خودت؟\n\nOK = برای همه\nCancel = فقط برای خودت');
-  if(choice){
-    /* حذف برای همه */
+  // منوی پایین به جای confirm
+  var existingSheet = document.getElementById('delete-sheet-overlay');
+  if(existingSheet) existingSheet.remove();
+
+  var ov = document.createElement('div');
+  ov.id = 'delete-sheet-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0);z-index:9999;display:flex;align-items:flex-end;justify-content:center;transition:background .25s ease';
+  ov.innerHTML = `
+    <div id="delete-sheet" style="background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:16px 16px 32px;transform:translateY(100%);transition:transform .35s cubic-bezier(.34,1.1,.4,1);display:flex;flex-direction:column;gap:8px">
+      <div style="width:36px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 12px"></div>
+      <div style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 16px">${esc(text.slice(0,60)+(text.length>60?'…':''))}</div>
+      <button id="del-for-all" style="padding:14px;border-radius:14px;background:rgba(229,51,74,.1);color:var(--red);font-size:14px;font-weight:600;border:1.5px solid rgba(229,51,74,.25);transition:background var(--ease)">🗑 حذف برای همه</button>
+      <button id="del-for-me" style="padding:14px;border-radius:14px;background:var(--panel);color:var(--text);font-size:14px;font-weight:600;border:1.5px solid var(--border);transition:background var(--ease)">👁 مخفی فقط برای من</button>
+      <button id="del-cancel" style="padding:12px;border-radius:14px;background:none;color:var(--muted);font-size:13px;font-weight:500">انصراف</button>
+    </div>`;
+  document.body.appendChild(ov);
+
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    ov.style.background='rgba(0,0,0,.55)';
+    document.getElementById('delete-sheet').style.transform='translateY(0)';
+  }));
+
+  function closeSheet(){
+    ov.style.background='rgba(0,0,0,0)';
+    var sheet=document.getElementById('delete-sheet');
+    if(sheet) sheet.style.transform='translateY(100%)';
+    setTimeout(()=>ov.remove(), 350);
+  }
+
+  document.getElementById('del-for-all').onclick=async function(){
+    closeSheet();
     try{
       await api(`/rest/v1/messages?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
       const el=msgElements[id]; if(el) el.remove();
       delete msgElements[id];
       toast('🗑 پیام حذف شد');
     }catch{ toast('❌ خطا'); }
-  } else {
-    /* فقط از دید خودت */
+  };
+  document.getElementById('del-for-me').onclick=function(){
+    closeSheet();
     const el=msgElements[id];
     if(el){ el.style.display='none'; toast('👁 پیام فقط برای تو مخفی شد'); }
-  }
+  };
+  document.getElementById('del-cancel').onclick=closeSheet;
+  ov.addEventListener('click',function(e){ if(e.target===ov) closeSheet(); });
 }
 async function adminDelMsg(id){
   try{
@@ -4380,356 +4484,623 @@ document.getElementById('dm-input').addEventListener('keydown',function(e){
   if(e.key==='Enter'){ e.preventDefault(); sendDm(); }
 });
 
-/* ═══════════════════════════════════════════
-   هوش مصنوعی – GapChat AI (Pollinations.ai)
-   رایگان · بدون API key · کار در ایران
-   ═══════════════════════════════════════════ */
-let aiHistory = [];
-let aiTyping  = false;
-
-function openAiPanel(){
-  const ov = document.getElementById('ai-overlay');
-  ov.style.display = 'flex';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('show')));
-  document.getElementById('ai-notif-dot').style.display = 'none';
-  setTimeout(()=>document.getElementById('ai-input').focus(), 350);
-}
-window.openAiPanel = openAiPanel;
-
-window.closeAiPanel = function(){
-  const ov = document.getElementById('ai-overlay');
-  ov.classList.remove('show');
-  setTimeout(()=>{ if(!ov.classList.contains('show')) ov.style.display='none'; }, 380);
-};
-
-window.clearAiPanel = function(){
-  const tab = document.getElementById('ai-tab-chat').classList.contains('active') ? 'chat' : 'image';
-  if(tab === 'chat'){
-    aiHistory = [];
-    document.getElementById('ai-messages').innerHTML =
-      `<div class="ai-welcome">
-         <div class="ai-welcome-icon">🤖</div>
-         <div class="ai-welcome-title">دستیار هوش مصنوعی</div>
-         <div class="ai-welcome-sub">هر سوالی داری بپرس، اینجام!</div>
-       </div>`;
-  } else {
-    document.getElementById('img-prompt').value = '';
-    document.getElementById('img-result').style.display = 'none';
-    document.getElementById('img-error').style.display = 'none';
-    document.getElementById('img-loading').style.display = 'none';
-  }
-};
-
-window.switchAiTab = function(tab){
-  document.getElementById('ai-tab-chat').classList.toggle('active', tab==='chat');
-  document.getElementById('ai-tab-image').classList.toggle('active', tab==='image');
-  document.getElementById('ai-pane-chat').style.display = tab==='chat' ? 'flex' : 'none';
-  document.getElementById('ai-pane-image').style.display = tab==='image' ? 'flex' : 'none';
-  document.getElementById('ai-model-label').textContent = tab==='chat'
-    ? 'GPT-4o Large · Pollinations.ai رایگان'
-    : 'FLUX · Pollinations.ai رایگان';
-};
-
-let selectedRatio = '1:1';
-window.selectRatio = function(btn){
-  document.querySelectorAll('.img-ratio-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedRatio = btn.dataset.ratio;
-};
-
-window.generateImage = async function(){
-  const prompt = document.getElementById('img-prompt').value.trim();
-  if(!prompt){ toast('⚠️ لطفاً توضیح تصویر رو بنویس'); return; }
-
-  const btn = document.getElementById('img-gen-btn');
-  const loading = document.getElementById('img-loading');
-  const result = document.getElementById('img-result');
-  const errEl = document.getElementById('img-error');
-
-  btn.disabled = true; btn.style.opacity = '.6';
-  result.style.display = 'none';
-  errEl.style.display = 'none';
-  loading.style.display = 'flex';
-  document.getElementById('img-loading-txt').textContent = 'در حال تولید تصویر… (ممکنه ۱۰-۳۰ ثانیه طول بکشه)';
-
-  const ratioMap = {'1:1':[1024,1024],'16:9':[1280,720],'9:16':[720,1280],'4:3':[1024,768]};
-  const [w,h] = ratioMap[selectedRatio] || [1024,1024];
-  const seed = Math.floor(Math.random() * 999999);
-  const encodedPrompt = encodeURIComponent(prompt);
-  const imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${w}&height=${h}&seed=${seed}&nologo=true&model=flux`;
-
-  const imgEl = document.getElementById('img-output');
-
-  // مستقیم src رو ست کن — pollinations تصویر رو تولید می‌کنه و برمی‌گردونه
-  imgEl.src = '';
-  imgEl.dataset.url = imgUrl;
-
-  imgEl.onload = function(){
-    loading.style.display = 'none';
-    result.style.display = 'flex';
-    btn.disabled = false; btn.style.opacity = '1';
-  };
-  imgEl.onerror = function(){
-    loading.style.display = 'none';
-    errEl.textContent = '❌ تصویر تولید نشد. دوباره امتحان کن یا پرامپت رو تغییر بده.';
-    errEl.style.display = 'block';
-    btn.disabled = false; btn.style.opacity = '1';
-  };
-
-  // timeout 60 ثانیه
-  const timeoutId = setTimeout(()=>{
-    imgEl.src = '';
-    loading.style.display = 'none';
-    errEl.textContent = '⏱️ زمان زیادی طول کشید. دوباره امتحان کن.';
-    errEl.style.display = 'block';
-    btn.disabled = false; btn.style.opacity = '1';
-  }, 60000);
-
-  imgEl.onload = function(){
-    clearTimeout(timeoutId);
-    loading.style.display = 'none';
-    result.style.display = 'flex';
-    btn.disabled = false; btn.style.opacity = '1';
-  };
-  imgEl.onerror = function(){
-    clearTimeout(timeoutId);
-    loading.style.display = 'none';
-    errEl.textContent = '❌ تصویر تولید نشد. دوباره امتحان کن یا پرامپت رو تغییر بده.';
-    errEl.style.display = 'block';
-    btn.disabled = false; btn.style.opacity = '1';
-  };
-
-  imgEl.src = imgUrl;
-};
-
-window.downloadAiImage = function(){
-  const url = document.getElementById('img-output').dataset.url || document.getElementById('img-output').src;
-  if(!url) return;
-  const a = document.createElement('a');
-  a.href = url; a.download = 'gapchat-ai-image.png'; a.target='_blank';
-  a.click();
-};
-
-async function pollinationsChat(messages, attempt=1){
-  const res = await fetch('https://text.pollinations.ai/openai', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model:'openai-large', messages, temperature:0.7 })
-  });
-  if(res.status===429 && attempt<4){
-    await new Promise(r=>setTimeout(r, attempt*3000));
-    return pollinationsChat(messages, attempt+1);
-  }
-  if(res.status===429) throw new Error('سرور شلوغه، چند ثانیه صبر کن و دوباره امتحان کن 🙏');
-  if(!res.ok) throw new Error(`خطای سرور: ${res.status}`);
-  return res.json();
-}
-
-window.sendAiMsg = async function(){
-  if(aiTyping) return;
-  const inp = document.getElementById('ai-input');
-  const text = inp.value.trim();
-  if(!text) return;
-  inp.value = '';
-  inp.style.height = 'auto';
-
-  appendAiMsg('user', text);
-  aiHistory.push({ role:'user', content: text });
-
-  aiTyping = true;
-  const loadEl = appendAiTyping();
-
-  try {
-    const messages = [
-      { role:'system', content:'تو یه دستیار هوشمند فارسی‌زبان هستی که به کاربران GapChat کمک می‌کنی. با لحنی دوستانه و مفید جواب بده. همیشه به فارسی جواب بده مگر اینکه کاربر به زبان دیگه‌ای بپرسه.' },
-      ...aiHistory
-    ];
-    const data = await pollinationsChat(messages);
-    loadEl.remove();
-    const reply = data.choices?.[0]?.message?.content || '❌ پاسخی دریافت نشد.';
-    aiHistory.push({ role:'assistant', content: reply });
-    appendAiMsg('assistant', reply);
-  } catch(e){
-    loadEl && loadEl.remove && loadEl.remove();
-    appendAiMsg('error', e.message);
-  } finally {
-    aiTyping = false;
-  }
-};
-
-function appendAiMsg(role, text){
-  const wrap = document.getElementById('ai-messages');
-  // حذف welcome اگر وجود داشت
-  const wl = wrap.querySelector('.ai-welcome');
-  if(wl) wl.remove();
-
-  const div = document.createElement('div');
-  div.className = `ai-msg-row ai-msg-${role}`;
-
-  const formatted = text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/`(.+?)`/g,'<code>$1</code>')
-    .replace(/\n/g,'<br>');
-
-  div.innerHTML = role === 'user'
-    ? `<div class="ai-bubble ai-bubble-user">${formatted}</div>`
-    : role === 'error'
-    ? `<div class="ai-bubble ai-bubble-err">${formatted}</div>`
-    : `<div class="ai-bubble-ai-wrap"><div class="ai-avatar-sm">🤖</div><div class="ai-bubble ai-bubble-ai">${formatted}</div></div>`;
-
-  wrap.appendChild(div);
-  wrap.scrollTop = wrap.scrollHeight;
-  return div;
-}
-
-function appendAiTyping(){
-  const wrap = document.getElementById('ai-messages');
-  const div = document.createElement('div');
-  div.className = 'ai-msg-row ai-msg-assistant';
-  div.innerHTML = `<div class="ai-bubble-ai-wrap"><div class="ai-avatar-sm">🤖</div><div class="ai-bubble ai-bubble-ai ai-typing-bubble"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></div></div>`;
-  wrap.appendChild(div);
-  wrap.scrollTop = wrap.scrollHeight;
-  return div;
-}
-
-// event listener‌های ai-input بعد از لود کامل DOM اجرا می‌شن
-window.addEventListener('load', function(){
-  const aiInp = document.getElementById('ai-input');
-  if(!aiInp) return;
-  aiInp.addEventListener('keydown', function(e){
-    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendAiMsg(); }
-  });
-  aiInp.addEventListener('input', function(){
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-  });
-});
-
 </script>
 
-<!-- ══ AI PANEL HTML ══ -->
-<div id="ai-overlay" class="fp-overlay" onclick="if(event.target===this) closeAiPanel()">
-  <div class="fp-panel" style="height:88vh;max-width:520px">
-
-    <!-- هدر -->
-    <div class="fp-header" style="padding:12px 14px">
-      <div style="display:flex;align-items:center;gap:10px;flex:1">
-        <div style="width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#7c6dfa,#fa6d9b);display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 4px 12px rgba(124,109,250,.35);flex-shrink:0">🤖</div>
-        <div>
-          <div style="font-size:14px;font-weight:700">دستیار هوش مصنوعی</div>
-          <div style="font-size:10px;color:var(--muted)" id="ai-model-label">GPT-4o Large · Pollinations.ai رایگان</div>
-        </div>
-      </div>
-      <button class="icon-btn" onclick="clearAiPanel()" title="پاک کردن" style="font-size:13px">🗑️</button>
-      <button class="icon-btn" onclick="closeAiPanel()">✕</button>
+<div id="tg-overlay">
+  <div id="tg-box">
+    <div id="tg-topbar">
+      <span>🧟 DEAD ZONE</span>
+      <button id="tg-close" onclick="tgClose()">✕</button>
     </div>
-
-    <!-- تب‌ها -->
-    <div class="ai-tabs">
-      <button class="ai-tab active" id="ai-tab-chat" onclick="switchAiTab('chat')">💬 گفتگو</button>
-      <button class="ai-tab" id="ai-tab-image" onclick="switchAiTab('image')">🎨 تولید تصویر</button>
-    </div>
-
-    <!-- ── تب گفتگو ── -->
-    <div id="ai-pane-chat" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0">
-      <div id="ai-messages" style="flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px">
-        <div class="ai-welcome">
-          <div class="ai-welcome-icon">🤖</div>
-          <div class="ai-welcome-title">دستیار هوش مصنوعی</div>
-          <div class="ai-welcome-sub">هر سوالی داری بپرس، اینجام!</div>
-        </div>
-      </div>
-      <div style="padding:10px 14px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;flex-shrink:0">
-        <textarea id="ai-input" placeholder="پیامت رو بنویس… (Enter برای ارسال)" rows="1"
-          style="flex:1;padding:10px 14px;background:var(--panel);border:1.5px solid var(--border);border-radius:14px;font-size:14px;font-family:var(--font);resize:none;max-height:120px;line-height:1.55;transition:border-color .18s;color:var(--text);outline:none"></textarea>
-        <button onclick="sendAiMsg()" title="ارسال" class="ai-send-btn">➤</button>
-      </div>
-    </div>
-
-    <!-- ── تب تولید تصویر ── -->
-    <div id="ai-pane-image" style="flex:1;display:none;flex-direction:column;overflow:hidden;min-height:0">
-      <div style="flex:1;overflow-y:auto;padding:14px">
-
-        <!-- پرامپت -->
-        <div style="margin-bottom:10px">
-          <div class="lbl">توضیح تصویر (انگلیسی یا فارسی)</div>
-          <textarea id="img-prompt" rows="3" placeholder="مثلاً: a futuristic city at night with neon lights, cyberpunk style"
-            style="width:100%;padding:10px 14px;background:var(--panel);border:1.5px solid var(--border);border-radius:14px;font-size:13px;font-family:var(--font);resize:none;color:var(--text);outline:none;transition:border-color .18s;line-height:1.5"></textarea>
-        </div>
-
-        <!-- نسبت ابعاد -->
-        <div style="margin-bottom:12px">
-          <div class="lbl">نسبت ابعاد</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="img-ratio-btn active" data-ratio="1:1" onclick="selectRatio(this)">1:1 مربع</button>
-            <button class="img-ratio-btn" data-ratio="16:9" onclick="selectRatio(this)">16:9 افقی</button>
-            <button class="img-ratio-btn" data-ratio="9:16" onclick="selectRatio(this)">9:16 عمودی</button>
-            <button class="img-ratio-btn" data-ratio="4:3" onclick="selectRatio(this)">4:3</button>
+    <div id="tg-wrap">
+      <canvas id="zg-canvas"></canvas>
+      <div id="zg-ui">
+        <div id="zg-hud">
+          <div class="zg-hblock">
+            <div class="zg-lbl">Health</div>
+            <div id="zg-hpbar"><div id="zg-hpfill" style="width:100%"></div></div>
+            <div id="zg-hpval" class="zg-val" style="font-size:12px;color:#ff4444">100 HP</div>
+          </div>
+          <div class="zg-hblock" style="align-items:center">
+            <div id="zg-waveinfo">WAVE 1</div>
+            <div id="zg-score" class="zg-val" style="text-align:center">0</div>
+            <div class="zg-lbl" style="text-align:center">Score</div>
+          </div>
+          <div class="zg-hblock" style="align-items:flex-end">
+            <div class="zg-lbl">Ammo</div>
+            <div id="zg-ammobar"></div>
           </div>
         </div>
-
-        <!-- دکمه تولید -->
-        <button onclick="generateImage()" id="img-gen-btn"
-          style="width:100%;padding:13px;border-radius:14px;font-size:15px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(124,109,250,.3);transition:transform .15s cubic-bezier(.34,1.56,.64,1),opacity .2s;font-family:var(--font);margin-bottom:14px">
-          ✨ تولید تصویر
-        </button>
-
-        <!-- نتیجه -->
-        <div id="img-result" style="display:none;flex-direction:column;align-items:center;gap:10px">
-          <img id="img-output" style="width:100%;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:fadeSlideUp .4s ease" alt="تصویر تولید شده"/>
-          <button onclick="downloadAiImage()" style="padding:9px 20px;border-radius:12px;font-size:13px;font-weight:600;background:var(--panel);border:1.5px solid var(--border);color:var(--text);cursor:pointer;font-family:var(--font);transition:border-color .18s">⬇️ دانلود تصویر</button>
+        <div id="zg-killfeed"></div>
+        <div id="zg-announce"></div>
+        <div id="zg-weapon">
+          <div id="zg-weapname">🔫 PISTOL</div>
+          <div id="zg-weapammo">12 / 12</div>
         </div>
-
-        <!-- لودینگ -->
-        <div id="img-loading" style="display:none;flex-direction:column;align-items:center;gap:12px;padding:30px 0">
-          <div class="img-gen-spinner"></div>
-          <div style="font-size:13px;color:var(--muted)" id="img-loading-txt">در حال تولید تصویر…</div>
+        <div id="zg-lvl">LVL 1</div>
+        <div id="zg-xpbar"><div id="zg-xpfill" style="width:0%"></div></div>
+      </div>
+      <div id="zg-perkmenu">
+        <h2>LEVEL UP!</h2>
+        <p>یه پرک انتخاب کن</p>
+        <div class="zg-perkcards" id="zg-perkcards"></div>
+      </div>
+      <div id="zg-overlay">
+        <h1>DEAD ZONE</h1>
+        <div class="zg-sub">ZOMBIE SURVIVAL</div>
+        <p>بقا به هر قیمتی</p>
+        <button id="zg-startbtn" onclick="zgStart()">▶ شروع بازی</button>
+        <div class="zg-hint">
+          <span>WASD</span> یا فلش‌ها — حرکت &nbsp; <span>Mouse/Touch</span> — شلیک<br>
+          <span>R</span> — شارژ &nbsp; <span>1/2/3</span> — سلاح &nbsp; <span>Shift</span> — دش
         </div>
-
-        <!-- خطا -->
-        <div id="img-error" style="display:none;padding:12px 14px;border-radius:12px;background:rgba(229,51,74,.1);border:1px solid rgba(229,51,74,.25);color:var(--red);font-size:13px"></div>
       </div>
     </div>
-
   </div>
 </div>
 
-<style>
-/* ── AI Panel ── */
-.ai-tabs{display:flex;padding:0 14px;gap:0;border-bottom:1px solid var(--border);flex-shrink:0}
-.ai-tab{flex:1;padding:10px 0;font-size:13px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;font-family:var(--font);background:none;border-top:none;border-left:none;border-right:none;cursor:pointer}
-.ai-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.ai-send-btn{width:42px;height:42px;border-radius:13px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 3px 12px rgba(124,109,250,.3);transition:transform .15s cubic-bezier(.34,1.56,.64,1)}
-.ai-send-btn:hover{transform:scale(1.08) rotate(-8deg)}
-.ai-send-btn:active{transform:scale(.9)}
-.ai-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:40px 20px;opacity:.6;flex:1;text-align:center}
-.ai-welcome-icon{font-size:48px;animation:emptyFloat 3s ease-in-out infinite}
-.ai-welcome-title{font-size:15px;font-weight:700;color:var(--text)}
-.ai-welcome-sub{font-size:12px;color:var(--muted)}
-.ai-msg-row{display:flex;flex-direction:column;animation:mi .3s cubic-bezier(.34,1.56,.64,1)}
-.ai-msg-user{align-items:flex-end}
-.ai-msg-assistant,.ai-msg-error{align-items:flex-start}
-.ai-bubble{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.65;word-break:break-word;max-width:82%}
-.ai-bubble-user{background:var(--accent);color:#fff;border-bottom-left-radius:5px}
-.ai-bubble-ai{background:var(--surface);border:1px solid var(--border);color:var(--text);border-bottom-right-radius:5px}
-.ai-bubble-err{background:rgba(229,51,74,.12);border:1px solid rgba(229,51,74,.3);color:var(--red);border-radius:12px;max-width:90%}
-.ai-bubble-ai-wrap{display:flex;align-items:flex-start;gap:8px}
-.ai-avatar-sm{width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:0 2px 8px rgba(124,109,250,.3)}
-.ai-bubble code{background:rgba(124,109,250,.15);border-radius:5px;padding:1px 5px;font-size:12px;font-family:monospace}
-.ai-typing-bubble{display:flex;align-items:center;gap:5px;padding:12px 16px}
-.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:aiDot 1.2s ease-in-out infinite}
-.ai-dot:nth-child(2){animation-delay:.2s}
-.ai-dot:nth-child(3){animation-delay:.4s}
-@keyframes aiDot{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1);opacity:1}}
-#ai-input:focus,#img-prompt:focus{border-color:var(--accent) !important}
-#ai-messages::-webkit-scrollbar{width:3px}
-#ai-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
-/* image ratio btns */
-.img-ratio-btn{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;background:var(--panel);border:1.5px solid var(--border);color:var(--muted);cursor:pointer;font-family:var(--font);transition:all .18s}
-.img-ratio-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(124,109,250,.1)}
-/* spinner */
-.img-gen-spinner{width:44px;height:44px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--accent);animation:spin .75s linear infinite}
-</style>
+<script>
+(function(){
+'use strict';
+var zgCanvas, zgCtx, zgW, zgH;
+var ZG = {};
+
+function zgInitState(){
+  ZG = {
+    running:false, paused:false, gameOver:false, levelUpPending:false,
+    frame:0, score:0, kills:0, wave:1,
+    zombies:[], bullets:[], particles:[], bloodPools:[], items:[], obstacles:[],
+    keys:{}, mouse:{x:0,y:0,down:false},
+    weapons:[
+      {name:'🔫 PISTOL',  damage:25,ammo:12,maxAmmo:12,fireRate:12,reloadDur:80, bullet:{speed:10,size:4,color:'#ffdd44'},spread:0.05},
+      {name:'🔧 SHOTGUN', damage:18,ammo:6, maxAmmo:6, fireRate:30,reloadDur:120,bullet:{speed:9, size:5,color:'#ff8844'},spread:0.25,pellets:5},
+      {name:'⚡ RIFLE',   damage:15,ammo:30,maxAmmo:30,fireRate:5, reloadDur:100,bullet:{speed:14,size:3,color:'#44ffdd'},spread:0.02},
+    ],
+    currentWeapon:0, fireCooldown:0,
+    // wave tracking
+    waveSpawnTotal:0,   // total zombies to spawn this wave
+    waveSpawned:0,      // how many have been spawned so far
+    waveKilled:0,       // how many killed this wave
+    waveCooldown:0,     // countdown between waves
+    flashTimer:0, bgOffset:0,
+    player:{
+      x:0,y:0,vx:0,vy:0,hp:100,maxHp:100,speed:3.2,angle:0,radius:16,
+      dashCooldown:0,dashActive:0,invincible:0,reloadTime:0,
+      level:1,xp:0,xpNeeded:100,perks:{},
+    },
+    obstacles: zgGenObs(),
+    touch:null,
+  };
+}
+
+function zgGenObs(){
+  var obs=[];
+  var pos=[[150,80,60,60],[400,60,80,40],[700,90,50,60],[100,300,40,100],[800,280,60,70],[280,200,70,50],[600,200,50,50],[150,450,80,40],[500,380,60,60],[750,430,50,80],[350,300,40,40]];
+  pos.forEach(function(p){obs.push({x:p[0],y:p[1],w:p[2],h:p[3]});});
+  return obs;
+}
+
+var ZTYPES=[
+  {name:'walker',hp:60, speed:0.9,damage:10,radius:14,color:'#5a8a3a',xp:15,score:10},
+  {name:'runner',hp:40, speed:2.1,damage:8, radius:12,color:'#8a5a3a',xp:20,score:20},
+  {name:'tank',  hp:200,speed:0.5,damage:25,radius:22,color:'#3a5a8a',xp:50,score:50},
+  {name:'spitter',hp:50,speed:0.7,damage:12,radius:13,color:'#5a8a5a',xp:30,score:35,ranged:true},
+];
+
+function zgSpawnWave(){
+  var count = 5 + ZG.wave * 3;
+  ZG.waveSpawnTotal = count;
+  ZG.waveSpawned = 0;
+  ZG.waveKilled = 0;
+  ZG.waveCooldown = 0;
+
+  var ann = document.getElementById('zg-announce');
+  ann.textContent = 'WAVE ' + ZG.wave;
+  ann.style.transition = 'none';
+  ann.style.opacity = '1';
+  setTimeout(function(){ ann.style.transition='opacity 1s'; ann.style.opacity='0'; }, 1500);
+  document.getElementById('zg-waveinfo').textContent = 'WAVE ' + ZG.wave;
+
+  for(var i=0; i<count; i++){
+    (function(idx){
+      setTimeout(function(){
+        if(!ZG.running) return;
+        var roll=Math.random(), type;
+        if(roll<0.05 && ZG.wave>=3) type=ZTYPES[2];
+        else if(roll<0.2 && ZG.wave>=2) type=ZTYPES[1];
+        else if(roll<0.3 && ZG.wave>=4) type=ZTYPES[3];
+        else type=ZTYPES[0];
+
+        var side=Math.floor(Math.random()*4),x,y;
+        if(side===0){x=Math.random()*zgW;y=-30;}
+        else if(side===1){x=zgW+30;y=Math.random()*zgH;}
+        else if(side===2){x=Math.random()*zgW;y=zgH+30;}
+        else{x=-30;y=Math.random()*zgH;}
+
+        ZG.zombies.push({
+          x:x,y:y,
+          hp:type.hp*(1+ZG.wave*0.1),maxHp:type.hp*(1+ZG.wave*0.1),
+          speed:type.speed*(1+ZG.wave*0.03),damage:type.damage,
+          radius:type.radius,color:type.color,type:type.name,
+          xp:type.xp,score:type.score,
+          angle:0,attackCool:0,ranged:type.ranged||false,rangedCool:0,
+          vx:0,vy:0,stunned:0,wobble:Math.random()*Math.PI*2,
+        });
+        ZG.waveSpawned++;
+      }, idx*400);
+    })(i);
+  }
+}
+
+// ── INPUT ──
+function zgSetupInput(){
+  document.addEventListener('keydown', function(e){
+    ZG.keys[e.key.toLowerCase()]=true;
+    if(e.key==='r'||e.key==='R') zgReload();
+    if(e.key==='1') ZG.currentWeapon=0;
+    if(e.key==='2') ZG.currentWeapon=1;
+    if(e.key==='3') ZG.currentWeapon=2;
+  });
+  document.addEventListener('keyup', function(e){ ZG.keys[e.key.toLowerCase()]=false; });
+
+  zgCanvas.addEventListener('mousemove', function(e){
+    var r=zgCanvas.getBoundingClientRect();
+    var sx=zgCanvas.width/r.width, sy=zgCanvas.height/r.height;
+    ZG.mouse.x=(e.clientX-r.left)*sx; ZG.mouse.y=(e.clientY-r.top)*sy;
+  });
+  zgCanvas.addEventListener('mousedown', function(){ ZG.mouse.down=true; });
+  zgCanvas.addEventListener('mouseup', function(){ ZG.mouse.down=false; });
+
+  zgCanvas.addEventListener('touchstart', function(e){
+    var r=zgCanvas.getBoundingClientRect();
+    var sx=zgCanvas.width/r.width, sy=zgCanvas.height/r.height;
+    ZG.mouse.x=(e.clientX-r.left)*sx; ZG.mouse.y=(e.clientY-r.top)*sy;
+  });
+  zgCanvas.addEventListener('mousedown', function(){ ZG.mouse.down=true; });
+  zgCanvas.addEventListener('mouseup', function(){ ZG.mouse.down=false; });
+
+  zgCanvas.addEventListener('touchstart', function(e){
+    e.preventDefault();
+    var r=zgCanvas.getBoundingClientRect();
+    var sx=zgCanvas.width/r.width, sy=zgCanvas.height/r.height;
+    ZG.touch=ZG.touch||{};
+    Array.from(e.changedTouches).forEach(function(t){
+      var tx=(t.clientX-r.left)*sx, ty=(t.clientY-r.top)*sy;
+      if(tx<zgCanvas.width/2){
+        ZG.touch.joystick={id:t.identifier,startX:tx,startY:ty,x:tx,y:ty};
+      } else {
+        ZG.touch.shoot={id:t.identifier};
+        ZG.mouse.x=tx; ZG.mouse.y=ty; ZG.mouse.down=true;
+      }
+    });
+  },{passive:false});
+  zgCanvas.addEventListener('touchmove', function(e){
+    e.preventDefault();
+    var r=zgCanvas.getBoundingClientRect();
+    var sx=zgCanvas.width/r.width, sy=zgCanvas.height/r.height;
+    Array.from(e.changedTouches).forEach(function(t){
+      var tx=(t.clientX-r.left)*sx, ty=(t.clientY-r.top)*sy;
+      if(ZG.touch&&ZG.touch.joystick&&t.identifier===ZG.touch.joystick.id){
+        ZG.touch.joystick.x=tx; ZG.touch.joystick.y=ty;
+      } else { ZG.mouse.x=tx; ZG.mouse.y=ty; }
+    });
+  },{passive:false});
+  zgCanvas.addEventListener('touchend', function(e){
+    e.preventDefault();
+    Array.from(e.changedTouches).forEach(function(t){
+      if(ZG.touch&&ZG.touch.joystick&&t.identifier===ZG.touch.joystick.id) ZG.touch.joystick=null;
+      if(ZG.touch&&ZG.touch.shoot&&t.identifier===ZG.touch.shoot.id){ZG.touch.shoot=null;ZG.mouse.down=false;}
+    });
+  },{passive:false});
+}
+
+function zgReload(){
+  var w=ZG.weapons[ZG.currentWeapon];
+  if(ZG.player.reloadTime>0||w.ammo===w.maxAmmo) return;
+  ZG.player.reloadTime=w.reloadDur;
+}
+
+function zgShoot(){
+  var w=ZG.weapons[ZG.currentWeapon];
+  if(ZG.fireCooldown>0||ZG.player.reloadTime>0) return;
+  if(w.ammo<=0){zgReload();return;}
+  w.ammo--; ZG.fireCooldown=w.fireRate;
+  var pellets=w.pellets||1;
+  for(var p=0;p<pellets;p++){
+    var angle=ZG.player.angle+(Math.random()-0.5)*w.spread*2+(p-(pellets-1)/2)*0.15;
+    ZG.bullets.push({x:ZG.player.x,y:ZG.player.y,vx:Math.cos(angle)*w.bullet.speed,vy:Math.sin(angle)*w.bullet.speed,damage:w.damage*(1+(ZG.player.perks.damage||0)*0.3),size:w.bullet.size,color:w.bullet.color,life:60,trail:[],fromZombie:false});
+  }
+  for(var i=0;i<8;i++){
+    var a2=ZG.player.angle+(Math.random()-0.5)*0.8, sp2=3+Math.random()*4;
+    ZG.particles.push({x:ZG.player.x+Math.cos(ZG.player.angle)*20,y:ZG.player.y+Math.sin(ZG.player.angle)*20,vx:Math.cos(a2)*sp2,vy:Math.sin(a2)*sp2,life:10,maxLife:10,color:w.bullet.color,size:3});
+  }
+  zgUpdateAmmo();
+}
+
+function zgUpdate(){
+  if(!ZG.running||ZG.gameOver||ZG.levelUpPending) return;
+  ZG.frame++;
+  var p=ZG.player;
+
+  // Movement
+  var dx=0,dy=0;
+  if(ZG.keys['w']||ZG.keys['arrowup']) dy-=1;
+  if(ZG.keys['s']||ZG.keys['arrowdown']) dy+=1;
+  if(ZG.keys['a']||ZG.keys['arrowleft']) dx-=1;
+  if(ZG.keys['d']||ZG.keys['arrowright']) dx+=1;
+  if(ZG.touch&&ZG.touch.joystick){
+    var jdx=ZG.touch.joystick.x-ZG.touch.joystick.startX;
+    var jdy=ZG.touch.joystick.y-ZG.touch.joystick.startY;
+    var jlen=Math.hypot(jdx,jdy);
+    if(jlen>10){dx+=jdx/jlen;dy+=jdy/jlen;}
+  }
+  var len=Math.sqrt(dx*dx+dy*dy);
+  if(len>0){dx/=len;dy/=len;}
+
+  if(ZG.keys['shift']&&p.dashCooldown<=0&&(dx||dy)){
+    p.dashActive=12; p.dashCooldown=90;
+    for(var i=0;i<12;i++) ZG.particles.push({x:p.x,y:p.y,vx:(Math.random()-0.5)*4,vy:(Math.random()-0.5)*4,life:20,maxLife:20,color:'#4488ff',size:4});
+  }
+  if(p.dashActive>0)p.dashActive--;
+  if(p.dashCooldown>0)p.dashCooldown--;
+  var dm=p.dashActive>0?3:1;
+  p.x+=dx*p.speed*dm; p.y+=dy*p.speed*dm;
+  p.x=Math.max(p.radius,Math.min(zgW-p.radius,p.x));
+  p.y=Math.max(p.radius,Math.min(zgH-p.radius,p.y));
+
+  ZG.obstacles.forEach(function(o){
+    if(p.x+p.radius>o.x&&p.x-p.radius<o.x+o.w&&p.y+p.radius>o.y&&p.y-p.radius<o.y+o.h){
+      var ol=p.x+p.radius-o.x,or2=o.x+o.w-(p.x-p.radius),ot=p.y+p.radius-o.y,ob=o.y+o.h-(p.y-p.radius);
+      var m=Math.min(ol,or2,ot,ob);
+      if(m===ol)p.x=o.x-p.radius; else if(m===or2)p.x=o.x+o.w+p.radius; else if(m===ot)p.y=o.y-p.radius; else p.y=o.y+o.h+p.radius;
+    }
+  });
+
+  p.angle=Math.atan2(ZG.mouse.y-p.y,ZG.mouse.x-p.x);
+  if(ZG.mouse.down) zgShoot();
+  if(ZG.fireCooldown>0) ZG.fireCooldown--;
+
+  if(p.reloadTime>0){
+    p.reloadTime--;
+    if(p.reloadTime===0){ZG.weapons[ZG.currentWeapon].ammo=ZG.weapons[ZG.currentWeapon].maxAmmo;zgUpdateAmmo();}
+  }
+
+  // Bullets
+  ZG.bullets=ZG.bullets.filter(function(b){
+    b.trail.push({x:b.x,y:b.y}); if(b.trail.length>6)b.trail.shift();
+    b.x+=b.vx; b.y+=b.vy; b.life--;
+    if(b.life<=0||b.x<0||b.x>zgW||b.y<0||b.y>zgH) return false;
+    for(var oi=0;oi<ZG.obstacles.length;oi++){
+      var o=ZG.obstacles[oi];
+      if(b.x>o.x&&b.x<o.x+o.w&&b.y>o.y&&b.y<o.y+o.h){zgSpawnParticles(b.x,b.y,'#888',4);return false;}
+    }
+    if(!b.fromZombie){
+      for(var zi=ZG.zombies.length-1;zi>=0;zi--){
+        var z=ZG.zombies[zi];
+        if(Math.hypot(b.x-z.x,b.y-z.y)<z.radius+b.size){
+          z.hp-=b.damage; z.stunned=5;
+          zgSpawnParticles(b.x,b.y,'#cc2200',6);
+          ZG.bloodPools.push({x:z.x,y:z.y,r:4+Math.random()*8,alpha:0.5+Math.random()*0.3});
+          if(ZG.bloodPools.length>60)ZG.bloodPools.shift();
+          if(z.hp<=0) zgKillZombie(zi,z);
+          return false;
+        }
+      }
+    }
+    return true;
+  });
+
+  // Zombies
+  ZG.zombies.forEach(function(z,i){
+    if(z.stunned>0){z.stunned--;return;}
+    z.wobble+=0.1;
+    var tx=p.x-z.x,ty=p.y-z.y,dist=Math.hypot(tx,ty);
+    z.angle=Math.atan2(ty,tx);
+    var sx2=0,sy2=0;
+    ZG.zombies.forEach(function(z2,j){
+      if(i===j)return;
+      var dd=Math.hypot(z.x-z2.x,z.y-z2.y);
+      if(dd<(z.radius+z2.radius)*1.5&&dd>0){sx2+=(z.x-z2.x)/dd;sy2+=(z.y-z2.y)/dd;}
+    });
+    if(!z.ranged||dist>200){z.vx=(tx/dist)*z.speed+sx2*0.5;z.vy=(ty/dist)*z.speed+sy2*0.5;}
+    if(z.ranged&&dist<220&&dist>60){
+      z.vx*=0.3;z.vy*=0.3;z.rangedCool--;
+      if(z.rangedCool<=0){
+        z.rangedCool=90;
+        var a=Math.atan2(p.y-z.y,p.x-z.x)+(Math.random()-0.5)*0.3;
+        ZG.bullets.push({x:z.x,y:z.y,vx:Math.cos(a)*5,vy:Math.sin(a)*5,damage:z.damage,size:6,color:'#88ff44',life:50,trail:[],fromZombie:true});
+      }
+    }
+    z.x+=z.vx;z.y+=z.vy;
+    ZG.obstacles.forEach(function(o){
+      if(z.x+z.radius>o.x&&z.x-z.radius<o.x+o.w&&z.y+z.radius>o.y&&z.y-z.radius<o.y+o.h){
+        var ol=z.x+z.radius-o.x,or2=o.x+o.w-(z.x-z.radius),ot=z.y+z.radius-o.y,ob=o.y+o.h-(z.y-z.radius);
+        var m=Math.min(ol,or2,ot,ob);
+        if(m===ol)z.x=o.x-z.radius;else if(m===or2)z.x=o.x+o.w+z.radius;else if(m===ot)z.y=o.y-z.radius;else z.y=o.y+o.h+z.radius;
+      }
+    });
+    if(dist<p.radius+z.radius+2){
+      z.attackCool--;
+      if(z.attackCool<=0){
+        z.attackCool=60;
+        if(p.invincible<=0&&p.dashActive<=0){
+          p.hp=Math.max(0,p.hp-z.damage*(1-(ZG.player.perks.armor||0)*0.2));
+          p.invincible=20;ZG.flashTimer=8;zgUpdateHp();
+          if(p.hp<=0)zgGameOver();
+        }
+      }
+    }
+  });
+
+  // Zombie bullets hit player
+  ZG.bullets=ZG.bullets.filter(function(b){
+    if(!b.fromZombie)return true;
+    if(Math.hypot(b.x-p.x,b.y-p.y)<p.radius+b.size&&p.invincible<=0&&p.dashActive<=0){
+      p.hp=Math.max(0,p.hp-b.damage);p.invincible=20;ZG.flashTimer=8;zgUpdateHp();
+      zgSpawnParticles(b.x,b.y,'#88ff44',5);
+      if(p.hp<=0)zgGameOver();
+      return false;
+    }
+    return true;
+  });
+
+  if(p.invincible>0)p.invincible--;
+  if(ZG.flashTimer>0)ZG.flashTimer--;
+
+  ZG.particles=ZG.particles.filter(function(pt){pt.x+=pt.vx;pt.y+=pt.vy;pt.vx*=0.92;pt.vy*=0.92;pt.life--;return pt.life>0;});
+
+  // Items
+  ZG.items=ZG.items.filter(function(item){
+    var pickup=p.perks.magnet?50:p.radius+12;
+    if(Math.hypot(item.x-p.x,item.y-p.y)<pickup){
+      if(item.type==='health'){p.hp=Math.min(p.maxHp,p.hp+30);zgUpdateHp();zgKillMsg('💊 +30 HP');}
+      else{ZG.weapons[ZG.currentWeapon].ammo=ZG.weapons[ZG.currentWeapon].maxAmmo;zgUpdateAmmo();zgKillMsg('🔋 Ammo');}
+      zgSpawnParticles(item.x,item.y,item.color,8);
+      return false;
+    }
+    return true;
+  });
+
+  // Wave clear check — all spawned AND all killed
+  if(ZG.waveSpawned===ZG.waveSpawnTotal && ZG.zombies.length===0 && ZG.waveSpawnTotal>0 && ZG.waveCooldown===0){
+    ZG.waveCooldown=180; // set once to start countdown
+  }
+  if(ZG.waveCooldown>0){
+    ZG.waveCooldown--;
+    if(ZG.waveCooldown===0 && ZG.zombies.length===0 && ZG.waveSpawned===ZG.waveSpawnTotal){
+      ZG.wave++;
+      // Drop items
+      for(var di=0;di<2;di++) ZG.items.push({x:80+Math.random()*(zgW-160),y:80+Math.random()*(zgH-160),type:Math.random()<0.6?'health':'ammo',color:Math.random()<0.6?'#ff4444':'#f0c040'});
+      zgSpawnWave();
+    }
+  }
+
+  ZG.bgOffset=(ZG.bgOffset+0.2)%40;
+  document.getElementById('zg-score').textContent=ZG.score.toLocaleString();
+  zgUpdateWeapon();
+}
+
+function zgKillZombie(i,z){
+  ZG.kills++; ZG.score+=z.score*ZG.wave;
+  ZG.zombies.splice(i,1);
+  for(var p=0;p<20;p++){
+    var a=Math.random()*Math.PI*2,sp=1+Math.random()*4;
+    ZG.particles.push({x:z.x,y:z.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:30+Math.random()*20,maxLife:50,color:'#881100',size:3+Math.random()*3});
+  }
+  ZG.bloodPools.push({x:z.x,y:z.y,r:4+Math.random()*10,alpha:0.6});
+  if(ZG.bloodPools.length>60)ZG.bloodPools.shift();
+  zgGiveXP(z.xp);
+  zgKillMsg('☠ +'+z.score*ZG.wave+' pts');
+  if(Math.random()<0.15) ZG.items.push({x:z.x,y:z.y,type:Math.random()<0.5?'health':'ammo',color:Math.random()<0.5?'#ff4444':'#f0c040'});
+}
+
+function zgGiveXP(amount){
+  var p=ZG.player; p.xp+=amount;
+  if(p.xp>=p.xpNeeded){p.xp-=p.xpNeeded;p.xpNeeded=Math.floor(p.xpNeeded*1.5);p.level++;document.getElementById('zg-lvl').textContent='LVL '+p.level;zgShowPerks();}
+  document.getElementById('zg-xpfill').style.width=(p.xp/p.xpNeeded*100)+'%';
+}
+
+var ZG_PERKS=[
+  {id:'damage',icon:'💀',name:'Deadly Shots',desc:'شلیک‌ها ۳۰٪ بیشتر آسیب میزنن'},
+  {id:'speed', icon:'👟',name:'Swift Runner', desc:'سرعت حرکت ۲۰٪ بیشتر'},
+  {id:'armor', icon:'🛡️',name:'Iron Skin',   desc:'۲۰٪ آسیب کمتر از دشمنا'},
+  {id:'health',icon:'❤️',name:'Adrenaline',  desc:'+30 HP اضافه'},
+  {id:'reload',icon:'⚡',name:'Fast Hands',  desc:'شارژ ۳۰٪ سریع‌تر'},
+  {id:'magnet',icon:'🔮',name:'Scavenger',   desc:'برداشتن آیتم از فاصله بیشتر'},
+];
+function zgShowPerks(){
+  ZG.levelUpPending=true;
+  var shuffled=[].concat(ZG_PERKS).sort(function(){return Math.random()-0.5;}).slice(0,3);
+  var cards=document.getElementById('zg-perkcards'); cards.innerHTML='';
+  shuffled.forEach(function(pk){
+    var d=document.createElement('div'); d.className='zg-pcard';
+    d.innerHTML='<div class="zg-picon">'+pk.icon+'</div><div class="zg-pname">'+pk.name+'</div><div class="zg-pdesc">'+pk.desc+'</div>';
+    d.onclick=function(){zgApplyPerk(pk.id);document.getElementById('zg-perkmenu').style.display='none';ZG.levelUpPending=false;};
+    cards.appendChild(d);
+  });
+  document.getElementById('zg-perkmenu').style.display='flex';
+}
+function zgApplyPerk(id){
+  var p=ZG.player; if(!p.perks[id])p.perks[id]=0; p.perks[id]++;
+  if(id==='speed')p.speed=3.2*(1+p.perks.speed*0.2);
+  if(id==='health'){p.maxHp+=30;p.hp=Math.min(p.hp+30,p.maxHp);zgUpdateHp();}
+  if(id==='reload')ZG.weapons.forEach(function(w){w.reloadDur=Math.floor(w.reloadDur*0.7);});
+}
+
+function zgSpawnParticles(x,y,color,n){
+  for(var i=0;i<n;i++){var a=Math.random()*Math.PI*2,sp=1+Math.random()*3;ZG.particles.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:20,maxLife:20,color:color,size:2+Math.random()*3});}
+}
+function zgKillMsg(msg){
+  var feed=document.getElementById('zg-killfeed');
+  var div=document.createElement('div'); div.className='zg-km'; div.textContent=msg;
+  feed.appendChild(div); setTimeout(function(){div.remove();},2000);
+}
+function zgUpdateHp(){
+  var p=ZG.player, pct=(p.hp/p.maxHp*100)+'%';
+  document.getElementById('zg-hpfill').style.width=pct;
+  document.getElementById('zg-hpval').textContent=Math.ceil(p.hp)+' HP';
+}
+function zgUpdateAmmo(){
+  var w=ZG.weapons[ZG.currentWeapon];
+  var bar=document.getElementById('zg-ammobar'); bar.innerHTML='';
+  for(var i=0;i<w.maxAmmo;i++){var d=document.createElement('div');d.className='zg-blt'+(i<w.ammo?'':' empty');bar.appendChild(d);}
+}
+function zgUpdateWeapon(){
+  var w=ZG.weapons[ZG.currentWeapon];
+  document.getElementById('zg-weapname').textContent=w.name;
+  if(ZG.player.reloadTime>0) document.getElementById('zg-weapammo').textContent='RELOADING... '+Math.floor((1-ZG.player.reloadTime/w.reloadDur)*100)+'%';
+  else document.getElementById('zg-weapammo').textContent=w.ammo+' / '+w.maxAmmo;
+}
+function zgGameOver(){
+  ZG.gameOver=true;
+  setTimeout(function(){
+    var ov=document.getElementById('zg-overlay'); ov.style.display='flex';
+    ov.innerHTML='<h1 style="color:#ff2244">GAME OVER</h1><div class="zg-sub" style="color:#888">کشته شدی</div><div style="color:#aaa;margin:16px 0;line-height:2.5;text-align:center;font-size:14px">⭐ امتیاز: <b style="color:#fff">'+ZG.score.toLocaleString()+'</b><br>🌊 موج: <b style="color:#ff4422">'+ZG.wave+'</b><br>☠ کشته‌ها: <b style="color:#ff6644">'+ZG.kills+'</b><br>🏅 سطح: <b style="color:#4488ff">'+ZG.player.level+'</b></div><button id="zg-startbtn" onclick="zgStart()">▶ دوباره</button>';
+  },1000);
+}
+
+function zgDraw(){
+  if(!ZG.running||!ZG.player){zgCtx.fillStyle='#0c0c0c';zgCtx.fillRect(0,0,zgW,zgH);return;}
+  var p=ZG.player;
+
+  zgCtx.fillStyle='#0c0c0c'; zgCtx.fillRect(0,0,zgW,zgH);
+  zgCtx.strokeStyle='#161616'; zgCtx.lineWidth=1;
+  var off=ZG.bgOffset;
+  for(var x=-40+off;x<zgW+40;x+=40){zgCtx.beginPath();zgCtx.moveTo(x,0);zgCtx.lineTo(x,zgH);zgCtx.stroke();}
+  for(var y=-40+off;y<zgH+40;y+=40){zgCtx.beginPath();zgCtx.moveTo(0,y);zgCtx.lineTo(zgW,y);zgCtx.stroke();}
+  var vg=zgCtx.createRadialGradient(zgW/2,zgH/2,zgH*0.3,zgW/2,zgH/2,zgH*0.9);
+  vg.addColorStop(0,'transparent');vg.addColorStop(1,'rgba(0,0,0,0.7)');
+  zgCtx.fillStyle=vg;zgCtx.fillRect(0,0,zgW,zgH);
+
+  ZG.obstacles.forEach(function(o){
+    zgCtx.fillStyle='#1a1a1a';zgCtx.fillRect(o.x,o.y,o.w,o.h);
+    zgCtx.strokeStyle='#2a2a2a';zgCtx.lineWidth=2;zgCtx.strokeRect(o.x,o.y,o.w,o.h);
+  });
+
+  ZG.bloodPools.forEach(function(b){
+    zgCtx.save();zgCtx.globalAlpha=b.alpha;zgCtx.fillStyle='#440000';
+    zgCtx.beginPath();zgCtx.ellipse(b.x,b.y,b.r*1.3,b.r*0.8,0,0,Math.PI*2);zgCtx.fill();zgCtx.restore();
+  });
+
+  ZG.items.forEach(function(item){
+    var pulse=Math.sin(ZG.frame*0.1)*3;
+    zgCtx.save();zgCtx.shadowColor=item.color;zgCtx.shadowBlur=15+pulse;zgCtx.fillStyle=item.color;
+    zgCtx.beginPath();zgCtx.arc(item.x,item.y,10+pulse*0.3,0,Math.PI*2);zgCtx.fill();zgCtx.restore();
+    zgCtx.fillStyle='#fff';zgCtx.font='12px Arial';zgCtx.textAlign='center';zgCtx.textBaseline='middle';
+    zgCtx.fillText(item.type==='health'?'💊':'🔋',item.x,item.y);
+  });
+
+  ZG.bullets.forEach(function(b){
+    if(b.trail.length>1){
+      zgCtx.save();zgCtx.strokeStyle=b.fromZombie?'#88ff44':b.color;zgCtx.lineWidth=b.size*0.8;zgCtx.globalAlpha=0.5;
+      zgCtx.beginPath();zgCtx.moveTo(b.trail[0].x,b.trail[0].y);
+      b.trail.forEach(function(t){zgCtx.lineTo(t.x,t.y);}); zgCtx.stroke();zgCtx.restore();
+    }
+    zgCtx.save();zgCtx.shadowColor=b.fromZombie?'#88ff44':b.color;zgCtx.shadowBlur=12;zgCtx.fillStyle=b.fromZombie?'#88ff44':b.color;
+    zgCtx.beginPath();zgCtx.arc(b.x,b.y,b.size,0,Math.PI*2);zgCtx.fill();zgCtx.restore();
+  });
+
+  ZG.zombies.forEach(function(z){
+    var wobble=Math.sin(z.wobble)*2;
+    zgCtx.save();zgCtx.translate(z.x,z.y);zgCtx.rotate(z.angle+wobble*0.05);
+    zgCtx.fillStyle=z.color;zgCtx.shadowColor=z.color;zgCtx.shadowBlur=6;
+    zgCtx.beginPath();zgCtx.arc(0,0,z.radius,0,Math.PI*2);zgCtx.fill();
+    zgCtx.fillStyle='#ff0000';zgCtx.shadowColor='#ff0000';zgCtx.shadowBlur=8;
+    zgCtx.beginPath();zgCtx.arc(z.radius*0.35,-z.radius*0.25,z.radius*0.18,0,Math.PI*2);zgCtx.fill();
+    zgCtx.beginPath();zgCtx.arc(z.radius*0.35,z.radius*0.25,z.radius*0.18,0,Math.PI*2);zgCtx.fill();
+    if(z.type==='tank'){zgCtx.strokeStyle='#fff';zgCtx.lineWidth=3;zgCtx.shadowBlur=0;zgCtx.beginPath();zgCtx.arc(0,0,z.radius+4,0,Math.PI*2);zgCtx.stroke();}
+    zgCtx.restore();
+    if(z.hp<z.maxHp){
+      var bw=z.radius*2.5,bx=z.x-bw/2,by=z.y-z.radius-10;
+      zgCtx.fillStyle='#300';zgCtx.fillRect(bx,by,bw,5);
+      zgCtx.fillStyle='#f00';zgCtx.fillRect(bx,by,bw*(z.hp/z.maxHp),5);
+    }
+  });
+
+  ZG.particles.forEach(function(pt){
+    zgCtx.save();zgCtx.globalAlpha=pt.life/pt.maxLife;zgCtx.fillStyle=pt.color;zgCtx.shadowColor=pt.color;zgCtx.shadowBlur=6;
+    zgCtx.beginPath();zgCtx.arc(pt.x,pt.y,pt.size,0,Math.PI*2);zgCtx.fill();zgCtx.restore();
+  });
+
+  // Player
+  zgCtx.save();zgCtx.translate(p.x,p.y);zgCtx.rotate(p.angle);
+  if(p.invincible>0&&Math.floor(p.invincible/3)%2===0)zgCtx.globalAlpha=0.4;
+  if(p.dashActive>0){zgCtx.shadowColor='#4488ff';zgCtx.shadowBlur=25;}
+  zgCtx.fillStyle='#e8e8e8';zgCtx.beginPath();zgCtx.arc(0,0,p.radius,0,Math.PI*2);zgCtx.fill();
+  zgCtx.fillStyle='#445566';zgCtx.beginPath();zgCtx.arc(0,0,p.radius*0.75,0,Math.PI*2);zgCtx.fill();
+  zgCtx.fillStyle='#888';zgCtx.shadowColor=ZG.weapons[ZG.currentWeapon].bullet.color;zgCtx.shadowBlur=8;
+  zgCtx.fillRect(p.radius*0.3,-4,p.radius*1.1,8);
+  zgCtx.restore();
+
+  // Crosshair
+  var mx=ZG.mouse.x,my=ZG.mouse.y;
+  zgCtx.save();zgCtx.strokeStyle='rgba(255,255,255,0.7)';zgCtx.lineWidth=1;
+  zgCtx.beginPath();zgCtx.moveTo(mx-15,my);zgCtx.lineTo(mx-5,my);zgCtx.stroke();
+  zgCtx.beginPath();zgCtx.moveTo(mx+5,my);zgCtx.lineTo(mx+15,my);zgCtx.stroke();
+  zgCtx.beginPath();zgCtx.moveTo(mx,my-15);zgCtx.lineTo(mx,my-5);zgCtx.stroke();
+  zgCtx.beginPath();zgCtx.moveTo(mx,my+5);zgCtx.lineTo(mx,my+15);zgCtx.stroke();
+  zgCtx.strokeStyle='rgba(255,50,50,0.6)';zgCtx.beginPath();zgCtx.arc(mx,my,4,0,Math.PI*2);zgCtx.stroke();
+  zgCtx.restore();
+
+  if(ZG.flashTimer>0){zgCtx.save();zgCtx.globalAlpha=ZG.flashTimer/8*0.25;zgCtx.fillStyle='#ff0000';zgCtx.fillRect(0,0,zgW,zgH);zgCtx.restore();}
+
+  // Reload bar
+  if(p.reloadTime>0){
+    var w2=ZG.weapons[ZG.currentWeapon],pct=1-p.reloadTime/w2.reloadDur;
+    var bw2=80,bx2=p.x-bw2/2,by2=p.y+p.radius+8;
+    zgCtx.fillStyle='#222';zgCtx.fillRect(bx2,by2,bw2,5);
+    zgCtx.fillStyle='#f0c040';zgCtx.shadowColor='#f0c040';zgCtx.shadowBlur=6;zgCtx.fillRect(bx2,by2,bw2*pct,5);zgCtx.shadowBlur=0;
+    zgCtx.fillStyle='#fff';zgCtx.font='9px monospace';zgCtx.textAlign='center';zgCtx.fillText('RELOADING',p.x,by2+16);
+  }
+
+  if(ZG.zombies.length>0){
+    zgCtx.fillStyle='rgba(0,0,0,0.6)';zgCtx.fillRect(zgW/2-50,44,100,22);
+    zgCtx.fillStyle='#ff4422';zgCtx.font='11px monospace';zgCtx.textAlign='center';
+    zgCtx.fillText('🧟 '+ZG.zombies.length+' remaining',zgW/2,58);
+  }
+}
+
+function zgLoop(){
+  zgUpdate();
+  zgDraw();
+  requestAnimationFrame(zgLoop);
+}
+
+window.zgStart=function(){
+  zgCanvas=document.getElementById('zg-canvas');
+  var wrap=document.getElementById('tg-wrap');
+  zgW=zgCanvas.width=wrap.offsetWidth||700;
+  zgH=zgCanvas.height=wrap.offsetHeight||460;
+  zgCtx=zgCanvas.getContext('2d');
+
+  zgInitState();
+  ZG.player.x=zgW/2; ZG.player.y=zgH/2;
+  ZG.running=true;
+  document.getElementById('zg-overlay').style.display='none';
+  document.getElementById('zg-perkmenu').style.display='none';
+  zgUpdateAmmo(); zgUpdateHp();
+  zgSpawnWave();
+
+  if(!zgLoopStarted){
+    zgLoopStarted=true;
+    zgSetupInput();
+    zgLoop();
+  }
+};
+
+var zgLoopStarted=false;
+
+window.openGame=function(){
+  var ov=document.getElementById('tg-overlay');
+  ov.classList.add('on');
+};
+window.tgClose=function(){
+  document.getElementById('tg-overlay').classList.remove('on');
+  if(ZG) ZG.running=false;
+};
+
+})();
+</script>
+
 </body>
 </html>

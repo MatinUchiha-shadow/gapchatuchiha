@@ -4450,37 +4450,56 @@ window.generateImage = async function(){
   result.style.display = 'none';
   errEl.style.display = 'none';
   loading.style.display = 'flex';
-  document.getElementById('img-loading-txt').textContent = 'در حال تولید تصویر…';
+  document.getElementById('img-loading-txt').textContent = 'در حال تولید تصویر… (ممکنه ۱۰-۳۰ ثانیه طول بکشه)';
 
   const ratioMap = {'1:1':[1024,1024],'16:9':[1280,720],'9:16':[720,1280],'4:3':[1024,768]};
   const [w,h] = ratioMap[selectedRatio] || [1024,1024];
+  const seed = Math.floor(Math.random() * 999999);
+  const encodedPrompt = encodeURIComponent(prompt);
+  const imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${w}&height=${h}&seed=${seed}&nologo=true&model=flux`;
 
-  try {
-    // Pollinations.ai Image API — کاملاً رایگان، بدون کلید، کار در ایران
-    const encodedPrompt = encodeURIComponent(prompt);
-    const seed = Math.floor(Math.random() * 999999);
-    const imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true`;
+  const imgEl = document.getElementById('img-output');
 
-    // پیش‌لود تصویر
-    await new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = resolve;
-      img.onerror = () => reject(new Error('تصویر لود نشد. دوباره امتحان کن.'));
-      img.src = imgUrl;
-    });
+  // مستقیم src رو ست کن — pollinations تصویر رو تولید می‌کنه و برمی‌گردونه
+  imgEl.src = '';
+  imgEl.dataset.url = imgUrl;
 
+  imgEl.onload = function(){
     loading.style.display = 'none';
-    document.getElementById('img-output').src = imgUrl;
-    document.getElementById('img-output').dataset.url = imgUrl;
     result.style.display = 'flex';
-
-  } catch(e){
-    loading.style.display = 'none';
-    errEl.textContent = '❌ ' + e.message;
-    errEl.style.display = 'block';
-  } finally {
     btn.disabled = false; btn.style.opacity = '1';
-  }
+  };
+  imgEl.onerror = function(){
+    loading.style.display = 'none';
+    errEl.textContent = '❌ تصویر تولید نشد. دوباره امتحان کن یا پرامپت رو تغییر بده.';
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.style.opacity = '1';
+  };
+
+  // timeout 60 ثانیه
+  const timeoutId = setTimeout(()=>{
+    imgEl.src = '';
+    loading.style.display = 'none';
+    errEl.textContent = '⏱️ زمان زیادی طول کشید. دوباره امتحان کن.';
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.style.opacity = '1';
+  }, 60000);
+
+  imgEl.onload = function(){
+    clearTimeout(timeoutId);
+    loading.style.display = 'none';
+    result.style.display = 'flex';
+    btn.disabled = false; btn.style.opacity = '1';
+  };
+  imgEl.onerror = function(){
+    clearTimeout(timeoutId);
+    loading.style.display = 'none';
+    errEl.textContent = '❌ تصویر تولید نشد. دوباره امتحان کن یا پرامپت رو تغییر بده.';
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.style.opacity = '1';
+  };
+
+  imgEl.src = imgUrl;
 };
 
 window.downloadAiImage = function(){
@@ -4490,6 +4509,21 @@ window.downloadAiImage = function(){
   a.href = url; a.download = 'gapchat-ai-image.png'; a.target='_blank';
   a.click();
 };
+
+async function pollinationsChat(messages, attempt=1){
+  const res = await fetch('https://text.pollinations.ai/openai', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model:'openai-large', messages, temperature:0.7 })
+  });
+  if(res.status===429 && attempt<4){
+    await new Promise(r=>setTimeout(r, attempt*3000));
+    return pollinationsChat(messages, attempt+1);
+  }
+  if(res.status===429) throw new Error('سرور شلوغه، چند ثانیه صبر کن و دوباره امتحان کن 🙏');
+  if(!res.ok) throw new Error(`خطای سرور: ${res.status}`);
+  return res.json();
+}
 
 window.sendAiMsg = async function(){
   if(aiTyping) return;
@@ -4506,33 +4540,18 @@ window.sendAiMsg = async function(){
   const loadEl = appendAiTyping();
 
   try {
-    // Pollinations.ai Text API — رایگان، بدون کلید، کار در ایران
     const messages = [
       { role:'system', content:'تو یه دستیار هوشمند فارسی‌زبان هستی که به کاربران GapChat کمک می‌کنی. با لحنی دوستانه و مفید جواب بده. همیشه به فارسی جواب بده مگر اینکه کاربر به زبان دیگه‌ای بپرسه.' },
       ...aiHistory
     ];
-    const res = await fetch('https://text.pollinations.ai/openai', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'openai-large',
-        messages,
-        temperature: 0.7
-      })
-    });
-
+    const data = await pollinationsChat(messages);
     loadEl.remove();
-
-    if(!res.ok) throw new Error(`خطای سرور: ${res.status}`);
-
-    const data = await res.json();
     const reply = data.choices?.[0]?.message?.content || '❌ پاسخی دریافت نشد.';
     aiHistory.push({ role:'assistant', content: reply });
     appendAiMsg('assistant', reply);
-
   } catch(e){
     loadEl && loadEl.remove && loadEl.remove();
-    appendAiMsg('error', `❌ خطا: ${e.message}`);
+    appendAiMsg('error', e.message);
   } finally {
     aiTyping = false;
   }

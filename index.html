@@ -920,7 +920,7 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
   display:flex;align-items:center;justify-content:center;
 }
 #tg-wrap{flex:1;position:relative;overflow:hidden;background:#0a0a0a}
-#zg-canvas{display:block;width:100%;height:100%}
+#zg-canvas{display:block;width:100%;height:100%;will-change:transform;image-rendering:pixelated}
 #zg-ui{position:absolute;top:0;left:0;right:0;pointer-events:none;font-family:'Courier New',monospace;}
 #zg-hud{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px;color:#fff}
 .zg-hblock{display:flex;flex-direction:column;gap:4px}
@@ -985,15 +985,45 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
   font-size:9px;padding:3px 8px;border-radius:4px;
   font-weight:700;letter-spacing:.5px;
 }
-#zg-perkmenu{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.92);z-index:20;pointer-events:all;font-family:'Courier New',monospace}
-#zg-perkmenu h2{color:#4488ff;font-size:24px;letter-spacing:3px;margin-bottom:6px;text-shadow:0 0 16px #4488ff}
-#zg-perkmenu p{color:#555;font-size:11px;margin-bottom:24px}
-.zg-perkcards{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;padding:0 16px}
-.zg-pcard{width:130px;padding:16px 12px;border:1px solid #333;background:#111;cursor:pointer;text-align:center;transition:all .2s;border-radius:4px}
-.zg-pcard:hover{border-color:#4488ff;background:#1a2240;box-shadow:0 0 16px #4488ff44;transform:translateY(-3px)}
-.zg-picon{font-size:30px;margin-bottom:8px}
-.zg-pname{color:#fff;font-size:12px;font-weight:bold;margin-bottom:4px}
-.zg-pdesc{color:#555;font-size:10px;line-height:1.5}
+#zg-perkmenu{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.94);z-index:20;pointer-events:all;font-family:'Courier New',monospace;overflow-y:auto;padding:16px 0}
+#zg-perkmenu h2{color:#4488ff;font-size:22px;letter-spacing:4px;margin-bottom:2px;text-shadow:0 0 20px #4488ff;animation:zgPerkGlow 2s ease-in-out infinite}
+@keyframes zgPerkGlow{0%,100%{text-shadow:0 0 10px #4488ff}50%{text-shadow:0 0 28px #4488ff,0 0 50px #2255cc}}
+#zg-perkmenu .zg-lvl-label{color:#888;font-size:10px;letter-spacing:2px;margin-bottom:4px}
+#zg-perkmenu .zg-perk-subtitle{color:#444;font-size:10px;margin-bottom:18px;letter-spacing:1px}
+.zg-perkcards{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:0 12px;max-width:560px}
+.zg-pcard{
+  width:160px;padding:0;border:1px solid #2a2a2a;background:#0e0e0e;
+  cursor:pointer;text-align:center;transition:all .22s cubic-bezier(.34,1.56,.64,1);
+  border-radius:10px;overflow:hidden;position:relative;
+}
+.zg-pcard:hover{transform:translateY(-5px) scale(1.03);border-color:var(--pc);box-shadow:0 0 22px var(--pc-glow),0 8px 30px rgba(0,0,0,.5)}
+.zg-pcard:active{transform:scale(.97)}
+.zg-pcard-header{padding:14px 10px 10px;position:relative}
+.zg-pcard-tier{position:absolute;top:6px;right:8px;font-size:8px;font-weight:bold;letter-spacing:1px;padding:2px 5px;border-radius:3px;background:rgba(0,0,0,.5);border:1px solid;border-color:var(--pc)}
+.zg-pcard-tier.legendary{color:#ffd700;border-color:#ffd700;text-shadow:0 0 6px #ffd700}
+.zg-pcard-tier.rare{color:#a855f7;border-color:#a855f7}
+.zg-pcard-tier.uncommon{color:#22c55e;border-color:#22c55e}
+.zg-pcard-tier.common{color:#888;border-color:#555}
+.zg-picon{font-size:34px;margin-bottom:6px;display:block;filter:drop-shadow(0 0 8px var(--pc))}
+.zg-pname{color:#fff;font-size:11px;font-weight:bold;margin-bottom:3px;letter-spacing:.5px}
+.zg-ptype{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--pc);margin-bottom:0;opacity:.8}
+.zg-pcard-body{background:#090909;border-top:1px solid #1a1a1a;padding:8px 10px 10px}
+.zg-pdesc{color:#888;font-size:9px;line-height:1.6;margin-bottom:6px}
+.zg-pstats{display:flex;flex-direction:column;gap:3px}
+.zg-pstat{display:flex;align-items:center;gap:5px;font-size:8px}
+.zg-pstat-label{color:#444;flex:1;text-align:left}
+.zg-pstat-bar{flex:2;height:3px;background:#1a1a1a;border-radius:99px;overflow:hidden}
+.zg-pstat-fill{height:100%;border-radius:99px;background:var(--pc);box-shadow:0 0 4px var(--pc)}
+.zg-pstat-val{color:var(--pc);min-width:28px;text-align:right;font-weight:bold}
+.zg-pcard-footer{background:var(--pc-dim);border-top:1px solid var(--pc-border);padding:5px 10px;font-size:8px;color:var(--pc);letter-spacing:1px;text-align:center}
+/* stack count badge */
+.zg-stack-badge{position:absolute;top:6px;left:8px;background:#111;border:1px solid #333;border-radius:99px;font-size:7px;color:#666;padding:1px 5px}
+/* synergy hint */
+.zg-synergy{font-size:7px;color:#ff8800;margin-top:4px;font-style:italic}
+/* acquired list */
+#zg-acquired-perks{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:12px;max-width:520px;padding:0 12px}
+.zg-acq-chip{font-size:9px;padding:2px 7px;border-radius:4px;background:#111;border:1px solid #222;color:#555}
+.zg-acq-chip.active{border-color:#333;color:#777}
 
 </style>
 </head>
@@ -1380,6 +1410,8 @@ let lastId=0, lastUid='', pollTimer=null, authMode='login';
 /* ══ Voice state ══ */
 let inVoice=false, localStream=null, isMuted=false;
 let peers={}, voiceMembers={}, lastSignalId=0;
+/* بافر ICE candidateهایی که قبل از setRemoteDescription رسیدن */
+let pendingCandidates={};
 let speakerOn=false;
 
 /* ══ Features state ══ */
@@ -3923,6 +3955,7 @@ async function leaveVoiceRoom(){
   }
   peers={};
   if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
+  pendingCandidates={};
   /* ثبت مدت زمان حضور در روم صوتی */
   if(voiceJoinTime){
     const seconds=Math.round((Date.now()-voiceJoinTime)/1000);
@@ -4050,12 +4083,21 @@ window.tryJoinRoom=async function(roomId, roomName, locked){
 };
 
 async function connectToPeer(peerName, isInitiator){
-  if(peers[peerName]) return;
+  /* اگه peer از قبل وجود داشته باشه و connection سالم باشه، برگرد */
+  if(peers[peerName]){
+    const st=peers[peerName].pc.connectionState;
+    if(st==='connected'||st==='connecting') return;
+    /* وگرنه cleanup کن و دوباره بساز */
+    peers[peerName].pc.close();
+    if(peers[peerName].audioEl) peers[peerName].audioEl.remove();
+    delete peers[peerName];
+  }
   const pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
   const audioEl=document.createElement('audio');
   audioEl.autoplay=true; audioEl.playsInline=true;
   document.body.appendChild(audioEl);
-  peers[peerName]={pc,audioEl};
+  peers[peerName]={pc, audioEl, remoteDescSet:false};
+  pendingCandidates[peerName]=[];
 
   if(localStream) localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
 
@@ -4066,6 +4108,7 @@ async function connectToPeer(peerName, isInitiator){
   pc.onconnectionstatechange=()=>{
     if(pc.connectionState==='failed'||pc.connectionState==='disconnected'){
       if(peers[peerName]){ peers[peerName].pc.close(); if(peers[peerName].audioEl) peers[peerName].audioEl.remove(); delete peers[peerName]; }
+      delete pendingCandidates[peerName];
       /* تلاش مجدد برای اتصال بعد از ۲ ثانیه */
       if(inVoice){
         setTimeout(async()=>{
@@ -4125,8 +4168,23 @@ async function handleSignal(sig){
   switch(sig.type){
     case 'offer':
       if(!inVoice) return;
-      await connectToPeer(sig.from_name,false);
+      /* اگه peer قبلاً وجود داشته باشه ولی remoteDesc نداره، cleanup کن */
+      if(peers[sig.from_name]){
+        const st=peers[sig.from_name].pc.connectionState;
+        if(st==='connected'||st==='connecting') return;
+        peers[sig.from_name].pc.close();
+        if(peers[sig.from_name].audioEl) peers[sig.from_name].audioEl.remove();
+        delete peers[sig.from_name];
+        delete pendingCandidates[sig.from_name];
+      }
+      await connectToPeer(sig.from_name, false);
       await peers[sig.from_name].pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      peers[sig.from_name].remoteDescSet=true;
+      /* اضافه کردن candidateهای بافر شده */
+      for(const c of (pendingCandidates[sig.from_name]||[])){
+        try{ await peers[sig.from_name].pc.addIceCandidate(new RTCIceCandidate(c)); }catch{}
+      }
+      pendingCandidates[sig.from_name]=[];
       const answer=await peers[sig.from_name].pc.createAnswer();
       await peers[sig.from_name].pc.setLocalDescription(answer);
       await sendSignal('answer',sig.from_name,{sdp:answer});
@@ -4134,11 +4192,23 @@ async function handleSignal(sig){
     case 'answer':
       if(peers[sig.from_name]){
         await peers[sig.from_name].pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+        peers[sig.from_name].remoteDescSet=true;
+        /* اضافه کردن candidateهای بافر شده */
+        for(const c of (pendingCandidates[sig.from_name]||[])){
+          try{ await peers[sig.from_name].pc.addIceCandidate(new RTCIceCandidate(c)); }catch{}
+        }
+        pendingCandidates[sig.from_name]=[];
       }
       break;
     case 'candidate':
       if(peers[sig.from_name]){
-        try{ await peers[sig.from_name].pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); }catch{}
+        if(peers[sig.from_name].remoteDescSet){
+          try{ await peers[sig.from_name].pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); }catch{}
+        } else {
+          /* بافر کن تا remoteDescription آماده بشه */
+          if(!pendingCandidates[sig.from_name]) pendingCandidates[sig.from_name]=[];
+          pendingCandidates[sig.from_name].push(payload.candidate);
+        }
       }
       break;
   }
@@ -4632,9 +4702,11 @@ document.getElementById('dm-input').addEventListener('keydown',function(e){
         <div id="zg-xpbar"><div id="zg-xpfill" style="width:0%"></div></div>
       </div>
       <div id="zg-perkmenu">
-        <h2>LEVEL UP!</h2>
-        <p>یه پرک انتخاب کن</p>
+        <div class="zg-lvl-label" id="zg-perk-lvl-label">LEVEL UP</div>
+        <h2>⬆ CHOOSE YOUR PERK</h2>
+        <div class="zg-perk-subtitle" id="zg-perk-subtitle">یه توانایی انتخاب کن</div>
         <div class="zg-perkcards" id="zg-perkcards"></div>
+        <div id="zg-acquired-perks"></div>
       </div>
       <div id="zg-overlay">
         <h1>DEAD ZONE</h1>
@@ -5244,6 +5316,450 @@ document.getElementById('dm-input').addEventListener('keydown',function(e){
             </div>
           </div>
 
+
+          <!-- FLESH MASS -->
+          <div style="display:flex;gap:14px;align-items:flex-start;background:#0d0500;border:1px solid #3a1500;border-radius:12px;padding:16px;margin-bottom:16px">
+            <div style="flex-shrink:0;width:68px;height:68px;border-radius:12px;background:#1a0800;border:2px solid #8B4513;display:flex;align-items:center;justify-content:center;font-size:36px">🧫</div>
+            <div class="zg-guide-info">
+              <div class="zg-guide-name" style="color:#cc6622;font-size:16px">🧫 THE FLESH MASS</div>
+              <div class="zg-guide-badge" style="background:#1a0500;color:#cc6622;border-color:#8B4513;font-size:11px">BOSS — موج ۱۵</div>
+              <div class="zg-guide-stats">
+                <span>❤️ <b>3500</b> HP (× موج)</span>
+                <span>⚡ <b>0.7→2.8</b> (فاز آخر)</span>
+                <span>💥 <b>18</b> آسیب تماسی + سم</span>
+                <span>⭐ <b>1800</b> XP / <b>3500</b> امتیاز</span>
+              </div>
+              <div class="zg-guide-desc">توده‌ای از ده‌ها زامبی به هم چسبیده! دست‌ها و سرهای مختلف از بدنش بیرون زده. هر ۲۰٪ از HP که کم می‌شود، شکل و اندام‌های جدیدی رشد می‌کنند.</div>
+              <div style="margin-top:10px">
+                <div style="font-size:10px;color:#555;letter-spacing:2px;margin-bottom:6px">PHASES & MECHANICS</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <div style="background:#1a0800;border:1px solid #3a1000;border-radius:6px;padding:8px 10px">
+                    <div style="color:#cc8844;font-size:11px;font-weight:700;margin-bottom:4px">🧟 فاز ۱ (جذب مردگان) — HP 100%-80%</div>
+                    <div style="color:#666;font-size:10px">زامبی احضار می‌کند. هر زامبی که به باس برسد جذب می‌شود و HP باس بالا می‌رود! زامبی‌ها را قبل از رسیدن به باس بکش.</div>
+                  </div>
+                  <div style="background:#1a0500;border:1px solid #3a0a00;border-radius:6px;padding:8px 10px">
+                    <div style="color:#cc4422;font-size:11px;font-weight:700;margin-bottom:4px">💀 فاز ۲ (جدا شدن اندام‌ها) — HP 80%-50%</div>
+                    <div style="color:#666;font-size:10px">بازوهای جهش‌یافته از بدنش جدا می‌شوند و مستقل حمله می‌کنند. نابود کردن هر بازو توانایی باس را کاهش می‌دهد.</div>
+                  </div>
+                  <div style="background:#0a1a00;border:1px solid #1a3a00;border-radius:6px;padding:8px 10px">
+                    <div style="color:#88ff00;font-size:11px;font-weight:700;margin-bottom:4px">☣ فاز ۳ (انفجار آلودگی) — HP 50%-20%</div>
+                    <div style="color:#666;font-size:10px">نیمی از بدنش منفجر می‌شود! استخرهای سمی روی نقشه پخش می‌شوند. بخش‌هایی از زمین برای مدتی کشنده می‌شوند.</div>
+                  </div>
+                  <div style="background:#1a0000;border:1px solid #440000;border-radius:6px;padding:8px 10px">
+                    <div style="color:#ff2200;font-size:11px;font-weight:700;margin-bottom:4px">💉 فاز نهایی (زامبی صفر) — HP زیر 20%</div>
+                    <div style="color:#666;font-size:10px">توده اصلی می‌میرد و «زامبی صفر» — اولین آلوده — بیرون می‌آید! سریع، باهوش، با دش. یک دوئل تن به تن!</div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:8px;font-size:10px;color:#cc6622;background:#1a0500;border:1px solid #3a1000;border-radius:6px;padding:6px 10px">
+                💡 نکته: در فاز ۱ اول زامبی‌ها را بکش، نه باس! در فاز ۳ از استخرهای سبز دوری کن. برای زامبی صفر دش‌ات را نگه‌دار!
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════════════ -->
+          <!-- SECTION: PERKS -->
+          <!-- ══════════════════════════════════════════ -->
+          <div style="font-size:11px;color:#4488ff;letter-spacing:3px;text-transform:uppercase;margin:32px 0 16px;border-right:3px solid #4488ff;padding-right:10px">⬆ پرک‌ها (توانایی‌های ویژه)</div>
+          <div style="font-size:11px;color:#444;margin-bottom:16px;line-height:1.8">با هر بار لِوِل‌آپ یه پرک انتخاب می‌کنی. پرک‌ها قابل stack هستن (تا حد ماکسیمم). ترکیب درست پرک‌ها فرق بین بقا و مرگه!</div>
+
+          <!-- ── OFFENSE ── -->
+          <div style="font-size:10px;color:#ff4422;letter-spacing:2px;margin:12px 0 10px;display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:20px;height:1px;background:#ff4422"></span>OFFENSE<span style="display:inline-block;flex:1;height:1px;background:#ff4422;opacity:.3"></span></div>
+
+          <!-- Deadly Shots -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #ff4422;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a0800;border-radius:8px;flex-shrink:0">💀</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#ff4422;letter-spacing:1px">Deadly Shots</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0800;color:#ff4422;border:1px solid rgba(255,68,34,.3)">OFFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ffa500;border:1px solid rgba(255,165,0,.2)">UNCOMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۵</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7;margin-bottom:5px">گلوله‌هات ۳۰٪ بیشتر آسیب میزنن. با هر stack قوی‌تر.</div>
+              <div style="font-size:10px;color:#555">💡 با Rapid Fire ترکیبش کن!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#ff4422">+30%</div>
+              <div style="font-size:9px;color:#444">آسیب</div>
+            </div>
+          </div>
+
+          <!-- Explosive Rounds -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #ff8800;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a0a00;border-radius:8px;flex-shrink:0">💥</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#ff8800;letter-spacing:1px">Explosive Rounds</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0800;color:#ff4422;border:1px solid rgba(255,68,34,.3)">OFFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ff8800;border:1px solid rgba(255,136,0,.2)">RARE</span>
+                <span style="font-size:9px;color:#444">Stack: ×۳</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7;margin-bottom:5px">هر گلوله انفجار کوچیک میزنه و به زامبی‌های کنارش هم آسیب میرسونه (25 آسیب، شعاع 35px).</div>
+              <div style="font-size:10px;color:#555">💡 با Deadly Shots خطرناکه!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#ff8800">25 AOE</div>
+              <div style="font-size:9px;color:#444">آسیب</div>
+            </div>
+          </div>
+
+          <!-- Rapid Fire -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #facc15;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a1500;border-radius:8px;flex-shrink:0">🔫</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#facc15;letter-spacing:1px">Rapid Fire</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0800;color:#ff4422;border:1px solid rgba(255,68,34,.3)">OFFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ffa500;border:1px solid rgba(255,165,0,.2)">UNCOMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۴</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7;margin-bottom:5px">سرعت شلیک ۲۵٪ بالاتر. گلوله‌ها سریع‌تر و بیشتر!</div>
+              <div style="font-size:10px;color:#555">💡 با Deadly Shots ترکیب‌پذیره</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#facc15">+25%</div>
+              <div style="font-size:9px;color:#444">سرعت شلیک</div>
+            </div>
+          </div>
+
+          <!-- Armor Piercer -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #22d3ee;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#001a1a;border-radius:8px;flex-shrink:0">🎯</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#22d3ee;letter-spacing:1px">Armor Piercer</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0800;color:#ff4422;border:1px solid rgba(255,68,34,.3)">OFFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ff8800;border:1px solid rgba(255,136,0,.2)">RARE</span>
+                <span style="font-size:9px;color:#444">Stack: ×۲</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">گلوله‌هات از یه زامبی رد میشن و به پشتیشون هم میخورن. Elite‌ها رو راحت‌تر بزن (+40%).</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#22d3ee">×2</div>
+              <div style="font-size:9px;color:#444">برخورد</div>
+            </div>
+          </div>
+
+          <!-- Vampiric Shots -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #c084fc;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#120022;border-radius:8px;flex-shrink:0">🧛</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#c084fc;letter-spacing:1px">Vampiric Shots</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0800;color:#ff4422;border:1px solid rgba(255,68,34,.3)">OFFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ff8800;border:1px solid rgba(255,136,0,.2)">RARE</span>
+                <span style="font-size:9px;color:#444">Stack: ×۳</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7;margin-bottom:5px">هر بار که زامبی میزنی ۳ HP برمیگرده. در نایت‌مر خیلی کمک میکنه.</div>
+              <div style="font-size:10px;color:#555">💡 با Rapid Fire خیلی کمک میکنه</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#c084fc">3 HP</div>
+              <div style="font-size:9px;color:#444">هر ضربه</div>
+            </div>
+          </div>
+
+          <!-- Critical Strike -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #fbbf24;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a1200;border-radius:8px;flex-shrink:0">⚡</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#fbbf24;letter-spacing:1px">Critical Strike</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0800;color:#ff4422;border:1px solid rgba(255,68,34,.3)">OFFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ff8800;border:1px solid rgba(255,136,0,.2)">RARE</span>
+                <span style="font-size:9px;color:#444">Stack: ×۴</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">۲۰٪ شانس کریتیکال: آسیب ۲.۵ برابر! با صدا و افکت بصری.</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#fbbf24">×2.5</div>
+              <div style="font-size:9px;color:#444">کریتیکال</div>
+            </div>
+          </div>
+
+          <!-- Multishot -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #332200;border-right:3px solid #f59e0b;border-radius:8px;padding:12px;margin-bottom:8px;box-shadow:0 0 12px rgba(245,158,11,.1)">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a1100;border-radius:8px;flex-shrink:0">🌟</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#f59e0b;letter-spacing:1px">Multishot</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0800;color:#ff4422;border:1px solid rgba(255,68,34,.3)">OFFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#2a1500;color:#f59e0b;border:1px solid rgba(245,158,11,.3)">⭐ LEGENDARY</span>
+                <span style="font-size:9px;color:#444">Stack: ×۲</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">هر شلیک ۱ گلوله اضافه در زاویه کمی متفاوت میزنه. دو برابر آسیب!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#f59e0b">×2</div>
+              <div style="font-size:9px;color:#444">گلوله</div>
+            </div>
+          </div>
+
+          <!-- Berserker Mode -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #2a0000;border-right:3px solid #dc2626;border-radius:8px;padding:12px;margin-bottom:8px;box-shadow:0 0 12px rgba(220,38,38,.1)">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a0000;border-radius:8px;flex-shrink:0">😤</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#dc2626;letter-spacing:1px">Berserker</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0800;color:#ff4422;border:1px solid rgba(255,68,34,.3)">OFFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#2a0000;color:#dc2626;border:1px solid rgba(220,38,38,.3)">⭐ LEGENDARY</span>
+                <span style="font-size:9px;color:#444">Stack: ×۱</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">زیر ۳۰٪ HP: آسیب +۵۰٪ و سرعت +۳۰٪. جهنم رو ببین!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:13px;font-weight:800;color:#dc2626">&lt;30%HP</div>
+              <div style="font-size:9px;color:#444">فعال میشه</div>
+            </div>
+          </div>
+
+          <!-- ── DEFENSE ── -->
+          <div style="font-size:10px;color:#4488ff;letter-spacing:2px;margin:16px 0 10px;display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:20px;height:1px;background:#4488ff"></span>DEFENSE<span style="display:inline-block;flex:1;height:1px;background:#4488ff;opacity:.3"></span></div>
+
+          <!-- Iron Skin -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #64748b;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#0e1118;border-radius:8px;flex-shrink:0">🛡️</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#94a3b8;letter-spacing:1px">Iron Skin</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#001222;color:#4488ff;border:1px solid rgba(68,136,255,.3)">DEFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ffa500;border:1px solid rgba(255,165,0,.2)">UNCOMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۴</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7;margin-bottom:5px">۲۰٪ از همه آسیب‌ها جذب میشه. هر stack کمتر ضربه میخوری.</div>
+              <div style="font-size:10px;color:#555">💡 با Battle Regen عالیه</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#94a3b8">−20%</div>
+              <div style="font-size:9px;color:#444">آسیب دریافتی</div>
+            </div>
+          </div>
+
+          <!-- Adrenaline Rush -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #e5334a;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a0008;border-radius:8px;flex-shrink:0">❤️</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#e5334a;letter-spacing:1px">Adrenaline Rush</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#001222;color:#4488ff;border:1px solid rgba(68,136,255,.3)">DEFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#111;color:#aaa;border:1px solid #333">COMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۶</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">+40 HP ماکسیمم. همین الان هم پر میشه. هر بار که میگیری بیشتر.</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#e5334a">+40 HP</div>
+              <div style="font-size:9px;color:#444">فوری</div>
+            </div>
+          </div>
+
+          <!-- Battle Regen -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#001a0a;border-radius:8px;flex-shrink:0">💚</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#22c55e;letter-spacing:1px">Battle Regen</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#001222;color:#4488ff;border:1px solid rgba(68,136,255,.3)">DEFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ff8800;border:1px solid rgba(255,136,0,.2)">RARE</span>
+                <span style="font-size:9px;color:#444">Stack: ×۳</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7;margin-bottom:5px">اگه ۳ ثانیه ضربه نخوری، آروم آروم HP برمیگرده (۱ HP هر ۴۵ فریم).</div>
+              <div style="font-size:10px;color:#555">💡 با Iron Skin عالیه</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#22c55e">1/45f</div>
+              <div style="font-size:9px;color:#444">ریکاوری</div>
+            </div>
+          </div>
+
+          <!-- Energy Shield -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #001a2a;border-right:3px solid #38bdf8;border-radius:8px;padding:12px;margin-bottom:8px;box-shadow:0 0 12px rgba(56,189,248,.08)">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#001525;border-radius:8px;flex-shrink:0">🔵</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#38bdf8;letter-spacing:1px">Energy Shield</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#001222;color:#4488ff;border:1px solid rgba(68,136,255,.3)">DEFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#001525;color:#38bdf8;border:1px solid rgba(56,189,248,.3)">⭐ LEGENDARY</span>
+                <span style="font-size:9px;color:#444">Stack: ×۲</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">یه سپر ۵۰ HP که بعد از ۸ ثانیه بدون ضربه دوباره پر میشه! جداگانه از HP.</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#38bdf8">50 HP</div>
+              <div style="font-size:9px;color:#444">سپر</div>
+            </div>
+          </div>
+
+          <!-- Ghost Step -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #a78bfa;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#0e0a1a;border-radius:8px;flex-shrink:0">💨</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#a78bfa;letter-spacing:1px">Ghost Step</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#001222;color:#4488ff;border:1px solid rgba(68,136,255,.3)">DEFENSE</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ff8800;border:1px solid rgba(255,136,0,.2)">RARE</span>
+                <span style="font-size:9px;color:#444">Stack: ×۳</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">۱۵٪ شانس دج کامل از هر ضربه. گلوله‌ها هم شامل میشه!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#a78bfa">15%</div>
+              <div style="font-size:9px;color:#444">دج</div>
+            </div>
+          </div>
+
+          <!-- ── MOBILITY ── -->
+          <div style="font-size:10px;color:#34d399;letter-spacing:2px;margin:16px 0 10px;display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:20px;height:1px;background:#34d399"></span>MOBILITY<span style="display:inline-block;flex:1;height:1px;background:#34d399;opacity:.3"></span></div>
+
+          <!-- Swift Runner -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #34d399;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#001a10;border-radius:8px;flex-shrink:0">👟</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#34d399;letter-spacing:1px">Swift Runner</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#001a10;color:#34d399;border:1px solid rgba(52,211,153,.3)">MOBILITY</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#111;color:#aaa;border:1px solid #333">COMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۴</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">سرعت حرکت ۲۰٪ بالاتر. زامبی‌ها نمیتونن بگیرنت!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#34d399">+20%</div>
+              <div style="font-size:9px;color:#444">سرعت</div>
+            </div>
+          </div>
+
+          <!-- Afterburner -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #4488ff;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#001025;border-radius:8px;flex-shrink:0">💫</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#4488ff;letter-spacing:1px">Afterburner</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#001a10;color:#34d399;border:1px solid rgba(52,211,153,.3)">MOBILITY</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ffa500;border:1px solid rgba(255,165,0,.2)">UNCOMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۳</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">دش cooldown ۴۰٪ کمتر. بعد از دش به مدت ۰.۴ ثانیه invincible میشی!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#4488ff">−40%</div>
+              <div style="font-size:9px;color:#444">کولدون دش</div>
+            </div>
+          </div>
+
+          <!-- Slipstream -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #2dd4bf;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#001518;border-radius:8px;flex-shrink:0">🌀</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#2dd4bf;letter-spacing:1px">Slipstream</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#001a10;color:#34d399;border:1px solid rgba(52,211,153,.3)">MOBILITY</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ff8800;border:1px solid rgba(255,136,0,.2)">RARE</span>
+                <span style="font-size:9px;color:#444">Stack: ×۲</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">بعد از کشتن ۳ زامبی پشت سر هم، ۲ ثانیه سرعت ۵۰٪ بیشتر میگیری!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#2dd4bf">+50%</div>
+              <div style="font-size:9px;color:#444">×3 کشتن</div>
+            </div>
+          </div>
+
+          <!-- ── UTILITY ── -->
+          <div style="font-size:10px;color:#e879f9;letter-spacing:2px;margin:16px 0 10px;display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:20px;height:1px;background:#e879f9"></span>UTILITY<span style="display:inline-block;flex:1;height:1px;background:#e879f9;opacity:.3"></span></div>
+
+          <!-- Fast Hands -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #fb923c;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a0c00;border-radius:8px;flex-shrink:0">🔄</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#fb923c;letter-spacing:1px">Fast Hands</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0a18;color:#e879f9;border:1px solid rgba(232,121,249,.3)">UTILITY</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#111;color:#aaa;border:1px solid #333">COMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۳</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">reload سرعت ۳۰٪ بیشتر. در آستانه مرگ وقت داری شارژ کنی.</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#fb923c">+30%</div>
+              <div style="font-size:9px;color:#444">سرعت لود</div>
+            </div>
+          </div>
+
+          <!-- Scavenger -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #e879f9;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a001a;border-radius:8px;flex-shrink:0">🔮</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#e879f9;letter-spacing:1px">Scavenger</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0a18;color:#e879f9;border:1px solid rgba(232,121,249,.3)">UTILITY</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#111;color:#aaa;border:1px solid #333">COMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۲</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">آیتم‌ها از فاصله دور هم جذب میشن (50px). هرگز آیتم از دست نمیدی!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#e879f9">50px</div>
+              <div style="font-size:9px;color:#444">جذب</div>
+            </div>
+          </div>
+
+          <!-- Grenadier -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #f97316;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1a0b00;border-radius:8px;flex-shrink:0">💣</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#f97316;letter-spacing:1px">Grenadier</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0a18;color:#e879f9;border:1px solid rgba(232,121,249,.3)">UTILITY</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0d00;color:#ffa500;border:1px solid rgba(255,165,0,.2)">UNCOMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۴</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">+2 نارنجک الان. نارنجک‌ها ۳۰٪ بیشتر آسیب میزنن. موثرتر انفجار.</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#f97316">+2 🔸</div>
+              <div style="font-size:9px;color:#444">نارنجک</div>
+            </div>
+          </div>
+
+          <!-- Ammo Pack -->
+          <div style="display:flex;gap:12px;align-items:flex-start;background:#0d0d0d;border:1px solid #1a1a1a;border-right:3px solid #a3e635;border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#0f1a00;border-radius:8px;flex-shrink:0">🔋</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:800;color:#a3e635;letter-spacing:1px">Ammo Pack</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#1a0a18;color:#e879f9;border:1px solid rgba(232,121,249,.3)">UTILITY</span>
+                <span style="font-size:9px;padding:2px 7px;border-radius:99px;background:#111;color:#aaa;border:1px solid #333">COMMON</span>
+                <span style="font-size:9px;color:#444">Stack: ×۳</span>
+              </div>
+              <div style="font-size:11px;color:#aaa;line-height:1.7">همه سلاح‌ها ۲۵٪ امو بیشتر + فوری پر میشه. هیچ‌وقت خشک نمیشی!</div>
+            </div>
+            <div style="flex-shrink:0;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#a3e635">+25%</div>
+              <div style="font-size:9px;color:#444">ظرفیت امو</div>
+            </div>
+          </div>
+
+          <!-- راهنمای ترکیب پرک -->
+          <div style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:10px;padding:14px;margin-top:20px">
+            <div style="font-size:10px;color:#444;letter-spacing:2px;margin-bottom:10px">💡 بهترین ترکیب‌ها</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="background:#0d0d0d;border-radius:6px;padding:8px 10px;border-right:2px solid #ff4422">
+                <div style="font-size:11px;color:#ff4422;font-weight:700;margin-bottom:3px">🔥 حداکثر آسیب</div>
+                <div style="font-size:10px;color:#555">Deadly Shots + Rapid Fire + Critical Strike + Explosive Rounds</div>
+              </div>
+              <div style="background:#0d0d0d;border-radius:6px;padding:8px 10px;border-right:2px solid #4488ff">
+                <div style="font-size:11px;color:#4488ff;font-weight:700;margin-bottom:3px">🛡 دفاع خارق‌العاده</div>
+                <div style="font-size:10px;color:#555">Iron Skin + Battle Regen + Energy Shield + Vampiric Shots</div>
+              </div>
+              <div style="background:#0d0d0d;border-radius:6px;padding:8px 10px;border-right:2px solid #34d399">
+                <div style="font-size:11px;color:#34d399;font-weight:700;margin-bottom:3px">💨 مانور و فرار</div>
+                <div style="font-size:10px;color:#555">Swift Runner + Afterburner + Slipstream + Ghost Step</div>
+              </div>
+            </div>
+          </div>
+
           <div style="text-align:center;margin-top:28px;color:#333;font-size:11px;letter-spacing:1px">
             ─────────────────────<br>
             <span style="color:#ff4422">موفق باشی در DEAD ZONE!</span><br>
@@ -5288,11 +5804,12 @@ function zgInitState(){
     player:{
       x:0,y:0,vx:0,vy:0,hp:100,maxHp:100,speed:3.2,angle:0,radius:16,
       dashCooldown:0,dashActive:0,invincible:0,reloadTime:0,
-      level:1,xp:0,xpNeeded:100,perks:{},
+      level:1,xp:0,xpNeeded:200,perks:{},
     },
     obstacles: zgGenObs(),
     touch:null,
     totem:{active:false, animating:false, animFrame:0},
+    ally:null, // NPC همراه — فعال میشه بعد از wave 20
   };
 }
 
@@ -5489,7 +6006,7 @@ var NIGHTMARE_TYPES = [
 /* ══════════════════════════════════════
    BOSS SYSTEM
 ══════════════════════════════════════ */
-var BOSS_WAVES = [10, 20]; // waves that have a boss
+var BOSS_WAVES = [10, 15, 20]; // waves that have a boss
 
 var BOSS_TYPES = {
   'BUTCHER': {
@@ -5515,6 +6032,19 @@ var BOSS_TYPES = {
       {hpPct:0.70, color:'#00aa00', speed:1.8, label:'PHASE 2 - خشم زهر ☠'},
       {hpPct:0.40, color:'#008800', speed:2.2, label:'PHASE 3 - دیوانگی اژدها 🔥'},
       {hpPct:0.15, color:'#ff6600', speed:2.8, label:'PHASE 4 - آخرالزمان 💀'},
+    ]
+  },
+  'FLESH_MASS': {
+    name:'🧫 THE FLESH MASS', hp:3500, speed:0.7, damage:18, radius:55, color:'#8B4513',
+    xp:1800, score:3500,
+    abilities:['absorb','detach_limbs','toxic_burst','zero_patient'],
+    color2:'#cc6622',
+    intro:'توده آلوده بیدار شد! زامبی‌ها رو بکش قبل از اینکه جذبشون کنه!',
+    phases:[
+      {hpPct:1.0,  color:'#8B4513', speed:0.7,  label:'فاز ۱ - جذب مردگان 🧟'},
+      {hpPct:0.80, color:'#7a3010', speed:0.9,  label:'فاز ۲ - جدا شدن اندام‌ها 💀'},
+      {hpPct:0.50, color:'#5a1a00', speed:1.1,  label:'فاز ۳ - انفجار آلودگی ☣'},
+      {hpPct:0.20, color:'#cc0000', speed:2.8,  label:'فاز نهایی - زامبی صفر 💉'},
     ]
   }
 };
@@ -5559,6 +6089,24 @@ function zgSpawnBoss(bossKey){
     burrowActive:false, burrowTimer:0, burrowCool:0, burrowTargetX:0, burrowTargetY:0,
     venomStackTimer:0,
     splitShotCool:0,
+    // FLESH_MASS-specific state
+    fm_absorbCool:0,         // cooldown between absorb pulses
+    fm_absorbActive:false,   // is absorb pulse out?
+    fm_absorbRadius:0,
+    fm_limbs:[],             // detached limbs (phase 2)
+    fm_limbSpawnCool:0,
+    fm_toxicPools:[],        // toxic ground zones (phase 3)
+    fm_toxicBurstDone:false,
+    fm_morphTimer:0,         // morph effect on every 20% hp loss
+    fm_morphAngle:0,
+    fm_tentacles:[],         // animated tentacles around body
+    fm_zeroPatient:false,    // phase 4: zombie zero spawned
+    fm_zeroHp:0, fm_zeroMaxHp:0,
+    fm_zeroX:0, fm_zeroY:0,
+    fm_zeroSpeed:0, fm_zeroAngle:0,
+    fm_zeroAttackCool:0, fm_zeroInvincible:0,
+    fm_zeroDashCool:0, fm_zeroDashActive:0,
+    fm_lastHpPct:1.0,        // track for morph trigger
   };
   ZG.boss = boss;
   ZG.waveSpawnTotal = 1;
@@ -5600,6 +6148,8 @@ function zgUpdateBossBar(){
 function zgBossCheckPhase(){
   var boss = ZG.boss;
   if(!boss) return;
+  // FLESH_MASS manages its own phases
+  if(boss.bossKey==='FLESH_MASS') return;
   var bt = BOSS_TYPES[boss.bossKey];
   var hpPct = boss.hp / boss.maxHp;
   var newPhase = 0;
@@ -5652,6 +6202,9 @@ function zgUpdateBoss(){
   var boss = ZG.boss;
   var p = ZG.player;
   if(!boss) return;
+
+  // FLESH MASS has its own full update
+  if(boss.bossKey==='FLESH_MASS'){ zgUpdateFleshMass(); return; }
 
   boss.enrageTimer++;
   boss.glowPulse += 0.08;
@@ -5927,7 +6480,7 @@ function zgUpdateSerpentBoss(boss, p){
     var cdx = boss.x - p.x, cdy = boss.y - p.y, cdist = Math.hypot(cdx, cdy);
     if(cdist > 0){
       p.x += (cdx/cdist) * 0.8;
-      p.y += (cdy/cdy||1) * 0.8;
+      p.y += (cdy/cdist) * 0.8;
     }
     // Damage if very close
     if(cdist < boss.radius + p.radius + 10 && p.invincible <= 0 && ZG.frame % 15 === 0){
@@ -6136,13 +6689,558 @@ function zgUpdateSerpentBoss(boss, p){
     }
   }
 
-  // Hypnosis reverses keys
-  if(ZG.player.hypnotized){
-    var tmp;
-    tmp=ZG.keys['w'];ZG.keys['w']=ZG.keys['s'];ZG.keys['s']=tmp;
-    tmp=ZG.keys['a'];ZG.keys['a']=ZG.keys['d'];ZG.keys['d']=tmp;
-    tmp=ZG.keys['arrowup'];ZG.keys['arrowup']=ZG.keys['arrowdown'];ZG.keys['arrowdown']=tmp;
-    tmp=ZG.keys['arrowleft'];ZG.keys['arrowleft']=ZG.keys['arrowright'];ZG.keys['arrowright']=tmp;
+}
+// Note: hypnosis direction reversal is handled in zgUpdate before movement
+
+
+/* ══════════════════════════════════════
+   FLESH MASS BOSS - UPDATE & DRAW
+══════════════════════════════════════ */
+function zgUpdateFleshMass(){
+  var boss = ZG.boss;
+  var p = ZG.player;
+  if(!boss || boss.bossKey !== 'FLESH_MASS') return;
+  var hpPct = boss.hp / boss.maxHp;
+
+  // ── MORPH every 20% HP loss
+  if(boss.fm_lastHpPct - hpPct >= 0.20){
+    boss.fm_lastHpPct = hpPct;
+    boss.fm_morphTimer = 40;
+    ZG.screenShake = 18;
+    // Grow new tentacles
+    var numT = 4 + Math.floor((1-hpPct)*8);
+    boss.fm_tentacles = [];
+    for(var t=0;t<numT;t++){
+      boss.fm_tentacles.push({
+        angle: (t/numT)*Math.PI*2 + Math.random()*0.5,
+        length: 25+Math.random()*30,
+        wobble: Math.random()*Math.PI*2,
+        wobbleSpd: 0.04+Math.random()*0.04,
+        thickness: 3+Math.random()*5,
+        segCount: 4+Math.floor(Math.random()*4),
+      });
+    }
+    // Spawn absorption/morph particles
+    for(var mp=0;mp<25;mp++){
+      var ma=Math.random()*Math.PI*2;
+      ZG.particles.push({x:boss.x+Math.cos(ma)*boss.radius,y:boss.y+Math.sin(ma)*boss.radius,vx:Math.cos(ma)*2,vy:Math.sin(ma)*2,life:35,maxLife:35,color:['#8B4513','#cc6622','#5a1a00'][mp%3],size:5+Math.random()*5});
+    }
+    zgKillMsg('☣ توده جهش کرد! شکل جدیدی رشد کرد!');
+    var ann=document.getElementById('zg-announce');
+    ann.textContent='💀 جهش جدید! ';ann.style.color='#cc6622';
+    ann.style.transition='none';ann.style.opacity='1';
+    setTimeout(function(){ann.style.transition='opacity 1s';ann.style.opacity='0';ann.style.color='#fff';},1800);
+  }
+
+  // tentacle wobble
+  boss.fm_tentacles.forEach(function(t){ t.wobble+=t.wobbleSpd; });
+  boss.fm_morphTimer = Math.max(0, boss.fm_morphTimer-1);
+  boss.glowPulse += 0.05;
+
+  // ─── PHASE 0: جذب مردگان (hp 100%-80%)
+  if(boss.phase === 0){
+    // Slow drift toward player
+    var tx=p.x-boss.x, ty=p.y-boss.y, dist=Math.hypot(tx,ty);
+    if(dist>120){
+      boss.x += (tx/dist)*boss.speed*0.4;
+      boss.y += (ty/dist)*boss.speed*0.4;
+    }
+    // Periodically summon absorb-zombie wave
+    boss.fm_absorbCool--;
+    if(boss.fm_absorbCool<=0){
+      boss.fm_absorbCool = 220;
+      zgKillMsg('🧟 توده احضار کرد! زامبی‌ها رو بکش!');
+      var ann2=document.getElementById('zg-announce');
+      ann2.textContent='⚠ زامبی‌ها جذب میشن! بکششون!';ann2.style.color='#ff8800';
+      ann2.style.transition='none';ann2.style.opacity='1';
+      setTimeout(function(){ann2.style.transition='opacity 1s';ann2.style.opacity='0';ann2.style.color='#fff';},1800);
+      for(var ai=0;ai<5+boss.phase;ai++){
+        (function(ii){ setTimeout(function(){
+          if(!ZG.boss) return;
+          var pos=zgRandEdge();
+          ZG.zombies.push({
+            x:pos.x,y:pos.y,
+            hp:60,maxHp:60,speed:2.2,damage:10,radius:12,color:'#884400',
+            type:'flesh_drone',xp:10,score:15,
+            angle:0,attackCool:0,ranged:false,rangedCool:0,
+            vx:0,vy:0,stunned:0,wobble:Math.random()*Math.PI*2,
+            isFleshy:true, // attracts to boss
+          });
+          ZG.waveSpawnTotal++;ZG.waveSpawned++;
+        },ii*280);})(ai);
+      }
+    }
+    // Fleshy zombies move toward boss to be absorbed
+    ZG.zombies.forEach(function(z,zi){
+      if(!z.isFleshy) return;
+      var dx=boss.x-z.x, dy=boss.y-z.y, d=Math.hypot(dx,dy);
+      if(d < boss.radius+z.radius+5){
+        // ABSORBED: heal boss, kill zombie
+        var healAmt = Math.min(boss.maxHp - boss.hp, 80);
+        boss.hp += healAmt;
+        zgUpdateBossBar();
+        for(var ap=0;ap<8;ap++) ZG.particles.push({x:boss.x,y:boss.y,vx:(Math.random()-0.5)*4,vy:(Math.random()-0.5)*4,life:18,maxLife:18,color:'#8B4513',size:5});
+        ZG.zombies.splice(zi,1);
+        ZG.waveKilled++; // count as killed for wave
+        zgKillMsg('☠ زامبی جذب شد! باس HP گرفت!');
+      } else if(d > 30){
+        // Pull toward boss
+        z.vx = (dx/d)*z.speed*1.2;
+        z.vy = (dy/d)*z.speed*1.2;
+      }
+    });
+    // Absorb ring pulse visual
+    boss.fm_absorbActive = true;
+    boss.fm_absorbRadius = boss.radius + 20 + Math.sin(boss.glowPulse*2)*15;
+  }
+
+  // ─── PHASE 1: جدا شدن اندام‌ها (hp 80%-50%)
+  if(boss.phase === 1){
+    // Normal chase
+    var tx2=p.x-boss.x, ty2=p.y-boss.y, dist2=Math.hypot(tx2,ty2);
+    if(dist2>80){ boss.x+=(tx2/dist2)*boss.speed; boss.y+=(ty2/dist2)*boss.speed; }
+
+    // Periodically detach a limb
+    boss.fm_limbSpawnCool--;
+    if(boss.fm_limbSpawnCool<=0 && boss.fm_limbs.length < 5){
+      boss.fm_limbSpawnCool = 180;
+      var la=Math.random()*Math.PI*2;
+      var limb={
+        x:boss.x+Math.cos(la)*(boss.radius+10), y:boss.y+Math.sin(la)*(boss.radius+10),
+        vx:Math.cos(la)*2.5, vy:Math.sin(la)*2.5,
+        hp:60, maxHp:60, radius:12,
+        angle:la, wobble:Math.random()*Math.PI*2,
+        attackCool:0, alive:true,
+        color:'#7a3010', id: Date.now()+Math.random(),
+      };
+      boss.fm_limbs.push(limb);
+      for(var lp=0;lp<12;lp++) ZG.particles.push({x:limb.x,y:limb.y,vx:(Math.random()-0.5)*6,vy:(Math.random()-0.5)*6,life:22,maxLife:22,color:'#8B4513',size:4+Math.random()*4});
+      ZG.screenShake=8;
+      zgKillMsg('💀 بازو جدا شد! بکشش!');
+    }
+    // Update limbs
+    boss.fm_limbs = boss.fm_limbs.filter(function(limb){
+      if(!limb.alive) return false;
+      limb.wobble+=0.08;
+      // Crawl toward player
+      var ldx=p.x-limb.x, ldy=p.y-limb.y, ld=Math.hypot(ldx,ldy);
+      if(ld>limb.radius+p.radius){
+        limb.x += (ldx/ld)*1.8;
+        limb.y += (ldy/ld)*1.8;
+      }
+      // Clamp
+      limb.x=Math.max(limb.radius,Math.min(zgW-limb.radius,limb.x));
+      limb.y=Math.max(limb.radius,Math.min(zgH-limb.radius,limb.y));
+      // Attack player
+      limb.attackCool--;
+      if(limb.attackCool<=0 && ld < limb.radius+p.radius+8){
+        limb.attackCool=50;
+        if(p.invincible<=0){
+          var dmg=(8+boss.phase*4)*(1-(ZG.player.perks.armor||0)*0.2);
+          p.hp=Math.max(0,p.hp-dmg); p.invincible=20; ZG.flashTimer=7; zgUpdateHp();
+          if(p.hp<=0) zgGameOver();
+        }
+      }
+      // Bullet hits limb
+      ZG.bullets.forEach(function(b,bi){
+        if(b.fromZombie) return;
+        if(Math.hypot(b.x-limb.x,b.y-limb.y)<limb.radius+b.size){
+          limb.hp -= b.damage;
+          zgSpawnParticles(b.x,b.y,'#8B4513',5);
+          ZG.bullets.splice(bi,1);
+          if(limb.hp<=0){
+            limb.alive=false;
+            // Destroying a limb reduces boss abilities
+            boss.minionCool = Math.min(boss.minionCool+40, 400);
+            for(var dp=0;dp<15;dp++) ZG.particles.push({x:limb.x,y:limb.y,vx:(Math.random()-0.5)*6,vy:(Math.random()-0.5)*6,life:28,maxLife:28,color:'#cc4400',size:4+Math.random()*5});
+            ZG.bloodPools.push({x:limb.x,y:limb.y,r:18,alpha:0.55});
+            ZG.screenShake=6;
+            zgKillMsg('✂ بازو نابود شد! توانایی باس کاهش یافت!');
+          }
+        }
+      });
+      return limb.alive;
+    });
+  }
+
+  // ─── PHASE 2: انفجار آلودگی (hp 50%-20%)
+  if(boss.phase === 2){
+    // Faster chase
+    var tx3=p.x-boss.x, ty3=p.y-boss.y, dist3=Math.hypot(tx3,ty3);
+    if(dist3>70){ boss.x+=(tx3/dist3)*boss.speed*1.2; boss.y+=(ty3/dist3)*boss.speed*1.2; }
+
+    // One-time toxic burst at start of phase
+    if(!boss.fm_toxicBurstDone){
+      boss.fm_toxicBurstDone=true;
+      var ann3=document.getElementById('zg-announce');
+      ann3.textContent='☣ انفجار آلودگی! زمین سمی!';ann3.style.color='#aaff00';
+      ann3.style.transition='none';ann3.style.opacity='1';
+      setTimeout(function(){ann3.style.transition='opacity 1.2s';ann3.style.opacity='0';ann3.style.color='#fff';},2200);
+      ZG.screenShake=22;
+      // Spread toxic pools in random positions
+      for(var tp=0;tp<8;tp++){
+        boss.fm_toxicPools.push({
+          x:80+Math.random()*(zgW-160), y:80+Math.random()*(zgH-160),
+          r:30+Math.random()*25, life:600, maxLife:600,
+          dmgCool:0,
+        });
+        for(var tpp=0;tpp<10;tpp++) ZG.particles.push({x:boss.fm_toxicPools[boss.fm_toxicPools.length-1].x,y:boss.fm_toxicPools[boss.fm_toxicPools.length-1].y,vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*5,life:25,maxLife:25,color:'#88ff00',size:4+Math.random()*4});
+      }
+      for(var ep2=0;ep2<25;ep2++){var ea2=Math.random()*Math.PI*2,sp2=3+Math.random()*8;ZG.particles.push({x:boss.x,y:boss.y,vx:Math.cos(ea2)*sp2,vy:Math.sin(ea2)*sp2,life:35,maxLife:35,color:['#88ff00','#aaff44','#5a1a00'][ep2%3],size:5+Math.random()*7});}
+      zgKillMsg('☣ نیمی از بدنش منفجر شد! مراقب زمین باش!');
+    }
+    // Update toxic pools
+    boss.fm_toxicPools = boss.fm_toxicPools.filter(function(pool){
+      pool.life--;
+      pool.dmgCool--;
+      // damage player if inside
+      if(Math.hypot(p.x-pool.x,p.y-pool.y)<pool.r && pool.dmgCool<=0 && p.invincible<=0){
+        pool.dmgCool=45;
+        p.hp=Math.max(0,p.hp-12); ZG.flashTimer=5; zgUpdateHp();
+        if(p.hp<=0) zgGameOver();
+      }
+      // periodic bubble particle
+      if(ZG.frame%12===0) ZG.particles.push({x:pool.x+(Math.random()-0.5)*pool.r,y:pool.y+(Math.random()-0.5)*pool.r,vx:(Math.random()-0.5)*1.5,vy:-0.8-Math.random(),life:18,maxLife:18,color:'#88ff00',size:3+Math.random()*3});
+      return pool.life>0;
+    });
+    // Still spawns limbs in this phase too
+    boss.fm_limbSpawnCool--;
+    if(boss.fm_limbSpawnCool<=0 && boss.fm_limbs.length < 3){
+      boss.fm_limbSpawnCool=240;
+      var la2=Math.random()*Math.PI*2;
+      boss.fm_limbs.push({x:boss.x+Math.cos(la2)*(boss.radius+10),y:boss.y+Math.sin(la2)*(boss.radius+10),vx:Math.cos(la2)*2,vy:Math.sin(la2)*2,hp:80,maxHp:80,radius:14,angle:la2,wobble:Math.random()*Math.PI*2,attackCool:0,alive:true,color:'#5a1a00',id:Date.now()+Math.random()});
+    }
+    // Update remaining limbs same as phase 1 (reuse logic)
+    boss.fm_limbs = boss.fm_limbs.filter(function(limb){
+      if(!limb.alive) return false;
+      limb.wobble+=0.08;
+      var ldx=p.x-limb.x, ldy=p.y-limb.y, ld=Math.hypot(ldx,ldy);
+      if(ld>limb.radius+p.radius){ limb.x+=(ldx/ld)*2; limb.y+=(ldy/ld)*2; }
+      limb.x=Math.max(limb.radius,Math.min(zgW-limb.radius,limb.x));
+      limb.y=Math.max(limb.radius,Math.min(zgH-limb.radius,limb.y));
+      limb.attackCool--;
+      if(limb.attackCool<=0 && ld<limb.radius+p.radius+8){limb.attackCool=45;if(p.invincible<=0){p.hp=Math.max(0,p.hp-12);p.invincible=20;ZG.flashTimer=6;zgUpdateHp();if(p.hp<=0)zgGameOver();}}
+      ZG.bullets.forEach(function(b,bi){if(b.fromZombie)return;if(Math.hypot(b.x-limb.x,b.y-limb.y)<limb.radius+b.size){limb.hp-=b.damage;zgSpawnParticles(b.x,b.y,'#8B4513',5);ZG.bullets.splice(bi,1);if(limb.hp<=0){limb.alive=false;for(var dp2=0;dp2<12;dp2++)ZG.particles.push({x:limb.x,y:limb.y,vx:(Math.random()-0.5)*6,vy:(Math.random()-0.5)*6,life:25,maxLife:25,color:'#cc4400',size:4});ZG.bloodPools.push({x:limb.x,y:limb.y,r:16,alpha:0.5});}}});
+      return limb.alive;
+    });
+  }
+
+  // ─── PHASE 3: زامبی صفر (hp < 20%)
+  if(boss.phase === 3){
+    // Spawn Patient Zero once
+    if(!boss.fm_zeroPatient){
+      boss.fm_zeroPatient=true;
+      boss.fm_zeroHp=280; boss.fm_zeroMaxHp=280;
+      boss.fm_zeroX=boss.x; boss.fm_zeroY=boss.y;
+      boss.fm_zeroSpeed=4.2;
+      boss.fm_zeroAngle=0; boss.fm_zeroAttackCool=0;
+      boss.fm_zeroInvincible=0; boss.fm_zeroDashCool=0; boss.fm_zeroDashActive=0;
+      // Flash body of main boss as it disintegrates
+      boss.hp = boss.maxHp * 0.18; // set hp low so it dies soon
+      boss.radius = 30; // shrink the mass
+      for(var zp=0;zp<20;zp++){var za=Math.random()*Math.PI*2,zsp=4+Math.random()*8;ZG.particles.push({x:boss.x,y:boss.y,vx:Math.cos(za)*zsp,vy:Math.sin(za)*zsp,life:40,maxLife:40,color:['#8B4513','#cc0000','#ff4400'][zp%3],size:5+Math.random()*8});}
+      ZG.bloodPools.push({x:boss.x,y:boss.y,r:boss.radius*2,alpha:0.65});
+      var ann4=document.getElementById('zg-announce');
+      ann4.textContent='💉 زامبی صفر ظاهر شد!';ann4.style.color='#ff0000';ann4.style.fontSize='22px';
+      ann4.style.transition='none';ann4.style.opacity='1';
+      setTimeout(function(){ann4.style.transition='opacity 2s';ann4.style.opacity='0';ann4.style.color='#fff';ann4.style.fontSize='20px';},3000);
+      ZG.screenShake=25;
+      zgKillMsg('💉 زامبی صفر! اولین آلوده!');
+      // Update boss bar color
+      document.getElementById('zg-boss-fill').style.background='#ff0000';
+      document.getElementById('zg-boss-name').textContent='💉 PATIENT ZERO — دوئل نهایی!';
+    }
+
+    // Update Patient Zero movement
+    var zx=p.x-boss.fm_zeroX, zy=p.y-boss.fm_zeroY, zd=Math.hypot(zx,zy);
+    boss.fm_zeroAngle=Math.atan2(zy,zx);
+    if(boss.fm_zeroDashActive>0){
+      boss.fm_zeroDashActive--;
+      boss.fm_zeroX+=Math.cos(boss.fm_zeroAngle)*12;
+      boss.fm_zeroY+=Math.sin(boss.fm_zeroAngle)*12;
+    } else if(zd>30){
+      boss.fm_zeroX+=(zx/zd)*boss.fm_zeroSpeed;
+      boss.fm_zeroY+=(zy/zd)*boss.fm_zeroSpeed;
+    }
+    boss.fm_zeroX=Math.max(16,Math.min(zgW-16,boss.fm_zeroX));
+    boss.fm_zeroY=Math.max(16,Math.min(zgH-16,boss.fm_zeroY));
+
+    // Dash ability for Patient Zero
+    boss.fm_zeroDashCool--;
+    if(boss.fm_zeroDashCool<=0 && zd<200){
+      boss.fm_zeroDashCool=120;
+      boss.fm_zeroDashActive=8;
+      for(var dp3=0;dp3<8;dp3++) ZG.particles.push({x:boss.fm_zeroX,y:boss.fm_zeroY,vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*5,life:12,maxLife:12,color:'#ff2200',size:4});
+      zgKillMsg('💨 زامبی صفر دش کرد!');
+    }
+    // Patient Zero invincible timer
+    if(boss.fm_zeroInvincible>0) boss.fm_zeroInvincible--;
+
+    // Patient Zero attack player on contact
+    boss.fm_zeroAttackCool--;
+    if(boss.fm_zeroAttackCool<=0 && Math.hypot(p.x-boss.fm_zeroX,p.y-boss.fm_zeroY)<16+p.radius && p.invincible<=0){
+      boss.fm_zeroAttackCool=35;
+      var zdmg=20*(1-(ZG.player.perks.armor||0)*0.2);
+      p.hp=Math.max(0,p.hp-zdmg); p.invincible=25; ZG.flashTimer=9; zgUpdateHp();
+      if(p.hp<=0) zgGameOver();
+    }
+    // Bullets hit Patient Zero
+    ZG.bullets=ZG.bullets.filter(function(b){
+      if(b.fromZombie) return true;
+      if(boss.fm_zeroInvincible>0) return true;
+      if(Math.hypot(b.x-boss.fm_zeroX,b.y-boss.fm_zeroY)<16+b.size){
+        boss.fm_zeroHp-=b.damage;
+        boss.fm_zeroInvincible=8;
+        zgSpawnParticles(b.x,b.y,'#ff4400',5);
+        // Update boss bar for zero hp
+        var zeroPct=Math.max(0,boss.fm_zeroHp/boss.fm_zeroMaxHp*100);
+        document.getElementById('zg-boss-fill').style.width=zeroPct+'%';
+        if(boss.fm_zeroHp<=0){
+          // Patient Zero dead = BOSS DEAD
+          for(var fd=0;fd<30;fd++){var fa=Math.random()*Math.PI*2,fs=3+Math.random()*9;ZG.particles.push({x:boss.fm_zeroX,y:boss.fm_zeroY,vx:Math.cos(fa)*fs,vy:Math.sin(fa)*fs,life:45,maxLife:45,color:['#ff0000','#ff8800','#ffcc00'][fd%3],size:4+Math.random()*7});}
+          ZG.bloodPools.push({x:boss.fm_zeroX,y:boss.fm_zeroY,r:22,alpha:0.7});
+          boss.hp=0;
+          zgBossDead(boss);
+          return false;
+        }
+        return false;
+      }
+      return true;
+    });
+    // Slow down main boss body in phase 3 (it's disintegrating)
+    boss.speed=0.1;
+  }
+
+  // Boss collision with player (all phases except 3 where zero handles it)
+  if(boss.phase < 3){
+    var tdx=p.x-boss.x, tdy=p.y-boss.y, td=Math.hypot(tdx,tdy);
+    if(td < boss.radius+p.radius+4 && p.invincible<=0 && p.dashActive<=0){
+      var bDmg=boss.damage*(1-(ZG.player.perks.armor||0)*0.2);
+      p.hp=Math.max(0,p.hp-bDmg); p.invincible=22; ZG.flashTimer=9; zgUpdateHp();
+      if(p.hp<=0) zgGameOver();
+    }
+    // Normal movement toward player
+    var tdist=Math.hypot(p.x-boss.x,p.y-boss.y);
+    if(tdist>boss.radius+p.radius+10 && boss.phase<2){
+      boss.x+=(p.x-boss.x)/tdist*boss.speed;
+      boss.y+=(p.y-boss.y)/tdist*boss.speed;
+    }
+    boss.x=Math.max(boss.radius,Math.min(zgW-boss.radius,boss.x));
+    boss.y=Math.max(boss.radius,Math.min(zgH-boss.radius,boss.y));
+  }
+
+  // Phase check via hp
+  var hpPct2=boss.hp/boss.maxHp;
+  var bt=BOSS_TYPES['FLESH_MASS'];
+  var newPhase=0;
+  for(var pi=bt.phases.length-1;pi>=0;pi--){ if(hpPct2<=bt.phases[pi].hpPct){newPhase=pi;break;} }
+  if(newPhase!==boss.phase && boss.phase < 3){
+    boss.phase=newPhase;
+    boss.color=bt.phases[newPhase].color;
+    ZG.screenShake=15;
+    var ann5=document.getElementById('zg-announce');
+    ann5.textContent='⚡ '+bt.phases[newPhase].label+' ⚡';
+    ann5.style.color=['#ff8800','#cc6622','#88ff00','#ff0000'][newPhase]||'#ff4400';
+    ann5.style.transition='none';ann5.style.opacity='1';
+    setTimeout(function(){ann5.style.transition='opacity 1s';ann5.style.opacity='0';ann5.style.color='#fff';},2000);
+    zgUpdateBossBar();
+    zgKillMsg('⚡ فاز '+(newPhase+1)+'!');
+  }
+
+  // hitFlash
+  if(boss.hitFlash>0) boss.hitFlash--;
+  boss.enrageTimer++;
+}
+
+function zgDrawFleshMass(){
+  var boss=ZG.boss;
+  if(!boss||boss.bossKey!=='FLESH_MASS') return;
+  var ctx=zgCtx;
+  var phase=boss.phase;
+  var pulse=Math.sin(boss.glowPulse)*6;
+  var morphAmt=boss.fm_morphTimer/40;
+
+  // ── TOXIC POOLS on ground
+  boss.fm_toxicPools.forEach(function(pool){
+    var alpha=(pool.life/pool.maxLife)*0.5+0.15;
+    ctx.save();
+    ctx.globalAlpha=alpha;
+    ctx.fillStyle='#44aa00';
+    ctx.shadowColor='#88ff00';ctx.shadowBlur=12;
+    ctx.beginPath();ctx.ellipse(pool.x,pool.y,pool.r*1.2,pool.r*0.75,0,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;ctx.globalAlpha=alpha*0.6;ctx.fillStyle='#aaff44';
+    ctx.beginPath();ctx.ellipse(pool.x,pool.y,pool.r*0.6,pool.r*0.4,0,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  });
+
+  // ── ABSORB RING (phase 0)
+  if(phase===0 && boss.fm_absorbActive){
+    ctx.save();
+    ctx.strokeStyle='rgba(139,69,19,0.4)';ctx.lineWidth=3+Math.sin(boss.glowPulse*3)*2;
+    ctx.setLineDash([8,5]);
+    ctx.beginPath();ctx.arc(boss.x,boss.y,boss.fm_absorbRadius,0,Math.PI*2);ctx.stroke();
+    ctx.setLineDash([]);ctx.restore();
+  }
+
+  // ── TENTACLES (morph mutations)
+  ctx.save();ctx.shadowBlur=0;
+  boss.fm_tentacles.forEach(function(t){
+    var baseX=boss.x+Math.cos(t.angle)*boss.radius*0.85;
+    var baseY=boss.y+Math.sin(t.angle)*boss.radius*0.85;
+    ctx.strokeStyle=boss.color;ctx.lineWidth=t.thickness;
+    ctx.beginPath();ctx.moveTo(baseX,baseY);
+    var segL=t.length/t.segCount;
+    var cx=baseX,cy=baseY;
+    for(var s=0;s<t.segCount;s++){
+      var segA=t.angle+Math.sin(t.wobble+s*0.9)*(0.5+s*0.2);
+      cx+=Math.cos(segA)*segL; cy+=Math.sin(segA)*segL;
+      ctx.lineTo(cx,cy);
+    }
+    ctx.stroke();
+  });
+  ctx.restore();
+
+  // ── MAIN BODY: layered organic blobs
+  ctx.save();
+  // Outer aura
+  var grd=ctx.createRadialGradient(boss.x,boss.y,boss.radius*0.3,boss.x,boss.y,boss.radius+20+Math.abs(pulse));
+  grd.addColorStop(0,boss.color);
+  grd.addColorStop(0.6,'rgba(90,26,0,0.6)');
+  grd.addColorStop(1,'rgba(50,10,0,0)');
+  ctx.fillStyle=grd;
+  ctx.beginPath();ctx.arc(boss.x,boss.y,boss.radius+20+Math.abs(pulse),0,Math.PI*2);ctx.fill();
+
+  // Main blob (irregular with scale wobble during morph)
+  var scX=1+(morphAmt*0.12*Math.sin(boss.glowPulse*4));
+  var scY=1-(morphAmt*0.12*Math.sin(boss.glowPulse*4));
+  ctx.save();ctx.translate(boss.x,boss.y);ctx.scale(scX,scY);
+  ctx.fillStyle=boss.color;
+  // Blobby outline using bezier-approximated circle
+  ctx.beginPath();
+  var pts=8;
+  for(var bi2=0;bi2<pts;bi2++){
+    var ba=(bi2/pts)*Math.PI*2;
+    var br=boss.radius+Math.sin(boss.glowPulse*1.3+bi2*0.9)*(6+morphAmt*10);
+    var bx2=Math.cos(ba)*br, by2=Math.sin(ba)*br;
+    if(bi2===0) ctx.moveTo(bx2,by2); else ctx.lineTo(bx2,by2);
+  }
+  ctx.closePath();ctx.fill();
+
+  // Darker inner core
+  ctx.fillStyle='rgba(40,10,0,0.55)';
+  ctx.beginPath();ctx.arc(0,0,boss.radius*0.55,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+
+  // Hit flash overlay
+  if(boss.hitFlash>0){
+    ctx.globalAlpha=(boss.hitFlash/8)*0.55;
+    ctx.fillStyle='#ffffff';
+    ctx.beginPath();ctx.arc(boss.x,boss.y,boss.radius+4,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  // Embedded hands/heads peeking out (random positions fixed to boss)
+  if(!boss._fmParts){
+    boss._fmParts=[];
+    for(var fp=0;fp<7;fp++){
+      var fa3=(fp/7)*Math.PI*2+Math.random()*0.4;
+      boss._fmParts.push({angle:fa3, dist:0.55+Math.random()*0.35, type:Math.random()<0.5?'hand':'head', wobble:Math.random()*Math.PI*2, wobbleSpd:0.02+Math.random()*0.03});
+    }
+  }
+  boss._fmParts.forEach(function(part){
+    part.wobble+=part.wobbleSpd;
+    var pr=boss.radius*part.dist;
+    var px2=boss.x+Math.cos(part.angle+Math.sin(part.wobble)*0.15)*pr;
+    var py2=boss.y+Math.sin(part.angle+Math.sin(part.wobble)*0.15)*pr;
+    ctx.fillStyle=part.type==='head'?'#6b2800':'#8B4513';
+    ctx.beginPath();
+    if(part.type==='head'){
+      ctx.arc(px2,py2,8+Math.sin(part.wobble)*2,0,Math.PI*2);ctx.fill();
+      // little red eyes
+      ctx.fillStyle='#ff0000';ctx.beginPath();ctx.arc(px2-3,py2-2,2,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(px2+3,py2-2,2,0,Math.PI*2);ctx.fill();
+    } else {
+      // hand: small ellipse with fingers
+      ctx.save();ctx.translate(px2,py2);ctx.rotate(part.angle+Math.PI/2);
+      ctx.fillStyle='#7a3010';ctx.fillRect(-5,-8,10,12);
+      for(var fi2=0;fi2<4;fi2++){ctx.fillStyle='#6b2800';ctx.fillRect(-5+fi2*3,-12,2,6);}
+      ctx.restore();
+    }
+  });
+
+  ctx.restore(); // main body ctx.save
+
+  // ── LIMBS (detached crawling arms)
+  boss.fm_limbs.forEach(function(limb){
+    if(!limb.alive) return;
+    ctx.save();
+    ctx.translate(limb.x,limb.y);ctx.rotate(limb.angle+Math.sin(limb.wobble)*0.4);
+    ctx.fillStyle=limb.color||'#7a3010';
+    // Forearm shape
+    ctx.fillRect(-limb.radius*0.4,-limb.radius,limb.radius*0.8,limb.radius*1.8);
+    // Hand
+    ctx.fillStyle='#6b2800';
+    ctx.beginPath();ctx.ellipse(0,limb.radius*0.9,limb.radius*0.55,limb.radius*0.4,0,0,Math.PI*2);ctx.fill();
+    // Fingers
+    for(var fi3=0;fi3<4;fi3++){
+      ctx.fillStyle='#5a1a00';
+      var fa4=-0.3+fi3*0.2;
+      ctx.save();ctx.translate(Math.cos(fa4+Math.PI/2)*limb.radius*0.4,limb.radius+Math.sin(fa4+Math.PI/2)*limb.radius*0.3);
+      ctx.rotate(fa4);ctx.fillRect(-1.5,-8,3,10);ctx.restore();
+    }
+    // Red eye in palm
+    ctx.fillStyle='#ff0000';ctx.beginPath();ctx.arc(0,limb.radius*0.9,3,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+    // HP bar
+    var bw=limb.radius*2.5,bx3=limb.x-bw/2,by3=limb.y-limb.radius-14;
+    ctx.fillStyle='#300';ctx.fillRect(bx3,by3,bw,4);
+    ctx.fillStyle='#cc4400';ctx.fillRect(bx3,by3,bw*(limb.hp/limb.maxHp),4);
+  });
+
+  // ── PATIENT ZERO (phase 3)
+  if(boss.phase===3 && boss.fm_zeroPatient){
+    ctx.save();
+    var zx=boss.fm_zeroX, zy=boss.fm_zeroY;
+    // glow
+    var zAlpha=boss.fm_zeroInvincible>0&&Math.floor(boss.fm_zeroInvincible/2)%2===0?0.3:1;
+    ctx.globalAlpha=zAlpha;
+    // Red aura
+    ctx.shadowColor='#ff0000';ctx.shadowBlur=18;
+    ctx.strokeStyle='#ff4400';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.arc(zx,zy,16+Math.sin(boss.glowPulse*2)*3,0,Math.PI*2);ctx.stroke();
+    // Body
+    ctx.shadowBlur=0;ctx.fillStyle='#660000';
+    ctx.beginPath();ctx.arc(zx,zy,14,0,Math.PI*2);ctx.fill();
+    // Clothes remnants
+    ctx.fillStyle='#330000';
+    ctx.beginPath();ctx.arc(zx,zy,10,0,Math.PI*2);ctx.fill();
+    // Eyes — manic red
+    ctx.fillStyle='#ff0000';ctx.shadowColor='#ff0000';ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(zx-4,zy-3,3.5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(zx+4,zy-3,3.5,0,Math.PI*2);ctx.fill();
+    // Dash trail
+    if(boss.fm_zeroDashActive>0){
+      ctx.globalAlpha=0.4;ctx.fillStyle='#ff2200';
+      ctx.beginPath();ctx.arc(zx-Math.cos(boss.fm_zeroAngle)*18,zy-Math.sin(boss.fm_zeroAngle)*18,10,0,Math.PI*2);ctx.fill();
+    }
+    ctx.shadowBlur=0;ctx.globalAlpha=1;
+    // HP bar
+    ctx.fillStyle='#300';ctx.fillRect(zx-28,zy-26,56,6);
+    var zpct=Math.max(0,boss.fm_zeroHp/boss.fm_zeroMaxHp);
+    ctx.fillStyle='#ff0000';ctx.fillRect(zx-28,zy-26,56*zpct,6);
+    // Label
+    ctx.fillStyle='#ff4444';ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.shadowBlur=0;
+    ctx.fillText('PATIENT ZERO',zx,zy-30);
+    ctx.restore();
+  }
+
+  // ── BOSS HP BAR LABEL (phase < 3)
+  if(boss.phase<3){
+    ctx.save();
+    ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(boss.x-50,boss.y-boss.radius-20,100,14);
+    ctx.fillStyle='#cc6622';ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.shadowBlur=0;
+    ctx.fillText('🧫 FLESH MASS',boss.x,boss.y-boss.radius-9);
+    ctx.restore();
   }
 }
 
@@ -6219,6 +7317,8 @@ function zgBossDead(boss){
 function zgDrawBoss(){
   var boss=ZG.boss;
   if(!boss) return;
+  // FLESH MASS has its own draw
+  if(boss.bossKey==='FLESH_MASS'){ zgDrawFleshMass(); return; }
   var bt=BOSS_TYPES[boss.bossKey];
   var pulse=Math.sin(boss.glowPulse)*5;
 
@@ -6806,6 +7906,227 @@ function zgUpdateElite(z,i){
   }
 }
 
+/* ══════════════════════════════════════
+   ALLY NPC SYSTEM — فعال بعد از wave 20
+══════════════════════════════════════ */
+function zgSpawnAlly(){
+  if(ZG.ally) return; // قبلاً spawned شده
+  ZG.ally = {
+    x: ZG.player.x + 60, y: ZG.player.y + 40,
+    hp: 800, maxHp: 800,
+    radius: 15,
+    angle: 0,
+    fireCool: 0,   // cooldown بین شلیک‌ها
+    target: null,  // زامبی هدف فعلی
+    moveTimer: 0,  // تایمر برای حرکت به سمت player
+    invincible: 0,
+    hitFlash: 0,
+  };
+  var ann = document.getElementById('zg-announce');
+  ann.textContent = '🤝 یارت رسید! کلت دستشه!';
+  ann.style.color = '#22c55e';
+  ann.style.fontSize = '18px';
+  ann.style.transition = 'none'; ann.style.opacity = '1';
+  setTimeout(function(){ ann.style.transition = 'opacity 1.5s'; ann.style.opacity = '0'; ann.style.color = '#fff'; ann.style.fontSize = '20px'; }, 2500);
+  zgKillMsg('🤝 یار NPC وارد شد! ۸۰۰ HP دارع!');
+}
+
+function zgUpdateAlly(){
+  var ally = ZG.ally;
+  if(!ally) return;
+  var p = ZG.player;
+  if(ally.invincible > 0) ally.invincible--;
+  if(ally.hitFlash > 0) ally.hitFlash--;
+  if(ally.fireCool > 0) ally.fireCool--;
+
+  // ── پیدا کردن نزدیک‌ترین زامبی به عنوان هدف
+  var bestDist = 9999, bestZ = null;
+  ZG.zombies.forEach(function(z){
+    // زامبی‌هایی که target ally هستند یا نزدیک‌ترین
+    var d = Math.hypot(z.x - ally.x, z.y - ally.y);
+    if(d < bestDist){ bestDist = d; bestZ = z; }
+  });
+  ally.target = bestZ;
+
+  // ── حرکت: ally سعی می‌کنه نزدیک player بمونه (فاصله ایده‌آل ۸۰px)
+  ally.moveTimer++;
+  var distToPlayer = Math.hypot(p.x - ally.x, p.y - ally.y);
+  var ax = 0, ay = 0;
+  if(distToPlayer > 120){
+    // برو سمت player
+    ax = (p.x - ally.x) / distToPlayer;
+    ay = (p.y - ally.y) / distToPlayer;
+  } else if(bestZ && bestDist < 300){
+    // حرکت کمی سمت هدف ولی نه خیلی نزدیک
+    var dzx = bestZ.x - ally.x, dzy = bestZ.y - ally.y;
+    if(bestDist > 90){
+      ax = dzx / bestDist * 0.6;
+      ay = dzy / bestDist * 0.6;
+    }
+  }
+  var allySpeed = 2.4;
+  ally.x += ax * allySpeed;
+  ally.y += ay * allySpeed;
+  ally.x = Math.max(ally.radius, Math.min(zgW - ally.radius, ally.x));
+  ally.y = Math.max(ally.radius, Math.min(zgH - ally.radius, ally.y));
+
+  // obstacle collision
+  ZG.obstacles.forEach(function(o){
+    if(ally.x+ally.radius>o.x&&ally.x-ally.radius<o.x+o.w&&ally.y+ally.radius>o.y&&ally.y-ally.radius<o.y+o.h){
+      var ol=ally.x+ally.radius-o.x,or2=o.x+o.w-(ally.x-ally.radius),ot=ally.y+ally.radius-o.y,ob=o.y+o.h-(ally.y-ally.radius);
+      var m=Math.min(ol,or2,ot,ob);
+      if(m===ol)ally.x=o.x-ally.radius;else if(m===or2)ally.x=o.x+o.w+ally.radius;else if(m===ot)ally.y=o.y-ally.radius;else ally.y=o.y+o.h+ally.radius;
+    }
+  });
+
+  // ── زاویه به سمت هدف
+  if(bestZ){
+    ally.angle = Math.atan2(bestZ.y - ally.y, bestZ.x - ally.x);
+  } else {
+    ally.angle = Math.atan2(p.y - ally.y, p.x - ally.x);
+  }
+
+  // ── شلیک کلت (هر ۫۵ فریم = تقریبا سرعت پیستول)
+  if(bestZ && bestDist < 380 && ally.fireCool <= 0){
+    ally.fireCool = 22; // سرعت شلیک
+    var spread = (Math.random() - 0.5) * 0.15;
+    var a = Math.atan2(bestZ.y - ally.y, bestZ.x - ally.x) + spread;
+    ZG.bullets.push({
+      x: ally.x + Math.cos(a)*18,
+      y: ally.y + Math.sin(a)*18,
+      vx: Math.cos(a)*10, vy: Math.sin(a)*10,
+      damage: 28,
+      size: 4, color: '#00e5ff',
+      life: 55, trail: [],
+      fromZombie: false,
+      fromAlly: true,
+    });
+    // muzzle flash particle
+    ZG.particles.push({x:ally.x+Math.cos(a)*20,y:ally.y+Math.sin(a)*20,vx:Math.cos(a)*3,vy:Math.sin(a)*3,life:6,maxLife:6,color:'#00e5ff',size:5});
+  }
+
+  // ── زامبی‌ها به ally آسیب می‌زنند (فقط اونایی که target=ally هستند)
+  ZG.zombies.forEach(function(z){
+    if(!z.targetAlly) return;
+    var d = Math.hypot(z.x - ally.x, z.y - ally.y);
+    if(d < ally.radius + z.radius + 2){
+      if(ally.invincible <= 0){
+        ally.hp -= z.damage * 0.7; // کمی کمتر از player
+        ally.invincible = 25;
+        ally.hitFlash = 8;
+        if(ally.hp <= 0){
+          ally.hp = 0;
+          zgAllyDead();
+        }
+      }
+    }
+  });
+
+  // گلوله‌های زامبی هم به ally آسیب میزنن
+  ZG.bullets = ZG.bullets.filter(function(b){
+    if(!b.fromZombie) return true;
+    var d = Math.hypot(b.x - ally.x, b.y - ally.y);
+    if(d < ally.radius + b.size && ally.invincible <= 0){
+      ally.hp -= b.damage * 0.6;
+      ally.invincible = 15;
+      ally.hitFlash = 5;
+      zgSpawnParticles(b.x, b.y, '#00e5ff', 4);
+      if(ally.hp <= 0){ ally.hp = 0; zgAllyDead(); }
+      return false;
+    }
+    return true;
+  });
+}
+
+function zgAllyDead(){
+  zgKillMsg('💔 یارت کشته شد!');
+  var ann = document.getElementById('zg-announce');
+  ann.textContent = '💔 یارت کشته شد...';
+  ann.style.color = '#e5334a';
+  ann.style.transition = 'none'; ann.style.opacity = '1';
+  setTimeout(function(){ ann.style.transition = 'opacity 2s'; ann.style.opacity = '0'; ann.style.color = '#fff'; }, 3000);
+  // particle burst جای مرگ
+  for(var i=0;i<20;i++){
+    var a=Math.random()*Math.PI*2, sp=2+Math.random()*5;
+    ZG.particles.push({x:ZG.ally.x,y:ZG.ally.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:35,maxLife:35,color:'#00e5ff',size:3+Math.random()*4});
+  }
+  ZG.ally = null;
+}
+
+function zgDrawAlly(){
+  var ally = ZG.ally;
+  if(!ally) return;
+  var ctx = zgCtx;
+
+  ctx.save();
+  ctx.translate(ally.x, ally.y);
+  ctx.rotate(ally.angle);
+
+  // blink on hit
+  if(ally.hitFlash > 0 && Math.floor(ally.hitFlash/2)%2===0){
+    ctx.globalAlpha = 0.35;
+  }
+
+  // glow ring دوست
+  ctx.shadowColor = '#22c55e'; ctx.shadowBlur = 18;
+  ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(0,0,ally.radius+5,0,Math.PI*2); ctx.stroke();
+
+  // بدنه
+  ctx.fillStyle = '#1a2e1a';
+  ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.arc(0,0,ally.radius,0,Math.PI*2); ctx.fill();
+
+  // مرکز (لباس)
+  ctx.fillStyle = '#2d5a2d';
+  ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(0,0,ally.radius*0.72,0,Math.PI*2); ctx.fill();
+
+  // کلت (gun barrel)
+  ctx.fillStyle = '#aaaaaa';
+  ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 6;
+  ctx.fillRect(ally.radius*0.28, -3, ally.radius*1.15, 6);
+
+  ctx.restore();
+
+  // HP bar بالای سر
+  var bw = ally.radius * 3.2;
+  var bx = ally.x - bw/2, by = ally.y - ally.radius - 16;
+  ctx.fillStyle = '#111'; ctx.fillRect(bx, by, bw, 6);
+  var hpPct = ally.hp / ally.maxHp;
+  var hpColor = hpPct > 0.5 ? '#22c55e' : hpPct > 0.25 ? '#f0c040' : '#e5334a';
+  ctx.fillStyle = hpColor;
+  ctx.shadowColor = hpColor; ctx.shadowBlur = 4;
+  ctx.fillRect(bx, by, bw * hpPct, 6);
+  ctx.shadowBlur = 0;
+
+  // نام
+  ctx.fillStyle = '#22c55e';
+  ctx.font = 'bold 9px monospace';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = '#22c55e'; ctx.shadowBlur = 5;
+  ctx.fillText('🤝 ALLY', ally.x, ally.y - ally.radius - 20);
+  ctx.shadowBlur = 0;
+
+  // HP عدد
+  ctx.fillStyle = '#aaffaa';
+  ctx.font = '8px monospace';
+  ctx.fillText(Math.ceil(ally.hp)+' HP', ally.x, ally.y - ally.radius - 30);
+}
+
+function zgAssignZombieTargets(){
+  // هر ۳۰ فریم یک بار reassign کن (به جای هر فریم)
+  if(!ZG.ally || ZG.ally.hp <= 0) {
+    if(ZG.frame%60===0) ZG.zombies.forEach(function(z){ z.targetAlly = false; });
+    return;
+  }
+  if(ZG.frame%30!==0) return; // فقط هر نیم ثانیه
+  ZG.zombies.forEach(function(z){
+    z.targetAlly = (Math.random() < 0.35);
+    z._targetAssigned = true;
+  });
+}
+
 function zgSpawnWave(){
   var isBoss = zgIsBossWave(ZG.wave);
 
@@ -6813,6 +8134,7 @@ function zgSpawnWave(){
 
   // ── NIGHTMARE MODE: wave 21+
   if(ZG.wave > 20){
+    zgSpawnAlly(); // یار NPC وارد میشه!
     zgSpawnNightmareWave();
     return;
   }
@@ -6866,7 +8188,7 @@ function zgSpawnWave(){
     // Spawn boss after a delay
     setTimeout(function(){
       if(!ZG.running) return;
-      var bossKey = ZG.wave === 10 ? 'BUTCHER' : 'BUTCHER';
+      var bossKey = ZG.wave === 10 ? 'BUTCHER' : (ZG.wave === 15 ? 'FLESH_MASS' : 'BUTCHER');
       zgSpawnBoss(bossKey);
       // count boss as +1 in total
       ZG.waveSpawnTotal += 1;
@@ -7018,7 +8340,7 @@ function zgShoot(){
         x:ZG.player.x+Math.cos(ZG.player.angle)*20,
         y:ZG.player.y+Math.sin(ZG.player.angle)*20,
         vx:Math.cos(fAngle)*fSpd, vy:Math.sin(fAngle)*fSpd,
-        damage:w.damage*(1+(ZG.player.perks.damage||0)*0.3),
+        damage:w.damage*(1+(ZG.player.perks.damage||0)*0.15),
         size:w.bullet.size*(0.8+Math.random()*0.8),
         life:18+Math.random()*10, maxLife:28,
         color:['#ff2200','#ff6600','#ffaa00','#ff4400'][Math.floor(Math.random()*4)],
@@ -7037,7 +8359,28 @@ function zgShoot(){
   var pellets=w.pellets||1;
   for(var p=0;p<pellets;p++){
     var angle=ZG.player.angle+(Math.random()-0.5)*w.spread*2+(p-(pellets-1)/2)*0.15;
-    ZG.bullets.push({x:ZG.player.x,y:ZG.player.y,vx:Math.cos(angle)*w.bullet.speed,vy:Math.sin(angle)*w.bullet.speed,damage:w.damage*(1+(ZG.player.perks.damage||0)*0.3),size:w.bullet.size,color:w.bullet.color,life:60,trail:[],fromZombie:false});
+    var dmg = w.damage*(1+(ZG.player.perks.damage||0)*0.15);
+    // Berserker mode
+    if(ZG.player.perks.berserker_mode && ZG.player.hp/ZG.player.maxHp < 0.2) dmg *= 1.25;
+    // Crit check
+    var critChance = (ZG.player.perks.crit||0) * 0.12;
+    var isCrit = Math.random() < critChance;
+    if(isCrit){ dmg *= 2.5; ZG.screenShake=3; }
+    var bColor = isCrit ? '#fff700' : w.bullet.color;
+    var bSize  = isCrit ? w.bullet.size*1.6 : w.bullet.size;
+    ZG.bullets.push({
+      x:ZG.player.x, y:ZG.player.y,
+      vx:Math.cos(angle)*w.bullet.speed, vy:Math.sin(angle)*w.bullet.speed,
+      damage:dmg, size:bSize, color:bColor, life:60, trail:[], fromZombie:false,
+      piercing: (ZG.player.perks.piercing||0)>0,
+      piercedCount: 0,
+      isCrit: isCrit,
+    });
+    // Multishot: گلوله دوم با زاویه کمی متفاوت و آسیب کمتر
+    if(ZG.player.perks.multishot){
+      var a2=angle+(Math.random()-0.5)*0.25;
+      ZG.bullets.push({x:ZG.player.x,y:ZG.player.y,vx:Math.cos(a2)*w.bullet.speed,vy:Math.sin(a2)*w.bullet.speed,damage:dmg*0.70,size:bSize*0.8,color:w.bullet.color,life:60,trail:[],fromZombie:false,piercing:false,piercedCount:0});
+    }
   }
   for(var i=0;i<8;i++){
     var a2=ZG.player.angle+(Math.random()-0.5)*0.8, sp2=3+Math.random()*4;
@@ -7053,10 +8396,12 @@ function zgUpdate(){
 
   // Movement
   var dx=0,dy=0;
-  if(ZG.keys['w']||ZG.keys['arrowup']) dy-=1;
-  if(ZG.keys['s']||ZG.keys['arrowdown']) dy+=1;
-  if(ZG.keys['a']||ZG.keys['arrowleft']) dx-=1;
-  if(ZG.keys['d']||ZG.keys['arrowright']) dx+=1;
+  // Hypnosis: reverse input directions
+  var _hypno = ZG.player.hypnotized;
+  if((!_hypno&&(ZG.keys['w']||ZG.keys['arrowup']))||(_hypno&&(ZG.keys['s']||ZG.keys['arrowdown']))) dy-=1;
+  if((!_hypno&&(ZG.keys['s']||ZG.keys['arrowdown']))||(_hypno&&(ZG.keys['w']||ZG.keys['arrowup']))) dy+=1;
+  if((!_hypno&&(ZG.keys['a']||ZG.keys['arrowleft']))||(_hypno&&(ZG.keys['d']||ZG.keys['arrowright']))) dx-=1;
+  if((!_hypno&&(ZG.keys['d']||ZG.keys['arrowright']))||(_hypno&&(ZG.keys['a']||ZG.keys['arrowleft']))) dx+=1;
   if(ZG.touch&&ZG.touch.joystick){
     var jdx=ZG.touch.joystick.x-ZG.touch.joystick.startX;
     var jdy=ZG.touch.joystick.y-ZG.touch.joystick.startY;
@@ -7067,7 +8412,10 @@ function zgUpdate(){
   if(len>0){dx/=len;dy/=len;}
 
   if(ZG.keys['shift']&&p.dashCooldown<=0&&(dx||dy)){
-    p.dashActive=12; p.dashCooldown=90;
+    p.dashActive=12;
+    var baseDashCD = p.dashCooldownBase || 90;
+    p.dashCooldown=baseDashCD;
+    if(p.perks.dash) p.invincible=Math.max(p.invincible, 24); // i-frames
     for(var i=0;i<12;i++) ZG.particles.push({x:p.x,y:p.y,vx:(Math.random()-0.5)*4,vy:(Math.random()-0.5)*4,life:20,maxLife:20,color:'#4488ff',size:4});
   }
   if(p.dashActive>0)p.dashActive--;
@@ -7153,14 +8501,16 @@ function zgUpdate(){
       // Boss bullet hit
       if(ZG.boss){
         var bss=ZG.boss;
-        if(Math.hypot(b.x-bss.x,b.y-bss.y)<bss.radius+b.size){
+        // Phase 3 FLESH_MASS: bullets handled in zgUpdateFleshMass (Patient Zero target)
+        var _skipBossBody = (bss.bossKey==='FLESH_MASS' && bss.phase>=3);
+        if(!_skipBossBody && Math.hypot(b.x-bss.x,b.y-bss.y)<bss.radius+b.size){
           if(!bss.shieldActive){
             bss.hp-=b.damage;
             bss.hitFlash=5;
-            zgSpawnParticles(b.x,b.y,'#ff4422',4);
+            zgSpawnParticles(b.x,b.y,b.fromAlly?'#00e5ff':'#ff4422',4);
             zgUpdateBossBar();
+            if(bss.hp<=0 && bss.bossKey!=='FLESH_MASS') zgBossDead(bss);
           } else {
-            // shield deflect
             zgSpawnParticles(b.x,b.y,'#00ccff',5);
           }
           return false;
@@ -7169,8 +8519,8 @@ function zgUpdate(){
       for(var zi=ZG.zombies.length-1;zi>=0;zi--){
         var z=ZG.zombies[zi];
         if(Math.hypot(b.x-z.x,b.y-z.y)<z.radius+b.size){
-          // MIRROR: reflect bullet back at player
-          if(z.eliteType==='mirror' && z.reflecting){
+          // MIRROR: reflect — ally bullets هم reflect میشن ولی به player نمیخورن
+          if(z.eliteType==='mirror' && z.reflecting && !b.fromAlly){
             var p3=ZG.player;
             var ra=Math.atan2(p3.y-b.y, p3.x-b.x);
             ZG.bullets.push({x:z.x,y:z.y,vx:Math.cos(ra)*5.5,vy:Math.sin(ra)*5.5,damage:b.damage*0.7,size:b.size,color:'#aaccff',life:55,trail:[],fromZombie:true,isReflected:true});
@@ -7187,10 +8537,35 @@ function zgUpdate(){
             if(z.shieldHp<=0){zgKillMsg('💥 زره شکسته شد!');ZG.screenShake=6;}
           }
           z.hp-=actualDmg; z.stunned=5;
-          zgSpawnParticles(b.x,b.y,z.elite?z.glowColor:'#cc2200',6);
+          zgSpawnParticles(b.x,b.y,b.fromAlly?'#00e5ff':(b.isCrit?'#fff700':(z.elite?z.glowColor:'#cc2200')),b.isCrit?10:6);
           ZG.bloodPools.push({x:z.x,y:z.y,r:4+Math.random()*8,alpha:0.5+Math.random()*0.3});
           if(ZG.bloodPools.length>25)ZG.bloodPools.shift();
+          // Vampiric lifesteal
+          if(!b.fromAlly && ZG.player.perks.vampiric){
+            var steal = 1*(ZG.player.perks.vampiric||0);
+            ZG.player.hp=Math.min(ZG.player.maxHp, ZG.player.hp+steal);
+            zgUpdateHp();
+          }
+          // Explosive Rounds: AOE burst
+          if(!b.fromAlly && ZG.player.perks.explosive_rounds){
+            var expR=25, expDmg=15*(ZG.player.perks.explosive_rounds||1);
+            ZG.zombies.forEach(function(nz,ni){
+              if(nz===z) return;
+              if(Math.hypot(nz.x-z.x,nz.y-z.y)<expR){
+                nz.hp-=expDmg; nz.stunned=8;
+                if(nz.hp<=0) zgKillZombie(ni,nz);
+              }
+            });
+            for(var ep=0;ep<6;ep++){var ea=Math.random()*Math.PI*2;ZG.particles.push({x:z.x,y:z.y,vx:Math.cos(ea)*4,vy:Math.sin(ea)*4,life:12,maxLife:12,color:'#ff8800',size:4});}
+          }
+          // Slipstream kill streak
+          if(!b.fromAlly){
+            ZG._streakKills=(ZG._streakKills||0)+1;
+            if(ZG.player.perks.slipstream && ZG._streakKills>=5){ ZG._streakKills=0; ZG._slipstreamTimer=80; }
+          }
           if(z.hp<=0) zgKillZombie(zi,z);
+          // Piercing: گلوله رد میشه
+          if(b.piercing && b.piercedCount < 1){ b.piercedCount++; return true; }
           return false;
         }
       }
@@ -7199,12 +8574,16 @@ function zgUpdate(){
   });
 
   // Zombies
+  zgAssignZombieTargets();
   ZG.zombies.forEach(function(z,i){
     if(z.stunned>0){z.stunned--;return;}
     z.wobble+=0.1;
     // Run elite-specific behaviors
     if(z.elite) zgUpdateElite(z,i);
-    var tx=p.x-z.x,ty=p.y-z.y,dist=Math.hypot(tx,ty);
+
+    // تعیین هدف: player یا ally
+    var target = (z.targetAlly && ZG.ally && ZG.ally.hp > 0) ? ZG.ally : p;
+    var tx=target.x-z.x, ty=target.y-z.y, dist=Math.hypot(tx,ty);
     z.angle=Math.atan2(ty,tx);
     var sx2=0,sy2=0;
     // Separation: only check nearby zombies (skip if > 2x radius away)
@@ -7222,7 +8601,7 @@ function zgUpdate(){
       z.vx*=0.3;z.vy*=0.3;z.rangedCool--;
       if(z.rangedCool<=0){
         z.rangedCool=90;
-        var a=Math.atan2(p.y-z.y,p.x-z.x)+(Math.random()-0.5)*0.3;
+        var a=Math.atan2(target.y-z.y,target.x-z.x)+(Math.random()-0.5)*0.3;
         ZG.bullets.push({x:z.x,y:z.y,vx:Math.cos(a)*5,vy:Math.sin(a)*5,damage:z.damage,size:6,color:'#88ff44',life:50,trail:[],fromZombie:true});
       }
     }
@@ -7234,15 +8613,26 @@ function zgUpdate(){
         if(m===ol)z.x=o.x-z.radius;else if(m===or2)z.x=o.x+o.w+z.radius;else if(m===ot)z.y=o.y-z.radius;else z.y=o.y+o.h+z.radius;
       }
     });
-    if(dist<p.radius+z.radius+2){
+    if(dist<target.radius+z.radius+2){
       z.attackCool--;
       if(z.attackCool<=0){
         z.attackCool=60;
-        if(p.invincible<=0&&p.dashActive<=0){
-          p.hp=Math.max(0,p.hp-z.damage*(1-(ZG.player.perks.armor||0)*0.2));
-          p.invincible=20;ZG.flashTimer=8;zgUpdateHp();
-          if(p.hp<=0)zgGameOver();
+        // اگه هدف player باشه
+        if(target===p){
+          if(p.invincible<=0&&p.dashActive<=0){
+            // Dodge check
+            if(p.perks.dodge && Math.random()<(p.perks.dodge*0.10)){ zgKillMsg('💨 دج کردی!'); p.invincible=10; }
+            else {
+              var dmgIn = z.damage*(1-(ZG.player.perks.armor||0)*0.2);
+              // Shield absorbs first
+              if(p.shieldHp>0){ var absorbed2=Math.min(p.shieldHp,dmgIn); p.shieldHp-=absorbed2; dmgIn-=absorbed2; ZG._shieldCoolTimer=0; }
+              p.hp=Math.max(0,p.hp-dmgIn);
+              p.invincible=20;ZG.flashTimer=8;zgUpdateHp();
+              if(p.hp<=0)zgGameOver();
+            }
+          }
         }
+        // اگه هدف ally باشه (در zgUpdateAlly هندل میشه، اینجا فقط player رو skip کن)
       }
     }
   });
@@ -7251,7 +8641,11 @@ function zgUpdate(){
   ZG.bullets=ZG.bullets.filter(function(b){
     if(!b.fromZombie)return true;
     if(Math.hypot(b.x-p.x,b.y-p.y)<p.radius+b.size&&p.invincible<=0&&p.dashActive<=0){
-      p.hp=Math.max(0,p.hp-b.damage);p.invincible=20;ZG.flashTimer=8;zgUpdateHp();
+      // Dodge check
+      if(p.perks.dodge && Math.random()<(p.perks.dodge*0.10)){ zgKillMsg('💨 دج کردی!'); zgSpawnParticles(b.x,b.y,'#a78bfa',5); return false; }
+      var dmgIn2 = b.damage*(1-(ZG.player.perks.armor||0)*0.2);
+      if(p.shieldHp>0){ var abs3=Math.min(p.shieldHp,dmgIn2); p.shieldHp-=abs3; dmgIn2-=abs3; ZG._shieldCoolTimer=0; }
+      p.hp=Math.max(0,p.hp-dmgIn2);p.invincible=20;ZG.flashTimer=8;zgUpdateHp();
       zgSpawnParticles(b.x,b.y,'#88ff44',5);
       if(p.hp<=0)zgGameOver();
       return false;
@@ -7262,11 +8656,40 @@ function zgUpdate(){
   if(p.invincible>0)p.invincible--;
   if(ZG.flashTimer>0)ZG.flashTimer--;
 
+  // ── PERK PASSIVE EFFECTS ──
+  // Regen: 1 HP هر ۴۵ فریم اگه ضربه نخورده باشی
+  if(p.perks.regen && p.hp>0 && p.hp<p.maxHp){
+    if(!ZG._regenTimer) ZG._regenTimer=0;
+    ZG._regenTimer++;
+    var regenInterval = Math.max(40, 60 - (p.perks.regen-1)*10);
+    if(p.invincible===0) ZG._regenTimer++; // اگه در حالت بدون ضربه دو برابر میشه
+    if(ZG._regenTimer >= regenInterval){ p.hp=Math.min(p.maxHp,p.hp+(p.perks.regen||1)); zgUpdateHp(); ZG._regenTimer=0; }
+  }
+  // Energy Shield recharge
+  if(p.perks.shield && p.shieldHp !== undefined){
+    if(p.invincible===0){ ZG._shieldCoolTimer=(ZG._shieldCoolTimer||0)+1; }
+    else { ZG._shieldCoolTimer=0; }
+    if(ZG._shieldCoolTimer >= 480 && p.shieldHp<p.shieldMax){ p.shieldHp=p.shieldMax; ZG._shieldCoolTimer=0; zgKillMsg('🔵 سپر شارژ شد!'); }
+  }
+  // Slipstream speed boost timer
+  if(ZG._slipstreamTimer > 0){
+    ZG._slipstreamTimer--;
+    if(ZG._slipstreamTimer===119) zgKillMsg('🌀 Slipstream! سرعت ×1.25 برای ۱.۳ ثانیه!');
+    p.speed = 3.2*(1+(p.perks.speed||0)*0.12)*1.25;
+    if(ZG._slipstreamTimer===0) p.speed = 3.2*(1+(p.perks.speed||0)*0.12);
+  }
+  // Berserker mode: speed boost زیر ۲۰٪ HP
+  if(p.perks.berserker_mode && p.hp/p.maxHp < 0.2 && !ZG._slipstreamTimer){
+    p.speed = 3.2*(1+(p.perks.speed||0)*0.12)*1.15;
+  } else if(!ZG._slipstreamTimer && p.perks.berserker_mode){
+    p.speed = 3.2*(1+(p.perks.speed||0)*0.12);
+  }
+
   ZG.particles=ZG.particles.filter(function(pt){pt.x+=pt.vx;pt.y+=pt.vy;pt.vx*=0.92;pt.vy*=0.92;pt.life--;return pt.life>0;});
   // Hard cap on particles to prevent lag
-  if(ZG.particles.length>250) ZG.particles.splice(0, ZG.particles.length-250);
+  if(ZG.particles.length>180) ZG.particles.splice(0, ZG.particles.length-180);
   // Cap bullets to prevent lag spikes
-  if(ZG.bullets.length>120) ZG.bullets.splice(0, ZG.bullets.length-120);
+  if(ZG.bullets.length>100) ZG.bullets.splice(0, ZG.bullets.length-100);
 
   // Items
   ZG.items=ZG.items.filter(function(item){
@@ -7340,6 +8763,7 @@ function zgUpdate(){
 
   // Wave clear check — all spawned AND all killed (boss counts too)
   if(ZG.boss) zgUpdateBoss();
+  zgUpdateAlly(); // NPC همراه
   var allEnemiesDead = ZG.zombies.length===0 && !ZG.boss;
   if(ZG.waveSpawned===ZG.waveSpawnTotal && allEnemiesDead && ZG.waveSpawnTotal>0 && ZG.waveCooldown===0){
     ZG.waveCooldown=180; // set once to start countdown
@@ -7355,8 +8779,8 @@ function zgUpdate(){
   }
 
   ZG.bgOffset=(ZG.bgOffset+0.2)%40;
-  document.getElementById('zg-score').textContent=ZG.score.toLocaleString();
-  zgUpdateWeapon();
+  if(ZG._lastScore!==ZG.score){ZG._lastScore=ZG.score;document.getElementById('zg-score').textContent=ZG.score.toLocaleString();}
+  if(ZG.frame%6===0||ZG.player.reloadTime>0) zgUpdateWeapon();
 }
 
 function zgKillZombie(i,z){
@@ -7429,35 +8853,300 @@ function zgKillZombie(i,z){
 
 function zgGiveXP(amount){
   var p=ZG.player; p.xp+=amount;
-  if(p.xp>=p.xpNeeded){p.xp-=p.xpNeeded;p.xpNeeded=Math.floor(p.xpNeeded*1.5);p.level++;document.getElementById('zg-lvl').textContent='LVL '+p.level;zgShowPerks();}
+  if(p.xp>=p.xpNeeded){p.xp-=p.xpNeeded;p.xpNeeded=Math.floor(p.xpNeeded*2.5);p.level++;document.getElementById('zg-lvl').textContent='LVL '+p.level;zgShowPerks();}
   document.getElementById('zg-xpfill').style.width=(p.xp/p.xpNeeded*100)+'%';
 }
 
-var ZG_PERKS=[
-  {id:'damage',icon:'💀',name:'Deadly Shots',desc:'شلیک‌ها ۳۰٪ بیشتر آسیب میزنن'},
-  {id:'speed', icon:'👟',name:'Swift Runner', desc:'سرعت حرکت ۲۰٪ بیشتر'},
-  {id:'armor', icon:'🛡️',name:'Iron Skin',   desc:'۲۰٪ آسیب کمتر از دشمنا'},
-  {id:'health',icon:'❤️',name:'Adrenaline',  desc:'+30 HP اضافه'},
-  {id:'reload',icon:'⚡',name:'Fast Hands',  desc:'شارژ ۳۰٪ سریع‌تر'},
-  {id:'magnet',icon:'🔮',name:'Scavenger',   desc:'برداشتن آیتم از فاصله بیشتر'},
+/* ══════════════════════════════════════
+   PERK SYSTEM v2 — کامل و جزئیات‌دار
+══════════════════════════════════════ */
+var ZG_PERKS = [
+  /* ── DAMAGE ── */
+  {
+    id:'damage', icon:'💀', name:'Deadly Shots', type:'OFFENSE',
+    tier:'uncommon', color:'#ff4422', glow:'rgba(255,68,34,.3)', dim:'rgba(255,68,34,.06)', border:'rgba(255,68,34,.2)',
+    desc:'گلوله‌هات ۱۵٪ بیشتر آسیب میزنن. با هر stack قوی‌تر.',
+    stats:[{label:'DMG',pct:30,val:'+15%'}],
+    footer:'LETHAL FORCE ENABLED',
+    maxStack:3,
+    synergy:'با Rapid Fire ترکیبش کن!',
+    apply:function(p){} // handled in zgShoot via perks.damage
+  },
+  {
+    id:'explosive_rounds', icon:'💥', name:'Explosive Rounds', type:'OFFENSE',
+    tier:'rare', color:'#ff8800', glow:'rgba(255,136,0,.3)', dim:'rgba(255,136,0,.06)', border:'rgba(255,136,0,.2)',
+    desc:'هر گلوله انفجار کوچیک میزنه و به زامبی‌های کنارش هم آسیب میرسونه.',
+    stats:[{label:'AOE DMG',pct:30,val:'15 dmg'},{label:'RADIUS',pct:25,val:'25px'}],
+    footer:'BOOM ON IMPACT',
+    maxStack:2,
+    synergy:'با Deadly Shots ترکیب کن',
+    apply:function(p){ p.perks.explosive_rounds = (p.perks.explosive_rounds||0)+1; }
+  },
+  {
+    id:'rapidfire', icon:'🔫', name:'Rapid Fire', type:'OFFENSE',
+    tier:'uncommon', color:'#facc15', glow:'rgba(250,204,21,.3)', dim:'rgba(250,204,21,.06)', border:'rgba(250,204,21,.2)',
+    desc:'سرعت شلیک ۱۵٪ بالاتر (به جای ۲۵٪ قبلی).',
+    stats:[{label:'FIRE RATE',pct:40,val:'+15%'},{label:'DPS',pct:35,val:'↑'}],
+    footer:'FULL AUTO ENGAGED',
+    maxStack:3,
+    synergy:'با Deadly Shots ترکیب‌پذیره',
+    apply:function(p){ ZG.weapons.forEach(function(w){ if(!w.isFlame) w.fireRate = Math.max(3, Math.floor(w.fireRate*0.85)); }); }
+  },
+  {
+    id:'piercing', icon:'🎯', name:'Armor Piercer', type:'OFFENSE',
+    tier:'rare', color:'#22d3ee', glow:'rgba(34,211,238,.3)', dim:'rgba(34,211,238,.06)', border:'rgba(34,211,238,.2)',
+    desc:'گلوله‌هات از یه زامبی رد میشن و به پشتیشون هم میخورن.',
+    stats:[{label:'PIERCE',pct:100,val:'×2 HIT'},{label:'VS ELITE',pct:40,val:'+20%'}],
+    footer:'NO COVER SAFE',
+    maxStack:1,
+    apply:function(p){ p.perks.piercing = (p.perks.piercing||0)+1; }
+  },
+  {
+    id:'vampiric', icon:'🧛', name:'Vampiric Shots', type:'OFFENSE',
+    tier:'rare', color:'#c084fc', glow:'rgba(192,132,252,.3)', dim:'rgba(192,132,252,.06)', border:'rgba(192,132,252,.2)',
+    desc:'هر بار که زامبی میزنی ۱ HP برمیگرده (به جای ۳).',
+    stats:[{label:'LIFESTEAL',pct:20,val:'1 HP/hit'},{label:'SUSTAIN',pct:30,val:'LOW'}],
+    footer:'DEATH FEEDS LIFE',
+    maxStack:2,
+    synergy:'با Rapid Fire کمک میکنه',
+    apply:function(p){ p.perks.vampiric = (p.perks.vampiric||0)+1; }
+  },
+  {
+    id:'crit', icon:'⚡', name:'Critical Strike', type:'OFFENSE',
+    tier:'rare', color:'#fbbf24', glow:'rgba(251,191,36,.3)', dim:'rgba(251,191,36,.06)', border:'rgba(251,191,36,.2)',
+    desc:'۱۲٪ شانس کریتیکال: آسیب ۲.۵ برابر! با افکت بصری.',
+    stats:[{label:'CRIT%',pct:12,val:'12%'},{label:'CRIT DMG',pct:100,val:'×2.5'}],
+    footer:'FORTUNE FAVORS THE BOLD',
+    maxStack:3,
+    apply:function(p){ p.perks.crit = (p.perks.crit||0)+1; }
+  },
+
+  /* ── DEFENSE ── */
+  {
+    id:'armor', icon:'🛡️', name:'Iron Skin', type:'DEFENSE',
+    tier:'uncommon', color:'#64748b', glow:'rgba(100,116,139,.3)', dim:'rgba(100,116,139,.06)', border:'rgba(100,116,139,.2)',
+    desc:'۲۰٪ از همه آسیب‌ها جذب میشه. هر stack کمتر ضربه میخوری.',
+    stats:[{label:'DMG RESIST',pct:65,val:'−20%'},{label:'EHP',pct:55,val:'+25%'}],
+    footer:'THICK AS STEEL',
+    maxStack:3,
+    apply:function(p){} // handled in damage calcs
+  },
+  {
+    id:'health', icon:'❤️', name:'Adrenaline Rush', type:'DEFENSE',
+    tier:'common', color:'#e5334a', glow:'rgba(229,51,74,.3)', dim:'rgba(229,51,74,.06)', border:'rgba(229,51,74,.2)',
+    desc:'+25 HP ماکسیمم (به جای +40). همین الان هم پر میشه.',
+    stats:[{label:'MAX HP',pct:50,val:'+25'},{label:'INSTANT',pct:100,val:'HEAL'}],
+    footer:'FRESH BLOOD PUMPING',
+    maxStack:4,
+    apply:function(p){ p.maxHp+=25; p.hp=Math.min(p.hp+25,p.maxHp); zgUpdateHp(); }
+  },
+  {
+    id:'regen', icon:'💚', name:'Battle Regen', type:'DEFENSE',
+    tier:'rare', color:'#22c55e', glow:'rgba(34,197,94,.3)', dim:'rgba(34,197,94,.06)', border:'rgba(34,197,94,.2)',
+    desc:'اگه ۵ ثانیه ضربه نخوری، آروم آروم HP برمیگرده. ۱ HP هر ۶۰ فریم.',
+    stats:[{label:'REGEN',pct:25,val:'1/60f'},{label:'COOLDOWN',pct:40,val:'5 sec'}],
+    footer:'WOUNDS CLOSE FAST',
+    maxStack:2,
+    synergy:'با Iron Skin عالیه',
+    apply:function(p){ p.perks.regen = (p.perks.regen||0)+1; }
+  },
+  {
+    id:'shield', icon:'🔵', name:'Energy Shield', type:'DEFENSE',
+    tier:'legendary', color:'#38bdf8', glow:'rgba(56,189,248,.35)', dim:'rgba(56,189,248,.06)', border:'rgba(56,189,248,.2)',
+    desc:'یه سپر ۳۰ HP (به جای ۵۰) که بعد از ۱۲ ثانیه دوباره پر میشه.',
+    stats:[{label:'SHIELD HP',pct:30,val:'30'},{label:'RECHARGE',pct:50,val:'12 sec'}],
+    footer:'ENERGY BARRIER ONLINE',
+    maxStack:1,
+    apply:function(p){ p.perks.shield=(p.perks.shield||0)+1; if(!p.shieldHp){ p.shieldHp=30; p.shieldMax=30; p.shieldCool=0; } else { p.shieldMax+=30; p.shieldHp=p.shieldMax; } }
+  },
+  {
+    id:'dodge', icon:'💨', name:'Ghost Step', type:'DEFENSE',
+    tier:'rare', color:'#a78bfa', glow:'rgba(167,139,250,.3)', dim:'rgba(167,139,250,.06)', border:'rgba(167,139,250,.2)',
+    desc:'۱۰٪ شانس دج از هر ضربه (به جای ۱۵٪). گلوله‌ها هم شامل میشه.',
+    stats:[{label:'DODGE%',pct:10,val:'10%'},{label:'TYPE',pct:100,val:'ALL DMG'}],
+    footer:'YOU CANT HIT WHAT ISNT THERE',
+    maxStack:2,
+    apply:function(p){ p.perks.dodge=(p.perks.dodge||0)+1; }
+  },
+
+  /* ── MOBILITY ── */
+  {
+    id:'speed', icon:'👟', name:'Swift Runner', type:'MOBILITY',
+    tier:'common', color:'#34d399', glow:'rgba(52,211,153,.3)', dim:'rgba(52,211,153,.06)', border:'rgba(52,211,153,.2)',
+    desc:'سرعت حرکت ۱۲٪ بالاتر (به جای ۲۰٪).',
+    stats:[{label:'MOVE SPD',pct:35,val:'+12%'},{label:'KITE',pct:40,val:'SLIGHT'}],
+    footer:'LEAVE THEM IN THE DUST',
+    maxStack:3,
+    apply:function(p){ p.speed=3.2*(1+(p.perks.speed||0)*0.12); }
+  },
+  {
+    id:'dash', icon:'💫', name:'Afterburner', type:'MOBILITY',
+    tier:'uncommon', color:'#4488ff', glow:'rgba(68,136,255,.3)', dim:'rgba(68,136,255,.06)', border:'rgba(68,136,255,.2)',
+    desc:'دش cooldown 25٪ کمتر (به جای ۴۰٪). بعد از دش invincible میشی.',
+    stats:[{label:'DASH CD',pct:35,val:'−25%'},{label:'I-FRAMES',pct:100,val:'0.4 sec'}],
+    footer:'SHIFT TO SURVIVE',
+    maxStack:2,
+    apply:function(p){ p.perks.dash=(p.perks.dash||0)+1; ZG.player.dashCooldownBase = Math.max(45, (ZG.player.dashCooldownBase||90)*0.75); }
+  },
+  {
+    id:'slipstream', icon:'🌀', name:'Slipstream', type:'MOBILITY',
+    tier:'rare', color:'#2dd4bf', glow:'rgba(45,212,191,.3)', dim:'rgba(45,212,191,.06)', border:'rgba(45,212,191,.2)',
+    desc:'بعد از کشتن ۵ زامبی پشت هم، ۱.۳ ثانیه سرعت ۲۵٪ بیشتر میگیری.',
+    stats:[{label:'KILL STREAK',pct:50,val:'×5'},{label:'SPEED BOOST',pct:40,val:'+25%'}],
+    footer:'ON A ROLL',
+    maxStack:1,
+    apply:function(p){ p.perks.slipstream=(p.perks.slipstream||0)+1; ZG._streakKills=ZG._streakKills||0; }
+  },
+
+  /* ── UTILITY ── */
+  {
+    id:'reload', icon:'🔄', name:'Fast Hands', type:'UTILITY',
+    tier:'common', color:'#fb923c', glow:'rgba(251,146,60,.3)', dim:'rgba(251,146,60,.06)', border:'rgba(251,146,60,.2)',
+    desc:'reload سرعت ۱۵٪ بیشتر (به جای ۳۰٪).',
+    stats:[{label:'RELOAD SPD',pct:30,val:'+15%'},{label:'DOWNTIME',pct:20,val:'−15%'}],
+    footer:'SPEED LOADER EQUIPPED',
+    maxStack:2,
+    apply:function(p){ ZG.weapons.forEach(function(w){ w.reloadDur=Math.floor(w.reloadDur*0.85); }); }
+  },
+  {
+    id:'magnet', icon:'🔮', name:'Scavenger', type:'UTILITY',
+    tier:'common', color:'#e879f9', glow:'rgba(232,121,249,.3)', dim:'rgba(232,121,249,.06)', border:'rgba(232,121,249,.2)',
+    desc:'آیتم‌ها از فاصله دور هم جذب میشن (30px).',
+    stats:[{label:'PICKUP RNG',pct:50,val:'30px'},{label:'AUTO',pct:100,val:'YES'}],
+    footer:'WASTE NOTHING',
+    maxStack:1,
+    apply:function(p){ p.perks.magnet=(p.perks.magnet||0)+1; }
+  },
+  {
+    id:'grenadier', icon:'💣', name:'Grenadier', type:'UTILITY',
+    tier:'uncommon', color:'#f97316', glow:'rgba(249,115,22,.3)', dim:'rgba(249,115,22,.06)', border:'rgba(249,115,22,.2)',
+    desc:'+1 نارنجک الان (به جای +2). نارنجک‌ها ۱۵٪ بیشتر آسیب.',
+    stats:[{label:'INSTANT',pct:100,val:'+1 NADE'},{label:'NADE DMG',pct:30,val:'+15%'}],
+    footer:'COOK IT BEFORE THROWING',
+    maxStack:3,
+    apply:function(p){ ZG.grenadeCount=Math.min(ZG.grenadeCount+1,6); p.perks.grenadier=(p.perks.grenadier||0)+1; }
+  },
+  {
+    id:'ammo_pack', icon:'🔋', name:'Ammo Pack', type:'UTILITY',
+    tier:'common', color:'#a3e635', glow:'rgba(163,230,53,.3)', dim:'rgba(163,230,53,.06)', border:'rgba(163,230,53,.2)',
+    desc:'همه سلاح‌ها ۱۵٪ امو بیشتر (به جای ۲۵٪).',
+    stats:[{label:'MAX AMMO',pct:40,val:'+15%'},{label:'INSTANT',pct:100,val:'REFILL'}],
+    footer:'LOADED FOR BEAR',
+    maxStack:2,
+    apply:function(p){ ZG.weapons.forEach(function(w){ w.maxAmmo=Math.floor(w.maxAmmo*1.15); w.ammo=w.maxAmmo; }); zgUpdateAmmo(); }
+  },
+  {
+    id:'multishot', icon:'🌟', name:'Multishot', type:'OFFENSE',
+    tier:'legendary', color:'#f59e0b', glow:'rgba(245,158,11,.35)', dim:'rgba(245,158,11,.06)', border:'rgba(245,158,11,.25)',
+    desc:'هر شلیک ۱ گلوله اضافه میزنه ولی هر دو ۳۰٪ آسیب کمتر دارن.',
+    stats:[{label:'BULLETS',pct:60,val:'×2'},{label:'PER BULLET',pct:40,val:'−30% DMG'}],
+    footer:'⭐ QUANTITY OVER QUALITY ⭐',
+    maxStack:1,
+    apply:function(p){ p.perks.multishot=(p.perks.multishot||0)+1; }
+  },
+  {
+    id:'berserker_mode', icon:'😤', name:'Berserker', type:'OFFENSE',
+    tier:'legendary', color:'#dc2626', glow:'rgba(220,38,38,.4)', dim:'rgba(220,38,38,.07)', border:'rgba(220,38,38,.25)',
+    desc:'زیر ۲۰٪ HP: آسیب +۲۵٪ و سرعت +۱۵٪. فعال‌سازی سخت‌تره!',
+    stats:[{label:'TRIGGER',pct:20,val:'<20% HP'},{label:'DMG',pct:50,val:'+25%'},{label:'SPD',pct:30,val:'+15%'}],
+    footer:'⭐ LAST STAND MODE ⭐',
+    maxStack:1,
+    apply:function(p){ p.perks.berserker_mode=1; }
+  },
 ];
+
+function zgPerkColor(pk){
+  return 'style="--pc:'+pk.color+';--pc-glow:'+pk.glow+';--pc-dim:'+pk.dim+';--pc-border:'+pk.border+'"';
+}
+
 function zgShowPerks(){
   ZG.levelUpPending=true;
-  var shuffled=[].concat(ZG_PERKS).sort(function(){return Math.random()-0.5;}).slice(0,3);
+  var p=ZG.player;
+
+  // آپدیت label
+  var lbl=document.getElementById('zg-perk-lvl-label');
+  if(lbl) lbl.textContent='LEVEL '+p.level+' REACHED';
+  var sub=document.getElementById('zg-perk-subtitle');
+  if(sub) sub.textContent='یه توانایی انتخاب کن — '+ZG_PERKS.length+' پرک در بازی';
+
+  // انتخاب ۳ پرک با وزن‌دهی (legendary کمتر ظاهر میشه)
+  var pool=[].concat(ZG_PERKS).filter(function(pk){
+    // حذف پرک‌هایی که به ماکسیمم stack رسیدن
+    return (p.perks[pk.id]||0) < pk.maxStack;
+  });
+  // وزن‌دهی بر اساس tier
+  var weighted=[];
+  pool.forEach(function(pk){
+    var w = pk.tier==='legendary'?1 : pk.tier==='rare'?2 : pk.tier==='uncommon'?4 : 10;
+    for(var i=0;i<w;i++) weighted.push(pk);
+  });
+  // shuffle و برداشتن ۳ یونیک
+  weighted.sort(function(){return Math.random()-0.5;});
+  var chosen=[], seen={};
+  for(var i=0;i<weighted.length&&chosen.length<3;i++){
+    if(!seen[weighted[i].id]){ seen[weighted[i].id]=true; chosen.push(weighted[i]); }
+  }
+  if(chosen.length<3){ // fallback اگه کمتر از ۳ بود
+    pool.forEach(function(pk){ if(chosen.length<3&&!seen[pk.id]){ chosen.push(pk); seen[pk.id]=true; } });
+  }
+
   var cards=document.getElementById('zg-perkcards'); cards.innerHTML='';
-  shuffled.forEach(function(pk){
-    var d=document.createElement('div'); d.className='zg-pcard';
-    d.innerHTML='<div class="zg-picon">'+pk.icon+'</div><div class="zg-pname">'+pk.name+'</div><div class="zg-pdesc">'+pk.desc+'</div>';
-    d.onclick=function(){zgApplyPerk(pk.id);document.getElementById('zg-perkmenu').style.display='none';ZG.levelUpPending=false;};
+  chosen.forEach(function(pk){
+    var stackCount = p.perks[pk.id]||0;
+    var statsHtml = pk.stats.map(function(s){
+      return '<div class="zg-pstat"><span class="zg-pstat-label">'+s.label+'</span><div class="zg-pstat-bar"><div class="zg-pstat-fill" style="width:'+s.pct+'%"></div></div><span class="zg-pstat-val">'+s.val+'</span></div>';
+    }).join('');
+    var synergyHtml = pk.synergy ? '<div class="zg-synergy">⚡ '+pk.synergy+'</div>' : '';
+    var stackHtml = stackCount>0 ? '<div class="zg-stack-badge">STACK '+stackCount+'/'+pk.maxStack+'</div>' : '';
+    var tierLabel = pk.tier==='legendary'?'LEGENDARY':pk.tier==='rare'?'RARE':pk.tier==='uncommon'?'UNCOMMON':'COMMON';
+    var d=document.createElement('div');
+    d.className='zg-pcard';
+    d.setAttribute('style','--pc:'+pk.color+';--pc-glow:'+pk.glow+';--pc-dim:'+pk.dim+';--pc-border:'+pk.border);
+    d.innerHTML=
+      '<div class="zg-pcard-header">'+
+        stackHtml+
+        '<div class="zg-pcard-tier '+pk.tier+'">'+tierLabel+'</div>'+
+        '<div class="zg-picon">'+pk.icon+'</div>'+
+        '<div class="zg-pname">'+pk.name+'</div>'+
+        '<div class="zg-ptype">'+pk.type+'</div>'+
+      '</div>'+
+      '<div class="zg-pcard-body">'+
+        '<div class="zg-pdesc">'+pk.desc+'</div>'+
+        '<div class="zg-pstats">'+statsHtml+'</div>'+
+        synergyHtml+
+      '</div>'+
+      '<div class="zg-pcard-footer">'+pk.footer+'</div>';
+    d.onclick=function(){ zgApplyPerk(pk); document.getElementById('zg-perkmenu').style.display='none'; ZG.levelUpPending=false; };
     cards.appendChild(d);
   });
+
+  // نمایش پرک‌های فعال
+  var acq=document.getElementById('zg-acquired-perks');
+  if(acq){
+    acq.innerHTML='<div style="color:#333;font-size:8px;letter-spacing:2px;width:100%;text-align:center;margin-bottom:4px">ACTIVE PERKS</div>';
+    ZG_PERKS.forEach(function(pk){
+      var cnt=p.perks[pk.id]||0;
+      if(cnt>0){
+        var chip=document.createElement('div');
+        chip.className='zg-acq-chip active';
+        chip.textContent=pk.icon+' '+pk.name+(cnt>1?' ×'+cnt:'');
+        chip.style.borderColor=pk.color;
+        chip.style.color=pk.color;
+        acq.appendChild(chip);
+      }
+    });
+    if(acq.children.length===1) acq.innerHTML=''; // hide if empty
+  }
+
   document.getElementById('zg-perkmenu').style.display='flex';
 }
-function zgApplyPerk(id){
-  var p=ZG.player; if(!p.perks[id])p.perks[id]=0; p.perks[id]++;
-  if(id==='speed')p.speed=3.2*(1+p.perks.speed*0.2);
-  if(id==='health'){p.maxHp+=30;p.hp=Math.min(p.hp+30,p.maxHp);zgUpdateHp();}
-  if(id==='reload')ZG.weapons.forEach(function(w){w.reloadDur=Math.floor(w.reloadDur*0.7);});
+
+function zgApplyPerk(pk){
+  var p=ZG.player;
+  if(!p.perks[pk.id]) p.perks[pk.id]=0;
+  p.perks[pk.id]++;
+  pk.apply(p);
+  zgKillMsg(pk.icon+' '+pk.name+' — '+pk.footer);
 }
 
 function zgThrowGrenade(){
@@ -7590,7 +9279,7 @@ function zgSpawnParticles(x,y,color,n){
 /* ══════════════════════════════════════
    NIGHTMARE WAVE SYSTEM (wave 21+)
 ══════════════════════════════════════ */
-if(!ZG.deadPool) ZG.deadPool = [];
+// deadPool is initialized inside zgSpawnNightmareWave and zgKillZombie
 
 function zgNightmareScaling(wave){
   var n = wave - 20;
@@ -7604,13 +9293,14 @@ function zgNightmareScaling(wave){
   };
 }
 
-function zgSpawnNightmareZombie(idx, sc){
+function zgSpawnNightmareZombie(idx, sc, waveAtSpawn){
   setTimeout(function(){
     if(!ZG.running) return;
+    if(ZG.wave !== waveAtSpawn) return; // guard: skip if wave changed
     // فقط نایتمر زامبی‌ها در موج نایتمر
     var nmType = NIGHTMARE_TYPES[Math.floor(Math.random()*NIGHTMARE_TYPES.length)];
     zgSpawnNightmare(nmType, sc);
-    ZG.waveSpawnTotal++;
+    // waveSpawnTotal already set to count in zgSpawnNightmareWave, don't increment again
   }, idx*300);
 }
 
@@ -7762,7 +9452,7 @@ function zgSpawnNightmareWave(){
   console.log('Nightmare wave ' + wave + ' spawning ' + count + ' zombies');
   
   for(var i=0; i<count; i++){
-    zgSpawnNightmareZombie(i, sc);
+    zgSpawnNightmareZombie(i, sc, wave);
   }
 
   zgNightmareEvent(wave);
@@ -7770,8 +9460,10 @@ function zgSpawnNightmareWave(){
 
 function zgKillMsg(msg){
   var feed=document.getElementById('zg-killfeed');
+  // Limit kill feed to 6 messages max to prevent DOM bloat
+  if(feed.children.length>=6) feed.removeChild(feed.firstChild);
   var div=document.createElement('div'); div.className='zg-km'; div.textContent=msg;
-  feed.appendChild(div); setTimeout(function(){div.remove();},2000);
+  feed.appendChild(div); setTimeout(function(){if(div.parentNode)div.remove();},2000);
 }
 function zgUpdateHp(){
   var p=ZG.player, pct=(p.hp/p.maxHp*100)+'%';
@@ -7797,9 +9489,12 @@ function zgUpdateAmmo(){
 }
 function zgUpdateWeapon(){
   var w=ZG.weapons[ZG.currentWeapon];
-  document.getElementById('zg-weapname').textContent=w.name;
-  if(ZG.player.reloadTime>0) document.getElementById('zg-weapammo').textContent='RELOADING... '+Math.floor((1-ZG.player.reloadTime/w.reloadDur)*100)+'%';
-  else document.getElementById('zg-weapammo').textContent=w.ammo+' / '+w.maxAmmo;
+  var nameEl=document.getElementById('zg-weapname');
+  var ammoEl=document.getElementById('zg-weapammo');
+  var newName=w.name;
+  var newAmmo=ZG.player.reloadTime>0?('RELOADING... '+Math.floor((1-ZG.player.reloadTime/w.reloadDur)*100)+'%'):(w.ammo+' / '+w.maxAmmo);
+  if(nameEl._last!==newName){nameEl.textContent=newName;nameEl._last=newName;}
+  if(ammoEl._last!==newAmmo){ammoEl.textContent=newAmmo;ammoEl._last=newAmmo;}
 }
 function zgGameOver(){
   if(ZG.godMode){ ZG.player.hp=ZG.player.maxHp; ZG.player.invincible=60; zgUpdateHp(); return; }
@@ -7959,39 +9654,67 @@ function zgDraw(){
     zgCtx.fillText(item.type==='health'?'💊':item.type==='grenade'?'💣':'🔋',item.x,item.y);
   });
 
+  // Bullet rendering: batch by type to minimize state changes
+  // Pass 1: trails (all at once)
+  zgCtx.save();zgCtx.globalAlpha=0.35;
   ZG.bullets.forEach(function(b){
-    // Skip drawing bullets far outside canvas
+    if(b.x < -50 || b.x > zgW+50 || b.y < -50 || b.y > zgH+50) return;
+    if(b.isFlame||!b.trail||b.trail.length<2) return;
+    var bColor=b.fromZombie?'#88ff44':b.color;
+    zgCtx.strokeStyle=bColor;zgCtx.lineWidth=b.size*0.7;
+    zgCtx.beginPath();zgCtx.moveTo(b.trail[0].x,b.trail[0].y);
+    var tStart=Math.max(0,b.trail.length-3);
+    for(var ti=tStart;ti<b.trail.length;ti++) zgCtx.lineTo(b.trail[ti].x,b.trail[ti].y);
+    zgCtx.stroke();
+  });
+  zgCtx.restore();
+  // Pass 2: bullet bodies (no per-bullet shadowBlur for performance)
+  zgCtx.save();zgCtx.shadowBlur=0;
+  ZG.bullets.forEach(function(b){
     if(b.x < -50 || b.x > zgW+50 || b.y < -50 || b.y > zgH+50) return;
     if(b.isFlame){
-      var alpha=b.life/b.maxLife;
-      zgCtx.save();
-      zgCtx.globalAlpha=alpha*0.9;
-      zgCtx.shadowColor=b.color; zgCtx.shadowBlur=b.size*1.5;
+      zgCtx.globalAlpha=(b.life/b.maxLife)*0.85;
       zgCtx.fillStyle=b.color;
-      zgCtx.beginPath(); zgCtx.arc(b.x,b.y,b.size,0,Math.PI*2); zgCtx.fill();
-      zgCtx.restore();
+      zgCtx.beginPath();zgCtx.arc(b.x,b.y,b.size,0,Math.PI*2);zgCtx.fill();
+      zgCtx.globalAlpha=1;
       return;
     }
-    if(b.trail && b.trail.length>1){
-      zgCtx.save();zgCtx.strokeStyle=b.fromZombie?'#88ff44':b.color;zgCtx.lineWidth=b.size*0.8;zgCtx.globalAlpha=0.4;
-      zgCtx.beginPath();zgCtx.moveTo(b.trail[0].x,b.trail[0].y);
-      // Only draw last 3 trail points for perf
-      var tStart=Math.max(0,b.trail.length-3);
-      for(var ti=tStart;ti<b.trail.length;ti++) zgCtx.lineTo(b.trail[ti].x,b.trail[ti].y);
-      zgCtx.stroke();zgCtx.restore();
-    }
     var bColor=b.isVenom?'#00ff44':(b.fromZombie?'#88ff44':b.color);
-    zgCtx.save();zgCtx.shadowColor=bColor;zgCtx.shadowBlur=b.isVenom?14:8;zgCtx.fillStyle=bColor;
-    zgCtx.beginPath();zgCtx.arc(b.x,b.y,b.isVenom?b.size*1.2:b.size,0,Math.PI*2);zgCtx.fill();
-    if(b.isVenom){
-      zgCtx.globalAlpha=0.5;zgCtx.fillStyle='#00cc33';
-      zgCtx.beginPath();zgCtx.arc(b.x,b.y+b.size*0.6,b.size*0.4,0,Math.PI*2);zgCtx.fill();
-    }
-    zgCtx.restore();
+    zgCtx.fillStyle=bColor;
+    var bSize=b.isVenom?b.size*1.2:b.size;
+    zgCtx.beginPath();zgCtx.arc(b.x,b.y,bSize,0,Math.PI*2);zgCtx.fill();
   });
+  zgCtx.restore();
 
+  // ── OPTIMIZED ZOMBIE DRAW: minimize shadowBlur changes ──
+  // Pass 1: normal zombies (no shadow glow, fast)
+  zgCtx.save();
+  zgCtx.shadowBlur=0;
   ZG.zombies.forEach(function(z){
-    // Skip drawing off-screen zombies
+    if(z.elite) return; // elites in pass 2
+    if(z.x < -z.radius-10 || z.x > zgW+z.radius+10 || z.y < -z.radius-10 || z.y > zgH+z.radius+10) return;
+    var wobble=Math.sin(z.wobble)*2;
+    zgCtx.save();
+    zgCtx.translate(z.x,z.y);zgCtx.rotate(z.angle+wobble*0.05);
+    zgCtx.fillStyle=z.color;
+    zgCtx.beginPath();zgCtx.arc(0,0,z.radius,0,Math.PI*2);zgCtx.fill();
+    zgCtx.fillStyle='#ff0000';
+    zgCtx.beginPath();zgCtx.arc(z.radius*0.35,-z.radius*0.25,z.radius*0.18,0,Math.PI*2);zgCtx.fill();
+    zgCtx.beginPath();zgCtx.arc(z.radius*0.35,z.radius*0.25,z.radius*0.18,0,Math.PI*2);zgCtx.fill();
+    if(z.type==='tank'){zgCtx.strokeStyle='#fff';zgCtx.lineWidth=3;zgCtx.beginPath();zgCtx.arc(0,0,z.radius+4,0,Math.PI*2);zgCtx.stroke();}
+    zgCtx.restore();
+    // HP bar
+    if(z.hp<z.maxHp){
+      var bw=z.radius*2.5,bx2=z.x-bw/2,by2=z.y-z.radius-10;
+      zgCtx.fillStyle='#300';zgCtx.fillRect(bx2,by2,bw,4);
+      zgCtx.fillStyle='#f00';zgCtx.fillRect(bx2,by2,bw*(z.hp/z.maxHp),4);
+    }
+  });
+  zgCtx.restore();
+
+  // Pass 2: elite zombies (with glow, drawn separately)
+  ZG.zombies.forEach(function(z){
+    if(!z.elite) return;
     if(z.x < -z.radius-10 || z.x > zgW+z.radius+10 || z.y < -z.radius-10 || z.y > zgH+z.radius+10) return;
     var wobble=Math.sin(z.wobble)*2;
     var alpha=z.invisible?(0.18+Math.sin(ZG.frame*0.2)*0.1):1;
@@ -7999,42 +9722,40 @@ function zgDraw(){
     zgCtx.globalAlpha=alpha;
     zgCtx.translate(z.x,z.y);zgCtx.rotate(z.angle+wobble*0.05);
 
-    if(z.elite){
-      // Outer glow ring for elites
-      zgCtx.shadowColor=z.glowColor||z.color; zgCtx.shadowBlur=14;
-      zgCtx.strokeStyle=z.glowColor||z.color; zgCtx.lineWidth=2.5;
-      zgCtx.beginPath();zgCtx.arc(0,0,z.radius+5,0,Math.PI*2);zgCtx.stroke();
-    }
+    // Outer glow ring for elites
+    zgCtx.shadowColor=z.glowColor||z.color; zgCtx.shadowBlur=10;
+    zgCtx.strokeStyle=z.glowColor||z.color; zgCtx.lineWidth=2;
+    zgCtx.beginPath();zgCtx.arc(0,0,z.radius+5,0,Math.PI*2);zgCtx.stroke();
 
-    zgCtx.shadowColor=z.color; zgCtx.shadowBlur=z.elite?8:4;
+    zgCtx.shadowBlur=0;
     zgCtx.fillStyle=z.color;
     zgCtx.beginPath();zgCtx.arc(0,0,z.radius,0,Math.PI*2);zgCtx.fill();
 
     // Eyes
-    zgCtx.fillStyle='#ff0000';zgCtx.shadowBlur=0;
+    zgCtx.fillStyle='#ff0000';
     zgCtx.beginPath();zgCtx.arc(z.radius*0.35,-z.radius*0.25,z.radius*0.18,0,Math.PI*2);zgCtx.fill();
     zgCtx.beginPath();zgCtx.arc(z.radius*0.35,z.radius*0.25,z.radius*0.18,0,Math.PI*2);zgCtx.fill();
 
     // Tank ring
-    if(z.type==='tank'){zgCtx.strokeStyle='#fff';zgCtx.lineWidth=3;zgCtx.shadowBlur=0;zgCtx.beginPath();zgCtx.arc(0,0,z.radius+4,0,Math.PI*2);zgCtx.stroke();}
+    if(z.type==='tank'){zgCtx.strokeStyle='#fff';zgCtx.lineWidth=3;zgCtx.beginPath();zgCtx.arc(0,0,z.radius+4,0,Math.PI*2);zgCtx.stroke();}
 
     // Armored: shield ring
     if(z.eliteType==='armored' && z.shieldHp>0){
       var sPct=z.shieldHp/z.shieldHpMax;
       zgCtx.strokeStyle='rgba(136,153,170,'+( 0.5+sPct*0.5)+')';
-      zgCtx.lineWidth=4+sPct*3;zgCtx.shadowColor='#8899aa';zgCtx.shadowBlur=12;
+      zgCtx.lineWidth=4+sPct*3;
       zgCtx.beginPath();zgCtx.arc(0,0,z.radius+8,0,Math.PI*2);zgCtx.stroke();
     }
 
     // Healer: golden cross symbol
     if(z.eliteType==='healer'){
-      zgCtx.fillStyle='rgba(255,220,0,0.85)';zgCtx.shadowColor='#ffdd00';zgCtx.shadowBlur=10;
+      zgCtx.fillStyle='rgba(255,220,0,0.85)';
       zgCtx.fillRect(-2,-8,4,16);zgCtx.fillRect(-8,-2,16,4);
     }
 
     // Shadow runner: dark inner core
     if(z.eliteType==='shadow_runner'){
-      zgCtx.fillStyle='rgba(10,10,40,0.7)';zgCtx.shadowBlur=0;
+      zgCtx.fillStyle='rgba(10,10,40,0.7)';
       zgCtx.beginPath();zgCtx.arc(0,0,z.radius*0.55,0,Math.PI*2);zgCtx.fill();
     }
 
@@ -8048,7 +9769,7 @@ function zgDraw(){
 
     // Berserker: rage cracks when low hp
     if(z.eliteType==='berserker' && z.hp/z.maxHp<0.4){
-      zgCtx.strokeStyle='rgba(255,50,0,0.8)';zgCtx.lineWidth=1.5;zgCtx.shadowColor='#ff2200';zgCtx.shadowBlur=8;
+      zgCtx.strokeStyle='rgba(255,50,0,0.8)';zgCtx.lineWidth=1.5;
       for(var cr=0;cr<4;cr++){
         var ca=(cr/4)*Math.PI*2+ZG.frame*0.02;
         zgCtx.beginPath();
@@ -8059,23 +9780,19 @@ function zgDraw(){
     }
 
     // Elite name tag
-    if(z.elite){
-      zgCtx.fillStyle=z.glowColor||'#ffffff';zgCtx.font='bold 8px monospace';
-      zgCtx.textAlign='center';zgCtx.shadowBlur=6;zgCtx.shadowColor=z.glowColor;
-      zgCtx.fillText(z.type.toUpperCase().replace('_',' '),0,-z.radius-8);
-    }
+    zgCtx.fillStyle=z.glowColor||'#ffffff';zgCtx.font='bold 8px monospace';
+    zgCtx.textAlign='center';zgCtx.shadowBlur=0;
+    zgCtx.fillText(z.type.toUpperCase().replace('_',' '),0,-z.radius-8);
 
     zgCtx.restore();
 
-    // HP bar (all zombies)
+    // HP bar (elites)
     if(z.hp<z.maxHp){
-      var bw=z.radius*2.5+(z.elite?10:0),bx2=z.x-bw/2,by2=z.y-z.radius-(z.elite?16:10);
+      var bw=z.radius*2.5+10,bx2=z.x-bw/2,by2=z.y-z.radius-16;
       zgCtx.fillStyle='#300';zgCtx.fillRect(bx2,by2,bw,5);
-      var hpColor=z.elite?(z.glowColor||'#f00'):'#f00';
-      zgCtx.fillStyle=hpColor;zgCtx.shadowColor=hpColor;zgCtx.shadowBlur=4;
+      var hpColor=z.glowColor||'#f00';
+      zgCtx.fillStyle=hpColor;
       zgCtx.fillRect(bx2,by2,bw*(z.hp/z.maxHp),5);
-      zgCtx.shadowBlur=0;
-      // Shield HP bar (armored)
       if(z.eliteType==='armored' && z.shieldHp>0){
         zgCtx.fillStyle='#8899aa';
         zgCtx.fillRect(bx2,by2-6,bw*(z.shieldHp/z.shieldHpMax),4);
@@ -8083,12 +9800,18 @@ function zgDraw(){
     }
   });
 
-  // Particles: batch draw without per-particle shadowBlur for performance
-  zgCtx.save();
+  // Particles: batch draw - use fillRect for small particles (much faster than arc)
+  zgCtx.save();zgCtx.shadowBlur=0;
   ZG.particles.forEach(function(pt){
-    zgCtx.globalAlpha=pt.life/pt.maxLife;
+    zgCtx.globalAlpha=pt.life/pt.maxLife*0.85;
     zgCtx.fillStyle=pt.color;
-    zgCtx.beginPath();zgCtx.arc(pt.x,pt.y,pt.size,0,Math.PI*2);zgCtx.fill();
+    if(pt.size<=4){
+      // fillRect is faster than arc for small particles
+      var s=pt.size;
+      zgCtx.fillRect(pt.x-s,pt.y-s,s*2,s*2);
+    } else {
+      zgCtx.beginPath();zgCtx.arc(pt.x,pt.y,pt.size,0,Math.PI*2);zgCtx.fill();
+    }
   });
   zgCtx.globalAlpha=1;
   zgCtx.restore();
@@ -8096,15 +9819,30 @@ function zgDraw(){
   // Boss
   if(ZG.boss) zgDrawBoss();
 
+  // Ally NPC
+  zgDrawAlly();
+
   // Player
   zgCtx.save();zgCtx.translate(p.x,p.y);zgCtx.rotate(p.angle);
   if(p.invincible>0&&Math.floor(p.invincible/3)%2===0)zgCtx.globalAlpha=0.4;
   if(p.dashActive>0){zgCtx.shadowColor='#4488ff';zgCtx.shadowBlur=25;}
+  // Berserker glow
+  if(p.perks.berserker_mode && p.hp/p.maxHp<0.3){ zgCtx.shadowColor='#dc2626'; zgCtx.shadowBlur=20+Math.sin(ZG.frame*0.2)*8; }
   zgCtx.fillStyle='#e8e8e8';zgCtx.beginPath();zgCtx.arc(0,0,p.radius,0,Math.PI*2);zgCtx.fill();
   zgCtx.fillStyle='#445566';zgCtx.beginPath();zgCtx.arc(0,0,p.radius*0.75,0,Math.PI*2);zgCtx.fill();
   zgCtx.fillStyle='#888';zgCtx.shadowColor=ZG.weapons[ZG.currentWeapon].bullet.color;zgCtx.shadowBlur=8;
   zgCtx.fillRect(p.radius*0.3,-4,p.radius*1.1,8);
   zgCtx.restore();
+  // Energy Shield ring
+  if(p.shieldHp>0){
+    var sPct=p.shieldHp/p.shieldMax;
+    zgCtx.save();
+    zgCtx.strokeStyle='rgba(56,189,248,'+( 0.35+sPct*0.55)+')';
+    zgCtx.lineWidth=2.5+sPct*2;
+    zgCtx.shadowColor='#38bdf8'; zgCtx.shadowBlur=12*sPct;
+    zgCtx.beginPath(); zgCtx.arc(p.x,p.y,p.radius+8,0,Math.PI*2); zgCtx.stroke();
+    zgCtx.restore();
+  }
 
   // Crosshair
   var mx=ZG.mouse.x,my=ZG.mouse.y;
@@ -8149,8 +9887,8 @@ function zgDraw(){
 function zgLoop(){
   var now=performance.now();
   var elapsed=now-(zgLoop._last||0);
-  // Cap to ~62fps to avoid burning CPU on 120Hz screens
-  if(elapsed<14){requestAnimationFrame(zgLoop);return;}
+  // Cap to 60fps to avoid burning CPU on 120Hz screens
+  if(elapsed<16){requestAnimationFrame(zgLoop);return;}
   zgLoop._last=now;
   zgUpdate();
   zgDraw();
@@ -8171,7 +9909,7 @@ window.zgStart=function(){
   var wrap=document.getElementById('tg-wrap');
   zgW=zgCanvas.width=wrap.offsetWidth||700;
   zgH=zgCanvas.height=wrap.offsetHeight||460;
-  zgCtx=zgCanvas.getContext('2d');
+  zgCtx=zgCanvas.getContext('2d',{alpha:false});
 
   zgInitState();
   ZG.player.x=zgW/2; ZG.player.y=zgH/2;

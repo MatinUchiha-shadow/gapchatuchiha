@@ -950,6 +950,22 @@ audio::-webkit-media-controls-panel{background:rgba(124,109,250,.1)}
 #zg-startbtn:hover{background:#ff2244;color:#000;box-shadow:0 0 30px #ff2244}
 .zg-hint{margin-top:18px;color:#333;font-size:11px;text-align:center;line-height:2}
 .zg-hint span{color:#555}
+/* ── CLASS SELECTOR ── */
+.zg-cls-card{
+  width:110px;padding:10px 8px 8px;border-radius:12px;
+  border:2px solid #2a2a2a;background:rgba(10,10,10,0.7);
+  cursor:pointer;transition:all .2s;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.zg-cls-card:hover{border-color:#555;background:rgba(30,30,30,0.85);transform:translateY(-2px)}
+.zg-cls-card.active{border-color:currentColor;box-shadow:0 0 18px rgba(255,255,255,0.15);transform:translateY(-3px);background:rgba(20,20,20,0.9)}
+.zg-cls-card#cls-warrior.active{border-color:#ff6644;box-shadow:0 0 20px rgba(255,102,68,0.35)}
+.zg-cls-card#cls-gunner.active{border-color:#ffdd44;box-shadow:0 0 20px rgba(255,221,68,0.35)}
+.zg-cls-card#cls-mage.active{border-color:#aa66ff;box-shadow:0 0 20px rgba(170,102,255,0.35)}
+.zg-cls-canvas{border-radius:8px;background:#111;display:block}
+.zg-cls-name{font-size:11px;font-weight:800;letter-spacing:1px;margin-top:2px}
+.zg-cls-desc{font-size:9px;color:#555;line-height:1.4;min-height:22px}
+.zg-cls-stats{display:flex;gap:5px;font-size:9px;flex-wrap:wrap;justify-content:center;margin-top:2px}
 
 /* ── ZOMBIE GUIDE STYLES ── */
 .zg-guide-card{
@@ -2363,6 +2379,12 @@ async function handleAdminCommand(raw){
     return;
   }
 
+  // Game admin panel
+  if(trimmed.toLowerCase()==='/game panel'){
+    toggleGameAdminPanel();
+    return;
+  }
+
   // Multi-word commands must be checked before split
   if(trimmed.toLowerCase()==='/game god'){
     window._zgGodMode = !window._zgGodMode;
@@ -2575,8 +2597,9 @@ const ADMIN_COMMANDS=[
   {cmd:'/takexp ',   desc:'کم کردن XP از کاربر',          placeholder:'نام_کاربر مقدار'},
   {cmd:'/Morty',     desc:'کد مخفی - +100 XP',           placeholder:''},
   {cmd:'/KMG',       desc:'کد مخفی - +100 XP',           placeholder:''},
-  {cmd:'/game god',  desc:'حالت خدا در بازی (نامیرا)',      placeholder:''},
-  {cmd:'/wave ',     desc:'رفتن به موج دلخواه در بازی',     placeholder:'عدد_موج'},
+  {cmd:'/game god',   desc:'حالت خدا در بازی (نامیرا)',       placeholder:''},
+  {cmd:'/game panel', desc:'کنترل پنل ادمین بازی (سایدبار)', placeholder:''},
+  {cmd:'/wave ',      desc:'رفتن به موج دلخواه در بازی',      placeholder:'عدد_موج'},
 ];
 function showAdminHelpMenu(){
   let el=document.getElementById('admin-help-menu');
@@ -4712,6 +4735,52 @@ document.getElementById('dm-input').addEventListener('keydown',function(e){
         <h1>DEAD ZONE</h1>
         <div class="zg-sub">ZOMBIE SURVIVAL</div>
         <p>بقا به هر قیمتی</p>
+
+        <!-- CLASS SELECTOR -->
+        <div id="zg-class-selector" style="margin:10px 0 14px;width:100%;max-width:420px;font-family:'Courier New',monospace">
+          <div style="font-size:11px;color:#555;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:10px">— انتخاب کلاس —</div>
+          <div id="zg-class-cards" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+
+            <!-- WARRIOR -->
+            <div class="zg-cls-card" id="cls-warrior" onclick="zgSelectClass('warrior')" style="selected:false">
+              <canvas class="zg-cls-canvas" id="cls-canvas-warrior" width="64" height="64"></canvas>
+              <div class="zg-cls-name" style="color:#ff6644">⚔️ WARRIOR</div>
+              <div class="zg-cls-desc">HP بالا · آسیب نزدیک</div>
+              <div class="zg-cls-stats">
+                <span style="color:#ff4444">❤️ ×1.5</span>
+                <span style="color:#ff8844">⚔️ ×1.3</span>
+                <span style="color:#4488ff">💨 ×0.9</span>
+              </div>
+            </div>
+
+            <!-- GUNNER -->
+            <div class="zg-cls-card" id="cls-gunner" onclick="zgSelectClass('gunner')" >
+              <canvas class="zg-cls-canvas" id="cls-canvas-gunner" width="64" height="64"></canvas>
+              <div class="zg-cls-name" style="color:#ffdd44">🔫 GUNNER</div>
+              <div class="zg-cls-desc">آمو زیاد · تیر سریع</div>
+              <div class="zg-cls-stats">
+                <span style="color:#ff4444">❤️ ×1.0</span>
+                <span style="color:#ffdd44">🔫 ×1.5</span>
+                <span style="color:#4488ff">💨 ×1.0</span>
+              </div>
+            </div>
+
+            <!-- MAGE -->
+            <div class="zg-cls-card" id="cls-mage" onclick="zgSelectClass('mage')">
+              <canvas class="zg-cls-canvas" id="cls-canvas-mage" width="64" height="64"></canvas>
+              <div class="zg-cls-name" style="color:#aa66ff">🔮 MAGIC</div>
+              <div class="zg-cls-desc">گلوله‌های سحری · سرعت بالا</div>
+              <div class="zg-cls-stats">
+                <span style="color:#ff4444">❤️ ×0.8</span>
+                <span style="color:#aa66ff">✨ ×2.0</span>
+                <span style="color:#4488ff">💨 ×1.3</span>
+              </div>
+            </div>
+
+          </div>
+          <div id="zg-cls-selected-label" style="text-align:center;margin-top:8px;font-size:11px;color:#666;letter-spacing:1px">کلاس انتخابی: <span id="zg-cls-name-lbl" style="color:#ff6644">⚔️ WARRIOR</span></div>
+        </div>
+
         <button id="zg-startbtn" onclick="zgStart()">▶ شروع بازی</button>
         <button id="zg-guidebtn" onclick="zgOpenGuide()" style="margin-top:10px;padding:8px 24px;font-size:13px;font-family:'Courier New',monospace;background:transparent;color:#4488ff;border:1.5px solid #4488ff;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;box-shadow:0 0 10px #4488ff44" onmouseover="this.style.background='#4488ff';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='#4488ff'">🧟 راهنمای زامبی‌ها</button>
         <div class="zg-hint">
@@ -5800,6 +5869,7 @@ function zgInitState(){
     waveSpawned:0,      // how many have been spawned so far
     waveKilled:0,       // how many killed this wave
     waveCooldown:0,     // countdown between waves
+    eliteSpawning:false, // true while elite zombies are being delayed-spawned after boss
     flashTimer:0, bgOffset:0,
     player:{
       x:0,y:0,vx:0,vy:0,hp:100,maxHp:100,speed:3.2,angle:0,radius:16,
@@ -7283,8 +7353,9 @@ function zgBossDead(boss){
   if(ZG.wave >= 11){
     var eliteCount = 2 + Math.floor((ZG.wave - 10) * 0.8);
     eliteCount = Math.min(eliteCount, 6);
+    ZG.eliteSpawning = true; // block wave-clear until all elites spawned
     setTimeout(function(){
-      if(!ZG.running) return;
+      if(!ZG.running){ ZG.eliteSpawning=false; return; }
       var ann3=document.getElementById('zg-announce');
       ann3.textContent='⚡ ELITE ZOMBIES INCOMING! ⚡';
       ann3.style.color='#ff00ff';
@@ -7298,6 +7369,7 @@ function zgBossDead(boss){
             // Randomize which elite type spawns
             typeIdx=Math.floor(Math.random()*ELITE_TYPES.length);
             zgSpawnElite(typeIdx);
+            if(idx === eliteCount - 1) ZG.eliteSpawning = false; // all elites queued
           }, idx*800);
         })(ei);
       }
@@ -8203,6 +8275,7 @@ function zgSpawnWave(){
   ZG.waveSpawned = 0;
   ZG.waveKilled = 0;
   ZG.waveCooldown = 0;
+  ZG.eliteSpawning = false;
 
   ann.textContent = 'WAVE ' + ZG.wave;
   ann.style.color='#fff';
@@ -8605,6 +8678,8 @@ function zgUpdate(){
         ZG.bullets.push({x:z.x,y:z.y,vx:Math.cos(a)*5,vy:Math.sin(a)*5,damage:z.damage,size:6,color:'#88ff44',life:50,trail:[],fromZombie:true});
       }
     }
+    // ── FREEZE: اگه فریز فعاله زامبی‌ها حرکت نکنن ──
+    if(ZG._frozen){ z.vx=0; z.vy=0; return; }
     z.x+=z.vx;z.y+=z.vy;
     ZG.obstacles.forEach(function(o){
       if(z.x+z.radius>o.x&&z.x-z.radius<o.x+o.w&&z.y+z.radius>o.y&&z.y-z.radius<o.y+o.h){
@@ -8765,7 +8840,7 @@ function zgUpdate(){
   if(ZG.boss) zgUpdateBoss();
   zgUpdateAlly(); // NPC همراه
   var allEnemiesDead = ZG.zombies.length===0 && !ZG.boss;
-  if(ZG.waveSpawned===ZG.waveSpawnTotal && allEnemiesDead && ZG.waveSpawnTotal>0 && ZG.waveCooldown===0){
+  if(ZG.waveSpawned===ZG.waveSpawnTotal && allEnemiesDead && ZG.waveSpawnTotal>0 && ZG.waveCooldown===0 && !ZG.eliteSpawning){
     ZG.waveCooldown=180; // set once to start countdown
   }
   if(ZG.waveCooldown>0){
@@ -9828,10 +9903,45 @@ function zgDraw(){
   if(p.dashActive>0){zgCtx.shadowColor='#4488ff';zgCtx.shadowBlur=25;}
   // Berserker glow
   if(p.perks.berserker_mode && p.hp/p.maxHp<0.3){ zgCtx.shadowColor='#dc2626'; zgCtx.shadowBlur=20+Math.sin(ZG.frame*0.2)*8; }
-  zgCtx.fillStyle='#e8e8e8';zgCtx.beginPath();zgCtx.arc(0,0,p.radius,0,Math.PI*2);zgCtx.fill();
-  zgCtx.fillStyle='#445566';zgCtx.beginPath();zgCtx.arc(0,0,p.radius*0.75,0,Math.PI*2);zgCtx.fill();
-  zgCtx.fillStyle='#888';zgCtx.shadowColor=ZG.weapons[ZG.currentWeapon].bullet.color;zgCtx.shadowBlur=8;
-  zgCtx.fillRect(p.radius*0.3,-4,p.radius*1.1,8);
+
+  var pCls = p._class || 'gunner';
+  if(pCls === 'warrior'){
+    // Warrior: armored, bulkier
+    zgCtx.shadowColor = p._classGlow||'#ff4422'; zgCtx.shadowBlur=6;
+    zgCtx.fillStyle='#773322'; zgCtx.beginPath(); zgCtx.arc(0,0,p.radius,0,Math.PI*2); zgCtx.fill();
+    zgCtx.fillStyle=p._classColor||'#cc4422'; zgCtx.beginPath(); zgCtx.arc(0,0,p.radius*0.72,0,Math.PI*2); zgCtx.fill();
+    // armor highlights
+    zgCtx.fillStyle='#ff6644'; zgCtx.beginPath(); zgCtx.arc(-4,-5,4,0,Math.PI*2); zgCtx.fill();
+    // sword barrel
+    zgCtx.fillStyle='#cccccc'; zgCtx.shadowColor='#fff'; zgCtx.shadowBlur=4;
+    zgCtx.fillRect(p.radius*0.3,-3,p.radius*1.3,6);
+    zgCtx.fillStyle='#ff4422';
+    zgCtx.fillRect(p.radius*1.2,-5,5,10);
+  } else if(pCls === 'mage'){
+    // Mage: glowing arcane
+    var mpulse=Math.sin(ZG.frame*0.07)*4;
+    zgCtx.shadowColor='#aa66ff'; zgCtx.shadowBlur=12+mpulse;
+    zgCtx.fillStyle='#220044'; zgCtx.beginPath(); zgCtx.arc(0,0,p.radius,0,Math.PI*2); zgCtx.fill();
+    zgCtx.fillStyle='#5522aa'; zgCtx.beginPath(); zgCtx.arc(0,0,p.radius*0.65,0,Math.PI*2); zgCtx.fill();
+    // orbiting rune dots
+    for(var ri=0;ri<3;ri++){
+      var ra=(ZG.frame*0.06)+(ri*Math.PI*2/3);
+      zgCtx.fillStyle=['#cc66ff','#6644ff','#ff44cc'][ri];
+      zgCtx.beginPath(); zgCtx.arc(Math.cos(ra)*(p.radius+4),Math.sin(ra)*(p.radius+4),2.5,0,Math.PI*2); zgCtx.fill();
+    }
+    // staff barrel
+    zgCtx.fillStyle='#9944ee'; zgCtx.shadowColor='#cc88ff'; zgCtx.shadowBlur=8;
+    zgCtx.fillRect(p.radius*0.3,-3,p.radius*1.1,5);
+    // tip orb
+    zgCtx.fillStyle='#cc88ff';
+    zgCtx.beginPath(); zgCtx.arc(p.radius*1.4,0,5,0,Math.PI*2); zgCtx.fill();
+  } else {
+    // Default Gunner
+    zgCtx.fillStyle='#e8e8e8';zgCtx.beginPath();zgCtx.arc(0,0,p.radius,0,Math.PI*2);zgCtx.fill();
+    zgCtx.fillStyle='#445566';zgCtx.beginPath();zgCtx.arc(0,0,p.radius*0.75,0,Math.PI*2);zgCtx.fill();
+    zgCtx.fillStyle='#888';zgCtx.shadowColor=ZG.weapons[ZG.currentWeapon].bullet.color;zgCtx.shadowBlur=8;
+    zgCtx.fillRect(p.radius*0.3,-4,p.radius*1.1,8);
+  }
   zgCtx.restore();
   // Energy Shield ring
   if(p.shieldHp>0){
@@ -9904,6 +10014,192 @@ window.zgCloseGuide=function(){
   if(modal) modal.style.display='none';
 };
 
+/* ══════════════════════════════════════
+   CLASS SYSTEM
+══════════════════════════════════════ */
+var ZG_CLASSES = {
+  warrior: {
+    label:'⚔️ WARRIOR',
+    color:'#ff6644',
+    bodyColor:'#cc3300',
+    armorColor:'#885533',
+    glowColor:'#ff4422',
+    maxHp: 150,
+    speed: 2.88,   // ×0.9
+    damageMult: 1.3,
+    ammoMult: 1.0,
+    fireRateMult: 1.0,
+    // weapon mods
+    weaponBonus: function(w){ w.damage = Math.round(w.damage * 1.3); },
+    draw: function(ctx, frame){
+      // body — armored warrior
+      ctx.save();
+      // outer armor plate
+      ctx.fillStyle='#773322';
+      ctx.beginPath(); ctx.arc(32,30,18,0,Math.PI*2); ctx.fill();
+      // chest
+      ctx.fillStyle='#cc4422';
+      ctx.beginPath(); ctx.arc(32,30,13,0,Math.PI*2); ctx.fill();
+      // armor highlight
+      ctx.fillStyle='#ff6644';
+      ctx.beginPath(); ctx.arc(28,25,4,0,Math.PI*2); ctx.fill();
+      // helmet
+      ctx.fillStyle='#882211';
+      ctx.beginPath(); ctx.arc(32,20,8,Math.PI,0); ctx.fill();
+      // visor
+      ctx.fillStyle='#ff2200';
+      ctx.fillRect(27,19,10,4);
+      // sword
+      ctx.strokeStyle='#cccccc'; ctx.lineWidth=3; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(46,18); ctx.lineTo(54,10); ctx.stroke();
+      ctx.strokeStyle='#888'; ctx.lineWidth=6;
+      ctx.beginPath(); ctx.moveTo(44,20); ctx.lineTo(46,18); ctx.stroke();
+      // glow
+      ctx.shadowColor='#ff4422'; ctx.shadowBlur=8+Math.sin(frame*0.08)*4;
+      ctx.strokeStyle='rgba(255,68,34,0.4)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(32,30,20,0,Math.PI*2); ctx.stroke();
+      ctx.restore();
+    }
+  },
+  gunner: {
+    label:'🔫 GUNNER',
+    color:'#ffdd44',
+    bodyColor:'#445566',
+    armorColor:'#334455',
+    glowColor:'#ffcc00',
+    maxHp: 100,
+    speed: 3.2,
+    damageBonus: 0,
+    ammoMult: 1.5,
+    fireRateMult: 1.5,
+    weaponBonus: function(w){
+      w.maxAmmo = Math.round(w.maxAmmo * 1.5);
+      w.ammo    = w.maxAmmo;
+      w.fireRate = Math.max(2, Math.round(w.fireRate / 1.5));
+    },
+    draw: function(ctx, frame){
+      ctx.save();
+      // body
+      ctx.fillStyle='#334455';
+      ctx.beginPath(); ctx.arc(32,30,17,0,Math.PI*2); ctx.fill();
+      // vest
+      ctx.fillStyle='#556677';
+      ctx.beginPath(); ctx.arc(32,30,11,0,Math.PI*2); ctx.fill();
+      // ammo pouches
+      ctx.fillStyle='#223344';
+      ctx.fillRect(20,26,5,8); ctx.fillRect(39,26,5,8);
+      // helmet
+      ctx.fillStyle='#445566';
+      ctx.beginPath(); ctx.arc(32,20,7,Math.PI,0); ctx.fill();
+      // visor yellow
+      ctx.fillStyle='#ffdd44';
+      ctx.fillRect(27,19,10,3);
+      // big rifle
+      ctx.fillStyle='#888';
+      ctx.fillRect(44,27,16,5);
+      ctx.fillRect(56,24,4,11);
+      // barrel
+      ctx.fillStyle='#555';
+      ctx.fillRect(44,29,20,2);
+      // scope
+      ctx.fillStyle='#aaa';
+      ctx.fillRect(48,24,6,4);
+      // glow
+      ctx.shadowColor='#ffdd44'; ctx.shadowBlur=6+Math.sin(frame*0.1)*3;
+      ctx.strokeStyle='rgba(255,220,68,0.35)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(32,30,19,0,Math.PI*2); ctx.stroke();
+      ctx.restore();
+    }
+  },
+  mage: {
+    label:'🔮 MAGIC',
+    color:'#aa66ff',
+    bodyColor:'#331155',
+    armorColor:'#5522aa',
+    glowColor:'#cc88ff',
+    maxHp: 80,
+    speed: 3.2*1.3,
+    damageBonus: 0,
+    ammoMult: 1.0,
+    fireRateMult: 1.0,
+    weaponBonus: function(w){
+      // magic: double bullet damage, magic color
+      w.damage = Math.round(w.damage * 2.0);
+      w.bullet.color = '#cc88ff';
+      w.bullet.size  = (w.bullet.size||4) + 2;
+    },
+    draw: function(ctx, frame){
+      ctx.save();
+      var pulse = Math.sin(frame * 0.07);
+      // robe
+      ctx.fillStyle='#220044';
+      ctx.beginPath(); ctx.arc(32,32,18,0,Math.PI*2); ctx.fill();
+      // inner
+      ctx.fillStyle='#441188';
+      ctx.beginPath(); ctx.arc(32,30,11,0,Math.PI*2); ctx.fill();
+      // arcane runes (small circles orbiting)
+      for(var ri=0;ri<4;ri++){
+        var ra=(frame*0.05)+(ri*Math.PI/2);
+        var rx=32+Math.cos(ra)*14, ry=30+Math.sin(ra)*14;
+        ctx.fillStyle=['#cc66ff','#6644ff','#ff44cc','#44ccff'][ri];
+        ctx.beginPath(); ctx.arc(rx,ry,2.5,0,Math.PI*2); ctx.fill();
+      }
+      // hood
+      ctx.fillStyle='#330055';
+      ctx.beginPath(); ctx.arc(32,20,8,Math.PI,0); ctx.fill();
+      // glowing eyes
+      ctx.fillStyle='#ff88ff';
+      ctx.shadowColor='#ff88ff'; ctx.shadowBlur=6;
+      ctx.beginPath(); ctx.arc(29,20,2,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(35,20,2,0,Math.PI*2); ctx.fill();
+      // staff
+      ctx.strokeStyle='#8844cc'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(46,44); ctx.lineTo(52,12); ctx.stroke();
+      ctx.fillStyle='#cc66ff';
+      ctx.shadowColor='#cc66ff'; ctx.shadowBlur=10+pulse*6;
+      ctx.beginPath(); ctx.arc(52,10,5,0,Math.PI*2); ctx.fill();
+      // aura ring
+      ctx.shadowColor='#9933ff'; ctx.shadowBlur=12+pulse*8;
+      ctx.strokeStyle='rgba(153,51,255,'+(0.3+pulse*0.2)+')'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(32,30,21,0,Math.PI*2); ctx.stroke();
+      ctx.restore();
+    }
+  }
+};
+
+window._zgSelectedClass = 'warrior';
+
+window.zgSelectClass = function(cls){
+  window._zgSelectedClass = cls;
+  document.querySelectorAll('.zg-cls-card').forEach(function(c){ c.classList.remove('active'); });
+  var card = document.getElementById('cls-'+cls);
+  if(card) card.classList.add('active');
+  var lbl = document.getElementById('zg-cls-name-lbl');
+  if(lbl){ lbl.textContent = ZG_CLASSES[cls].label; lbl.style.color = ZG_CLASSES[cls].color; }
+};
+
+// Animate class preview canvases
+(function zgClassPreviewLoop(){
+  var frame = (zgClassPreviewLoop._f = (zgClassPreviewLoop._f||0)+1);
+  ['warrior','gunner','mage'].forEach(function(cls){
+    var cv = document.getElementById('cls-canvas-'+cls);
+    if(!cv) return;
+    var ctx2 = cv.getContext('2d');
+    ctx2.clearRect(0,0,64,64);
+    // background
+    ctx2.fillStyle='#0a0a0f';
+    ctx2.fillRect(0,0,64,64);
+    // subtle grid
+    ctx2.strokeStyle='rgba(255,255,255,0.04)'; ctx2.lineWidth=1;
+    for(var gi=8;gi<64;gi+=8){ ctx2.beginPath(); ctx2.moveTo(gi,0); ctx2.lineTo(gi,64); ctx2.stroke(); ctx2.beginPath(); ctx2.moveTo(0,gi); ctx2.lineTo(64,gi); ctx2.stroke(); }
+    ZG_CLASSES[cls].draw(ctx2, frame);
+  });
+  requestAnimationFrame(zgClassPreviewLoop);
+})();
+
+// Init default selection
+setTimeout(function(){ zgSelectClass('warrior'); }, 50);
+
 window.zgStart=function(){
   zgCanvas=document.getElementById('zg-canvas');
   var wrap=document.getElementById('tg-wrap');
@@ -9912,6 +10208,20 @@ window.zgStart=function(){
   zgCtx=zgCanvas.getContext('2d',{alpha:false});
 
   zgInitState();
+
+  // ── Apply selected class ──
+  var cls = ZG_CLASSES[window._zgSelectedClass || 'warrior'];
+  if(cls){
+    ZG.player.maxHp = cls.maxHp;
+    ZG.player.hp    = cls.maxHp;
+    ZG.player.speed = cls.speed;
+    ZG.player._class = window._zgSelectedClass;
+    ZG.player._classColor  = cls.bodyColor;
+    ZG.player._classGlow   = cls.glowColor;
+    // Apply weapon bonuses
+    ZG.weapons.forEach(function(w){ if(!w.locked) cls.weaponBonus(w); });
+    ZG.weapons[0].ammo = ZG.weapons[0].maxAmmo; // refill after bonus
+  }
   ZG.player.x=zgW/2; ZG.player.y=zgH/2;
   ZG.obstacles=zgGenObs(); // regenerate random obstacles each game
   ZG.running=true;
@@ -9942,6 +10252,460 @@ window.zgStart=function(){
 };
 
 var zgLoopStarted=false;
+
+/* ══════════════════════════════════════
+   GAME ADMIN PANEL  —  /game panel
+══════════════════════════════════════ */
+(function(){
+
+var _panel=null;
+
+window.toggleGameAdminPanel=function(){
+  if(_panel){ _panel.remove(); _panel=null; return; }
+  buildGameAdminPanel();
+};
+
+function buildGameAdminPanel(){
+  var p=document.createElement('div');
+  _panel=p;
+  p.id='game-admin-panel';
+  p.style.cssText=[
+    'position:fixed','top:50%','left:16px','transform:translateY(-50%)',
+    'width:260px','max-height:90vh','overflow-y:auto',
+    'background:#0f1117','border:1px solid #2a2f45',
+    'border-radius:18px','padding:0','z-index:99999',
+    'box-shadow:0 16px 60px rgba(0,0,0,.7)',
+    'font-family:Vazirmatn,system-ui,sans-serif',
+    'direction:rtl','color:#e2e5f0',
+    'animation:gapFadeIn .25s ease',
+  ].join(';');
+
+  // inject keyframe once
+  if(!document.getElementById('gap-admin-kf')){
+    var st=document.createElement('style');
+    st.id='gap-admin-kf';
+    st.textContent=`
+      @keyframes gapFadeIn{from{opacity:0;transform:translateY(-50%) translateX(-12px)}to{opacity:1;transform:translateY(-50%) translateX(0)}}
+      .gap-section{padding:10px 14px 6px;border-bottom:1px solid #1e2333}
+      .gap-section-title{font-size:10px;font-weight:700;color:#4b5280;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+      .gap-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px}
+      .gap-label{font-size:12px;color:#9ba3c4}
+      .gap-btn{padding:5px 11px;border-radius:8px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;border:1px solid transparent;transition:filter .15s,transform .1s}
+      .gap-btn:active{transform:scale(.94)}
+      .gap-btn.red{background:rgba(229,51,74,.15);color:#e5334a;border-color:rgba(229,51,74,.3)}
+      .gap-btn.red:hover{filter:brightness(1.3)}
+      .gap-btn.green{background:rgba(34,197,94,.12);color:#22c55e;border-color:rgba(34,197,94,.28)}
+      .gap-btn.green:hover{filter:brightness(1.3)}
+      .gap-btn.purple{background:rgba(124,109,250,.15);color:#a89bfb;border-color:rgba(124,109,250,.3)}
+      .gap-btn.purple:hover{filter:brightness(1.3)}
+      .gap-btn.yellow{background:rgba(250,204,21,.12);color:#facc15;border-color:rgba(250,204,21,.28)}
+      .gap-btn.yellow:hover{filter:brightness(1.3)}
+      .gap-btn.gray{background:rgba(107,112,148,.12);color:#9ba3c4;border-color:rgba(107,112,148,.28)}
+      .gap-btn.gray:hover{filter:brightness(1.3)}
+      .gap-input{width:64px;padding:4px 8px;border-radius:7px;border:1px solid #2a2f45;background:#1a1e2a;color:#e2e5f0;font-size:12px;font-family:inherit;text-align:center}
+      .gap-input:focus{outline:none;border-color:#7c6dfa}
+      .gap-toggle{width:36px;height:20px;border-radius:99px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+      .gap-toggle.on{background:#22c55e}
+      .gap-toggle.off{background:#2a2f45}
+      .gap-toggle::after{content:'';position:absolute;top:3px;width:14px;height:14px;border-radius:99px;background:#fff;transition:left .2s,right .2s}
+      .gap-toggle.on::after{left:auto;right:3px}
+      .gap-toggle.off::after{left:3px;right:auto}
+      .gap-stat{font-size:12px;color:#7c6dfa;font-weight:600;min-width:28px;text-align:center}
+    `;
+    document.head.appendChild(st);
+  }
+
+  // ── Header
+  var hdr=document.createElement('div');
+  hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px;border-bottom:1px solid #1e2333;flex-shrink:0';
+  hdr.innerHTML='<span style="font-size:13px;font-weight:700;color:#a89bfb">🎮 کنترل پنل بازی</span>'
+    +'<button onclick="toggleGameAdminPanel()" style="width:24px;height:24px;border-radius:7px;background:#1e2333;border:none;color:#6b7094;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">✕</button>';
+  p.appendChild(hdr);
+
+  // ── Render all sections
+  p.appendChild(makeSectionPlayer());
+  p.appendChild(makeSectionWeapons());
+  p.appendChild(makeSectionWave());
+  p.appendChild(makeSectionZombies());
+  p.appendChild(makeSectionMap());
+  p.appendChild(makeSectionGame());
+
+  document.body.appendChild(p);
+}
+
+/* helper builders */
+function sec(title){ var d=document.createElement('div'); d.className='gap-section'; d.innerHTML='<div class="gap-section-title">'+title+'</div>'; return d; }
+function row(label,rightHtml){ var d=document.createElement('div'); d.className='gap-row'; d.innerHTML='<span class="gap-label">'+label+'</span><div style="display:flex;gap:5px;align-items:center">'+rightHtml+'</div>'; return d; }
+function btn(cls,label,onclick){ return '<button class="gap-btn '+cls+'" onclick="'+onclick+'">'+label+'</button>'; }
+function toggle(id,isOn,onclick){ return '<button id="'+id+'" class="gap-toggle '+(isOn?'on':'off')+'" onclick="'+onclick+'"></button>'; }
+function numInput(id,val,w){ return '<input class="gap-input" id="'+id+'" value="'+val+'" type="number" style="width:'+(w||64)+'px">'; }
+function stat(id,val){ return '<span class="gap-stat" id="'+id+'">'+val+'</span>'; }
+
+/* re-render stats every 500ms */
+setTimeout(function tick(){
+  if(!_panel||!document.contains(_panel)) return;
+  _updateStats();
+  setTimeout(tick,500);
+},500);
+
+function _updateStats(){
+  var g=window.ZG;
+  if(!g) return;
+  var p=g.player;
+  _set('gap-hp', p?Math.round(p.hp||0)+'/'+Math.round(p.maxHp||100):'—');
+  _set('gap-ammo', g.currentWeapon!==undefined && g.weapons ? (g.weapons[g.currentWeapon]?g.weapons[g.currentWeapon].ammo:'—') : '—');
+  _set('gap-wave', g.wave||1);
+  _set('gap-score', g.score||0);
+  _set('gap-zcount', g.zombies?g.zombies.length:0);
+  _set('gap-killed', g.waveKilled||0);
+  _set('gap-grenade', p&&p.grenades!==undefined?p.grenades:'—');
+}
+function _set(id,val){ var el=document.getElementById(id); if(el) el.textContent=val; }
+
+/* ── SECTION: Player */
+function makeSectionPlayer(){
+  var s=sec('👤 پلیر');
+
+  // HP display + fill
+  s.appendChild(row(
+    'HP',
+    stat('gap-hp','—')
+    +btn('green','پر کردن HP',"_gap('fillhp')")
+    +btn('red','-50 HP',"_gap('dmg')")
+  ));
+
+  // Speed
+  s.appendChild(row(
+    'سرعت',
+    btn('gray','-',"_gap('spd-')")
+    +stat('gap-spd','—')
+    +btn('purple','+',"_gap('spd+')")
+  ));
+
+  // God mode
+  s.appendChild(row(
+    'God Mode',
+    toggle('gap-god-toggle', window._zgGodMode||false, "_gap('god')")
+  ));
+
+  // Grenades
+  s.appendChild(row(
+    'نارنجک',
+    stat('gap-grenade','—')
+    +btn('yellow','+5',"_gap('grenade+')")
+    +btn('red','صفر',"_gap('grenade0')")
+  ));
+
+  // update speed stat
+  setTimeout(function(){
+    var el=document.getElementById('gap-spd');
+    if(el&&window.ZG&&ZG.player) el.textContent=(ZG.player.speed||4).toFixed(1);
+  },100);
+
+  return s;
+}
+
+/* ── SECTION: Weapons */
+function makeSectionWeapons(){
+  var s=sec('🔫 سلاح');
+
+  s.appendChild(row(
+    'آمو سلاح فعلی',
+    btn('yellow','+100',"_gap('ammo+')")
+    +btn('yellow','∞',"_gap('ammo∞')")
+    +btn('red','صفر',"_gap('ammo0')")
+  ));
+
+  s.appendChild(row(
+    'همه سلاح‌ها',
+    btn('purple','آنلاک همه',"_gap('unlockall')")
+  ));
+
+  s.appendChild(row(
+    'سلاح فعلی',
+    stat('gap-ammo','—')+btn('gray','عوض کن',"_gap('nextwep')")
+  ));
+
+  return s;
+}
+
+/* ── SECTION: Wave */
+function makeSectionWave(){
+  var s=sec('🌊 موج');
+
+  s.appendChild(row(
+    'موج فعلی',
+    btn('gray','-',"_gap('wave-')")
+    +stat('gap-wave','—')
+    +btn('purple','+',"_gap('wave+')")
+  ));
+
+  s.appendChild(row(
+    'پرش به موج',
+    numInput('gap-wave-num',1,50)
+    +btn('purple','برو',"_gap('wavejump')")
+  ));
+
+  s.appendChild(row(
+    'امتیاز',
+    stat('gap-score','0')
+    +btn('yellow','+1000',"_gap('score+')")
+    +btn('red','صفر',"_gap('score0')")
+  ));
+
+  return s;
+}
+
+/* ── SECTION: Zombies */
+function makeSectionZombies(){
+  var s=sec('🧟 زامبی‌ها');
+
+  s.appendChild(row(
+    'تعداد زنده',
+    stat('gap-zcount','—')
+    +stat('gap-killed','—')+' کشته'
+  ));
+
+  s.appendChild(row(
+    '',
+    btn('green','+5 زامبی',"_gap('spawn5')")
+    +btn('red','همه رو بکش',"_gap('killall')")
+  ));
+
+  s.appendChild(row(
+    'فریز',
+    toggle('gap-freeze-toggle',false,"_gap('freeze')")
+  ));
+
+  s.appendChild(row(
+    'Boss',
+    btn('red','اسپاون Boss',"_gap('spawnboss')")
+    +btn('gray','بکش',"_gap('killboss')")
+  ));
+
+  return s;
+}
+
+/* ── SECTION: Map */
+function makeSectionMap(){
+  var s=sec('🗺️ محیط');
+
+  s.appendChild(row(
+    'موانع',
+    btn('gray','بازسازی',"_gap('regen')")
+    +btn('purple','پاک کن',"_gap('clearobs')")
+  ));
+
+  s.appendChild(row(
+    'تله‌ها',
+    btn('red','همه منفجر',"_gap('explodetraps')")
+  ));
+
+  return s;
+}
+
+/* ── SECTION: Game */
+function makeSectionGame(){
+  var s=sec('⚙️ بازی');
+  s.style.borderBottom='none';
+
+  s.appendChild(row(
+    '',
+    btn('green','ریست موج',"_gap('resetwave')")
+    +btn('red','Game Over',"_gap('gameover')")
+  ));
+
+  s.appendChild(row(
+    '',
+    btn('purple','باز کن بازی',"_gap('opengame')")
+    +btn('gray','ببند',"_gap('closegame')")
+  ));
+
+  return s;
+}
+
+/* ── Central dispatcher */
+window._gap=function(action){
+  var g=window.ZG;
+  var p=g&&g.player;
+
+  // helper: یه زامبی تصادفی در لبه صفحه اسپاون کن
+  function _gapSpawnOneZombie(){
+    if(!g||!window.ZTYPES) return;
+    var side=Math.floor(Math.random()*4), x, y;
+    if(side===0){x=Math.random()*zgW;y=-30;}
+    else if(side===1){x=zgW+30;y=Math.random()*zgH;}
+    else if(side===2){x=Math.random()*zgW;y=zgH+30;}
+    else{x=-30;y=Math.random()*zgH;}
+    var t=ZTYPES[Math.floor(Math.random()*ZTYPES.length)];
+    g.zombies.push({
+      x:x,y:y,hp:t.hp*(1+(g.wave||1)*0.1),maxHp:t.hp*(1+(g.wave||1)*0.1),
+      speed:t.speed*(1+(g.wave||1)*0.03),damage:t.damage,
+      radius:t.radius,color:t.color,type:t.name,
+      xp:t.xp,score:t.score,
+      angle:0,attackCool:0,ranged:!!t.ranged,rangedCool:0,
+      vx:0,vy:0,stunned:0,wobble:Math.random()*Math.PI*2,
+    });
+  }
+
+  switch(action){
+
+    /* ─ Player ─ */
+    case 'fillhp':
+      if(g&&p){ p.hp=p.maxHp; if(typeof zgUpdateHp==='function') zgUpdateHp(); toast('❤️ HP پر شد'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'dmg':
+      if(g&&p){ p.hp=Math.max(0,p.hp-50); if(typeof zgUpdateHp==='function') zgUpdateHp(); toast('💔 -50 HP'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'spd+':
+      if(g&&p){ p.speed=parseFloat(((p.speed||3.2)+0.5).toFixed(1)); if(typeof zgUpdateHp==='function') zgUpdateHp(); toast('⚡ سرعت: '+p.speed.toFixed(1)); var el=document.getElementById('gap-spd');if(el)el.textContent=p.speed.toFixed(1); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'spd-':
+      if(g&&p){ p.speed=Math.max(0.5,parseFloat(((p.speed||3.2)-0.5).toFixed(1))); toast('🐢 سرعت: '+p.speed.toFixed(1)); var el2=document.getElementById('gap-spd');if(el2)el2.textContent=p.speed.toFixed(1); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'god':
+      window._zgGodMode=!window._zgGodMode;
+      if(g) g.godMode=window._zgGodMode;
+      var tg=document.getElementById('gap-god-toggle');
+      if(tg){ tg.className='gap-toggle '+(window._zgGodMode?'on':'off'); }
+      toast(window._zgGodMode?'👑 God Mode ON':'💀 God Mode OFF');
+      break;
+    case 'grenade+':
+      // نارنجک‌ها روی ZG.grenadeCount نگه داشته میشن، نه p.grenades
+      if(g){ g.grenadeCount=(g.grenadeCount||0)+5; if(typeof zgUpdateGrenadeHUD==='function') zgUpdateGrenadeHUD(); toast('💣 +5 نارنجک'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'grenade0':
+      if(g){ g.grenadeCount=0; if(typeof zgUpdateGrenadeHUD==='function') zgUpdateGrenadeHUD(); toast('💣 نارنجک صفر شد'); }
+      else toast('بازی در جریان نیست');
+      break;
+
+    /* ─ Weapons ─ */
+    case 'ammo+':
+      if(g&&g.weapons&&g.currentWeapon!==undefined){
+        var cw=g.weapons[g.currentWeapon];
+        cw.ammo=Math.min((cw.ammo||0)+100, cw.maxAmmo||9999);
+        if(typeof zgUpdateAmmo==='function') zgUpdateAmmo();
+        toast('🔫 +100 آمو');
+      } else toast('بازی در جریان نیست');
+      break;
+    case 'ammo∞':
+      if(g&&g.weapons){ g.weapons.forEach(function(w){w.ammo=9999; w.maxAmmo=Math.max(w.maxAmmo||0,9999);}); if(typeof zgUpdateAmmo==='function') zgUpdateAmmo(); toast('♾️ آمو بی‌نهایت'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'ammo0':
+      if(g&&g.weapons&&g.currentWeapon!==undefined){ g.weapons[g.currentWeapon].ammo=0; if(typeof zgUpdateAmmo==='function') zgUpdateAmmo(); toast('🔫 آمو صفر شد'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'unlockall':
+      if(g&&g.weapons){ g.weapons.forEach(function(w){w.locked=false; w.unlocked=true;}); if(typeof zgUpdateAmmo==='function') zgUpdateAmmo(); toast('🔓 همه سلاح‌ها آنلاک شدن'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'nextwep':
+      if(g&&g.weapons){ g.currentWeapon=(g.currentWeapon+1)%g.weapons.length; if(typeof zgUpdateAmmo==='function') zgUpdateAmmo(); if(typeof zgUpdateWeapon==='function') zgUpdateWeapon(); toast('🔄 سلاح: '+g.weapons[g.currentWeapon].name); }
+      else toast('بازی در جریان نیست');
+      break;
+
+    /* ─ Wave ─ */
+    case 'wave+':
+      if(g){ g.zombies=[]; g.boss=null; document.getElementById('zg-boss-bar').style.display='none'; g.wave=(g.wave||1)+1; g.waveCooldown=0; g.waveSpawnTotal=0; g.waveSpawned=0; g.waveKilled=0; g.eliteSpawning=false; zgSpawnWave(); toast('⬆️ موج '+g.wave); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'wave-':
+      if(g&&g.wave>1){ g.zombies=[]; g.boss=null; document.getElementById('zg-boss-bar').style.display='none'; g.wave=g.wave-1; g.waveCooldown=0; g.waveSpawnTotal=0; g.waveSpawned=0; g.waveKilled=0; g.eliteSpawning=false; zgSpawnWave(); toast('⬇️ موج '+g.wave); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'wavejump':
+      var wn=parseInt((document.getElementById('gap-wave-num')||{}).value)||1;
+      if(g){ g.zombies=[]; g.boss=null; g.wave=wn; g.waveCooldown=0; g.waveSpawnTotal=0; g.waveSpawned=0; g.waveKilled=0; g.eliteSpawning=false; document.getElementById('zg-boss-bar').style.display='none'; zgSpawnWave(); toast('⚡ رفتی موج '+wn); }
+      else { window._zgStartWave=wn; toast('⚡ بازی از موج '+wn+' شروع میشه'); }
+      break;
+    case 'score+':
+      if(g){ g.score=(g.score||0)+1000; toast('⭐ +1000 امتیاز'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'score0':
+      if(g){ g.score=0; toast('امتیاز صفر شد'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'resetwave':
+      if(g){ g.zombies=[]; g.boss=null; g.waveCooldown=0; g.waveSpawnTotal=0; g.waveSpawned=0; g.waveKilled=0; g.eliteSpawning=false; document.getElementById('zg-boss-bar').style.display='none'; zgSpawnWave(); toast('🔄 موج ریست شد'); }
+      else toast('بازی در جریان نیست');
+      break;
+
+    /* ─ Zombies ─ */
+    case 'spawn5':
+      if(g){ for(var si=0;si<5;si++) _gapSpawnOneZombie(); toast('🧟 ×5 زامبی اسپاون شد'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'killall':
+      if(g){ g.zombies=[]; g.boss=null; document.getElementById('zg-boss-bar').style.display='none'; toast('💥 همه زامبی‌ها و باس کشته شدن'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'freeze':
+      if(!g){ toast('بازی در جریان نیست'); break; }
+      g._frozen=!g._frozen;
+      var ft=document.getElementById('gap-freeze-toggle');
+      if(ft){ ft.className='gap-toggle '+(g._frozen?'on':'off'); }
+      if(g._frozen){
+        // سرعت همه زامبی‌ها صفر کن
+        g.zombies.forEach(function(z){ z._savedSpeed=z.speed; z.speed=0; });
+        if(g.boss){ g.boss._savedSpeed=g.boss.speed; g.boss.speed=0; }
+        toast('❄️ همه فریز شدن');
+      } else {
+        g.zombies.forEach(function(z){ if(z._savedSpeed!==undefined){z.speed=z._savedSpeed; delete z._savedSpeed;} });
+        if(g.boss&&g.boss._savedSpeed!==undefined){ g.boss.speed=g.boss._savedSpeed; delete g.boss._savedSpeed; }
+        toast('🔥 فریز برداشته شد');
+      }
+      break;
+    case 'spawnboss':
+      if(g&&typeof zgSpawnBoss==='function'){
+        // باس فعلی رو بر اساس موج انتخاب کن
+        var bk= g.wave>=20?'FLESH_MASS': g.wave>=15?'SERPENT':'BUTCHER';
+        if(g.boss){ toast('باس از قبل در جریانه!'); break; }
+        zgSpawnBoss(bk);
+        toast('👹 '+bk+' اسپاون شد');
+      } else toast('بازی در جریان نیست');
+      break;
+    case 'killboss':
+      if(g&&g.boss){ g.boss.hp=0; toast('💀 Boss کشته شد'); }
+      else toast('الان باسی نیست');
+      break;
+
+    /* ─ Map ─ */
+    case 'regen':
+      if(g&&typeof zgGenObs==='function'){ g.obstacles=zgGenObs(); toast('🗺️ موانع بازسازی شدن'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'clearobs':
+      if(g){ g.obstacles=[]; toast('🧹 موانع پاک شدن'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'explodetraps':
+      if(g){ g.traps=[]; toast('💥 تله‌ها پاک شدن'); }
+      else toast('بازی در جریان نیست');
+      break;
+
+    /* ─ Game ─ */
+    case 'gameover':
+      if(g&&g.running){ g.running=false; g.gameOver=true; if(typeof zgGameOver==='function') zgGameOver(); toast('💀 Game Over!'); }
+      else toast('بازی در جریان نیست');
+      break;
+    case 'opengame':
+      if(typeof window.openGame==='function') window.openGame();
+      break;
+    case 'closegame':
+      if(typeof window.tgClose==='function') window.tgClose();
+      break;
+  }
+};
+
+})();
+
 
 window.openGame=function(){
   var ov=document.getElementById('tg-overlay');
